@@ -91,6 +91,9 @@ a{color:var(--cyan)}
 .eye{transform-box:fill-box;transform-origin:50% 50%;animation:blink 4.6s infinite}
 @keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
 .bob{animation:bob 3.2s ease-in-out infinite}
+.mkhop{transform-box:fill-box}
+#mk3.joy .mkhop{animation:mkhop .45s ease-in-out infinite}
+@keyframes mkhop{50%{transform:translateY(-3.5px)}}
 @keyframes bob{50%{transform:translateY(-2px)}}
 
 /* Sheet */
@@ -385,25 +388,21 @@ function grantOffline(sec){
 
 /* ---------------- Chibi (Miko) ---------------- */
 function chibiInner(){return `<g class="bob">
-<path d="M16 56 Q10 6 50 6 Q90 6 84 56 Q90 90 76 104 L24 104 Q10 90 16 56Z" fill="#3a2a8c"/>
-<path d="M26 122 Q26 90 50 90 Q74 90 74 122Z" fill="#ff5ea8"/>
-<path d="M40 91 Q50 101 60 91" stroke="#fff" fill="none" stroke-width="2.6" stroke-linecap="round"/>
-<rect x="44" y="82" width="12" height="11" rx="3" fill="#ffd9c7"/>
-<ellipse cx="50" cy="55" rx="27" ry="25" fill="#ffe4d6"/>
-<path d="M22 54 Q20 18 50 17 Q80 18 78 54 Q70 36 58 38 Q52 27 46 38 Q32 36 22 54Z" fill="#5a43c9"/>
-<path d="M30 30 Q40 22 52 24" stroke="#9a88ff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".75"/>
-<path d="M19 52 Q19 11 50 11 Q81 11 81 52" stroke="#22e6ff" stroke-width="4.5" fill="none" stroke-linecap="round"/>
-<rect x="12" y="45" width="11" height="22" rx="5.5" fill="#ff4fa3"/><rect x="77" y="45" width="11" height="22" rx="5.5" fill="#ff4fa3"/>
-<g class="eye"><ellipse cx="39" cy="57" rx="6.5" ry="8.5" fill="#fff"/><ellipse cx="39" cy="58" rx="5" ry="7" fill="#22d3ee"/><ellipse cx="39" cy="59" rx="2.6" ry="4.2" fill="#0b1b3a"/><circle cx="37" cy="54" r="2.1" fill="#fff"/><circle cx="41" cy="62" r="1" fill="#fff"/></g>
-<g class="eye"><ellipse cx="61" cy="57" rx="6.5" ry="8.5" fill="#fff"/><ellipse cx="61" cy="58" rx="5" ry="7" fill="#22d3ee"/><ellipse cx="61" cy="59" rx="2.6" ry="4.2" fill="#0b1b3a"/><circle cx="59" cy="54" r="2.1" fill="#fff"/><circle cx="63" cy="62" r="1" fill="#fff"/></g>
-<path d="M31 48 Q39 43 46 48" stroke="#2a1c6b" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M54 48 Q61 43 69 48" stroke="#2a1c6b" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-<ellipse cx="29" cy="68" rx="5" ry="3" fill="#ff7aa8" opacity=".45"/><ellipse cx="71" cy="68" rx="5" ry="3" fill="#ff7aa8" opacity=".45"/>
-<path class="mouth" d="M44 69 Q50 73 56 69" fill="none" stroke="#8a2a55" stroke-width="1.8" stroke-linecap="round"/>
-<path d="M70 28 l2.2 5.2 5.6.5-4.2 3.6 1.3 5.5-4.9-3-4.9 3 1.3-5.5-4.2-3.6 5.6-.5z" fill="#ffd166"/></g>`}
+<ellipse cx="13" cy="80" rx="7" ry="11" transform="rotate(18 13 80)" fill="#5ee6f5" stroke="#2a1c6b" stroke-width="3"/>
+<ellipse cx="87" cy="80" rx="7" ry="11" transform="rotate(-18 87 80)" fill="#5ee6f5" stroke="#2a1c6b" stroke-width="3"/>
+<ellipse cx="36" cy="109" rx="10" ry="5.5" fill="#2fc6d8" stroke="#2a1c6b" stroke-width="3"/><ellipse cx="64" cy="109" rx="10" ry="5.5" fill="#2fc6d8" stroke="#2a1c6b" stroke-width="3"/>
+<path d="M50 22V9" stroke="#5ee6f5" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="7" r="5.5" fill="#ffd166" stroke="#2a1c6b" stroke-width="3"/>
+<path d="M12 96C6 50 26 20 50 20S94 50 88 96C88 108 12 108 12 96Z" fill="#5ee6f5" stroke="#2a1c6b" stroke-width="3" stroke-linejoin="round"/>
+<ellipse cx="50" cy="88" rx="21" ry="13" fill="#bff7ff" opacity=".6"/>
+<path d="M25 50Q29 36 40 30" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity=".6"/>
+<g class="eye"><ellipse cx="38" cy="56" rx="5.5" ry="7.5" fill="#1b1040"/><circle cx="36" cy="53" r="2" fill="#fff"/></g>
+<g class="eye"><ellipse cx="62" cy="56" rx="5.5" ry="7.5" fill="#1b1040"/><circle cx="60" cy="53" r="2" fill="#fff"/></g>
+<ellipse cx="27" cy="69" rx="5" ry="3" fill="#ff4fa3" opacity=".5"/><ellipse cx="73" cy="69" rx="5" ry="3" fill="#ff4fa3" opacity=".5"/>
+<path class="mouth" d="M44 69 Q50 73 56 69" fill="none" stroke="#1b1040" stroke-width="2.2" stroke-linecap="round"/></g>`}
 const chibiSvg=(w,h)=>`<svg class="chibi" viewBox="0 0 100 120" ${w?`width="${w}" height="${h||w*1.2}"`:''}>${chibiInner()}</svg>`;
 const MOUTH={happy:['M41 65 Q50 80 59 65Z','#d81b60'],calm:['M44 69 Q50 73 56 69','none']};
 let moodT;
-function setMood(m,ms){const [d,f]=MOUTH[m];document.querySelectorAll('.mouth').forEach(p=>{p.setAttribute('d',d);p.setAttribute('fill',f)});clearTimeout(moodT);if(m!=='calm')moodT=setTimeout(()=>setMood('calm'),ms||1500)}
+function setMood(m,ms){const [d,f]=MOUTH[m];const mk=document.getElementById('mk3');if(mk)mk.classList.toggle('joy',m!=='calm');document.querySelectorAll('.mouth').forEach(p=>{p.setAttribute('d',d);p.setAttribute('fill',f)});clearTimeout(moodT);if(m!=='calm')moodT=setTimeout(()=>setMood('calm'),ms||1500)}
 
 /* ---------------- Isometric engine ---------------- */
 const s=22,kx=s*.866,ky=s*.5,X0=225,Y0=180,L=9,H=7.5;
@@ -463,15 +462,25 @@ function minerSvg(m,a,z){
  return box(a,.08,z,MW,1.0,MH,BODY[m.coin])+onB(1.08,`<g transform="translate(${a} ${z})">${faceArt(m)}</g>`)}
 
 /* ---------------- Rack / shelves ---------------- */
+/* ---------------- متن ساده با ضخامت سه‌بعدی (۴ لایه) ---------------- */
+const text3d=(txt,u,v,fs,side,front)=>{let s='';
+ for(let i=0;i<=3;i++)s+=onB(1+.04*i,`<g transform="translate(${u} ${v}) scale(1 -1)"><text direction="ltr" text-anchor="middle" font-size="${fs}" font-weight="900" fill="${i<3?side:front}">${txt}</text></g>`);
+ return s};
+
 const BAY_A=[.3,4.5],ZB=[.1,2.2,4.2],LVL_COL=['#22e6ff','#ff4fa3','#ffc247'];
 const shelfPos=k=>({bay:k<3?0:1,lv:k%3,a0:BAY_A[k<3?0:1],zb:ZB[k%3]});
 function lockedShelf(k,a0,zb){
- const nx=k===S.shelves,col=nx?'#22e6ff':'#6b5fb5',[cx,cy]=P(a0+1.75,1.25,zb+.75);
- const label=nx?`<text direction="ltr" text-anchor="middle" y="4" font-size="12" font-weight="800" fill="#7df3ff" filter="url(#gl2)">${fc(SHELF_COST[k])}</text>`
-  :`<text direction="ltr" text-anchor="middle" y="3" font-size="8.5" font-weight="700" letter-spacing="2.2" fill="#a79ddb" opacity=".6">LOCKED</text>`;
- return `<g class="tap" data-act="shelf" data-k="${k}" opacity="${nx?1:.7}">`
+ const nx=k===S.shelves,cu=a0+1.75,col=nx?'#22e6ff':'#6b5fb5';
+ const pl=nx?['rgba(34,230,255,.30)','rgba(34,230,255,.17)','rgba(34,230,255,.11)']:['rgba(124,104,255,.24)','rgba(124,104,255,.14)','rgba(124,104,255,.09)'];
+ let o=`<g class="tap" data-act="shelf" data-k="${k}" opacity="${nx?1:.88}">`
+  +box(a0+.12,0,zb-.1,3.26,1.25,.1,pl)
   +onB(1.2,`<rect x="${a0+.12}" y="${zb}" width="3.26" height="1.7" rx=".12" fill="${nx?'rgba(34,230,255,.06)':'rgba(120,100,255,.04)'}" stroke="${col}" stroke-opacity="${nx?.8:.45}" stroke-width=".035" stroke-dasharray=".18 .12"/>`)
-  +`<g transform="translate(${cx.toFixed(1)} ${cy.toFixed(1)})">${label}</g></g>`}
+  +onTop(zb+.005,`<ellipse cx="${cu}" cy="1.0" rx="1.55" ry=".3" fill="rgba(0,0,0,.4)"/>`);
+ if(nx){
+  const txt=fc(SHELF_COST[k]),fs=Math.min(.95,3.0/(txt.length*.62));
+  o+=text3d(txt,cu,zb+.55,fs,'#0b5f7a','#7df3ff');
+ }else o+=text3d('LOCKED',cu,zb+.6,.5,'#1b1457','#a79ddb');
+ return o+`</g>`}
 
 function renderRack(){
  let o='';
@@ -489,6 +498,11 @@ function renderRack(){
   })
  });
  $('#rackItems').innerHTML=o}
+
+/* ---------------- میکو روی صندلی ---------------- */
+function mikoBlob(){
+ const [x,y]=P(3.0,6.15,1.85),[sx,sy]=P(3.0,6.15,1.87);
+ return `<ellipse cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" rx="17" ry="6" fill="url(#gShadow)"/><g class="mkhop"><g transform="translate(${x.toFixed(1)} ${(y+3).toFixed(1)}) scale(.5) translate(-50 -112)">${chibiInner()}</g></g>`}
 
 /* ---------------- Room ---------------- */
 function buildRoom(){
@@ -529,7 +543,7 @@ function buildRoom(){
  let grid='';for(let i=1;i<L;i++)grid+=`<line x1="${i}" y1="0" x2="${i}" y2="${L}"/><line x1="0" y1="${i}" x2="${L}" y2="${i}"/>`;
  o+=onTop(0,`<g stroke="rgba(200,180,255,.09)" stroke-width=".03">${grid}</g>`);
  o+=onTop(.01,`<polygon points="0,.5 0,3.2 2.7,4.8 2.7,2.1" fill="rgba(255,170,90,.10)"/><ellipse cx="1.7" cy="6.2" rx="2" ry="3.4" fill="url(#gCyan)"/><ellipse cx="6.2" cy="1.4" rx="3.6" ry="1.8" fill="url(#gPink)"/><ellipse cx="7.05" cy="5.35" rx="2.1" ry="2.1" fill="rgba(34,230,255,.08)"/><ellipse cx="7.05" cy="5.35" rx="1.7" ry="1.7" fill="none" stroke="rgba(34,230,255,.35)" stroke-width=".04" stroke-dasharray=".2 .14"/>`);
- o+=onTop(.015,`<ellipse cx="2.05" cy="1.2" rx="2.3" ry=".9" fill="url(#gShadow)"/><ellipse cx="6.25" cy="1.2" rx="2.3" ry=".9" fill="url(#gShadow)"/><ellipse cx="1.3" cy="6.1" rx="1.9" ry="2.7" fill="url(#gShadow)"/><ellipse cx="3.6" cy="6.2" rx=".95" ry=".95" fill="url(#gShadow)"/><ellipse cx="7.05" cy="5.35" rx="1.3" ry="1.3" fill="url(#gShadow)"/>`);
+ o+=onTop(.015,`<ellipse cx="2.05" cy="1.2" rx="2.3" ry=".9" fill="url(#gShadow)"/><ellipse cx="6.25" cy="1.2" rx="2.3" ry=".9" fill="url(#gShadow)"/><ellipse cx="1.3" cy="6.1" rx="1.9" ry="2.7" fill="url(#gShadow)"/><ellipse cx="3.15" cy="6.2" rx=".95" ry=".95" fill="url(#gShadow)"/><ellipse cx="7.05" cy="5.35" rx="1.3" ry="1.3" fill="url(#gShadow)"/>`);
 
  /* ---- left wall (plane a=0 : u=b) ---- */
  let wi=`<rect x=".5" y="2.2" width="2.7" height="3.7" fill="url(#gSky)"/><g clip-path="url(#winClip)">`;
@@ -575,8 +589,9 @@ function buildRoom(){
   +onTop(4.88,'<rect x=".4" y="7.4" width="1.2" height=".08" fill="url(#gRgb)"/>','class="rgb"')
   +onA(1.65,`<rect x="7.43" y="2.66" width="1.0" height="2.14" rx=".06" fill="#07051a" stroke="#7c5cff" stroke-width=".03"/>`+[3.15,3.8,4.45].map((cy,i)=>`<g class="rgb" style="animation-delay:${i*-.8}s">${fan(7.93,cy,.26,'#ff4fa3',(.5+i*.1)+'s')}</g>`).join(''))+`</g>`;
 
- /* ---- chair ---- */
- o+=box(3.15,5.7,0,.9,.9,.12,['#2a2a4a','#1a1a35','#14142b'])+box(3.5,6.05,.12,.2,.2,1.1,['#444','#2a2a2a','#222'])+box(3.0,5.55,1.22,1.2,1.2,.28,['#f4f1ff','#c9c1ee','#b3a9e0'])+box(4.0,5.6,1.5,.2,1.1,1.6,['#ff4fa3','#cc3b82','#a02d68']);
+ /* ---- chair (بلندتر شد تا میکو راحت به میز برسه) + Miko 3D ---- */
+ o+=box(2.7,5.7,0,.9,.9,.12,['#2a2a4a','#1a1a35','#14142b'])+box(3.05,6.05,.12,.2,.2,1.45,['#444','#2a2a2a','#222'])+box(2.55,5.55,1.57,1.2,1.2,.28,['#f4f1ff','#c9c1ee','#b3a9e0']);
+ o+=box(3.55,5.6,1.85,.2,1.1,.38,['#ff4fa3','#cc3b82','#a02d68'])+`<g id="mk3" class="tap" data-act="miko">`+mikoBlob()+`</g>`;
 
  /* ---- holo market table ---- */
  o+=box(6.3,4.6,0,1.5,1.5,.8,['#2a2458','#1b1740','#141033']);
@@ -592,8 +607,6 @@ function buildRoom(){
   <rect x="-34" y="-9.5" width="68" height="1" fill="#22e6ff" opacity=".55"/><rect x="-34" y="36.5" width="68" height="1" fill="#22e6ff" opacity=".25"/>`
   +COINS.map((c,i)=>`<g transform="translate(0 ${6+i*14})"><circle cx="-29" cy="0" r="3" fill="${c.col}" filter="url(#gl2)"/><text direction="ltr" x="-22" y="3.1" font-size="8.5" font-weight="700" fill="#e9fbff" id="bbp-${c.id}"></text><text direction="ltr" x="32" y="3.1" font-size="8" text-anchor="end" font-weight="800" id="bbt-${c.id}"></text></g>`).join('')+`</g>`;
 
- /* Miko */
- o+=`<svg x="152" y="196" width="46" height="55" viewBox="0 0 100 120" overflow="visible">${chibiInner()}</svg>`;
 
  /* hint + sparkles */
  o+=`<circle id="hint" cx="94" cy="196" r="14" fill="none" stroke="#22e6ff" stroke-width="2"><animate attributeName="r" values="12;26;12" dur="1.6s" repeatCount="indefinite"/><animate attributeName="opacity" values=".9;0;.9" dur="1.6s" repeatCount="indefinite"/></circle>`;
@@ -796,6 +809,7 @@ function openSheet(tab,i){
 function closeSheet(){sheet.tab=null;$('#sheet').classList.remove('open');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('on'));setTimeout(resizeFx,60)}
 
 /* ---------------- Actions ---------------- */
+const LINES_MIKO=['دارم کد می‌نویسم، نزن! 😤','ماینرها دارن کار می‌کنن، منم کار می‌کنم!','قلقلکم نده! 😆','من میکوام، رئیس اتاق ماینر! ✨'];
 const LINES_BUY=['ماینر جدید! صدای فن‌هاش عاشقانه‌ست 😍','این یکی خیلی قویه، قفسه داره می‌درخشه!','سود داره بالا میره، حس خوبیه ✨'];
 function centerBurst(col){const r=$('#scene').getBoundingClientRect();burst(r.left+r.width*.5,r.top+r.height*.45,col,16,4)}
 function act(t,e){
@@ -813,6 +827,7 @@ function act(t,e){
  else if(a==='slot'){const i=+t.dataset.i;if(S.slots[i])openSheet('slot',i);else openSheet('miners')}
  else if(a==='sellminer'){const m=mById(S.slots[sheet.slot]);if(!m)return;S.usd+=m.price*.6;S.slots[sheet.slot]=null;renderRack();toast('ماینر فروخته شد · +'+f$(m.price*.6));closeSheet();renderHUD();save(true)}
  else if(a==='daily'){if(!dailyReady())return;const nd=dailyIdx();S.usd+=DAILY[nd];S.st=nd+1;S.dl=dayKey();flyBal('+'+fc(DAILY[nd]));bumpBal();toast('هدیه‌ی روز '+(nd+1)+' اضافه شد · +'+fc(DAILY[nd]));setMood('happy');hapOk();afterAction();save(true)}
+ else if(a==='miko'){setMood('happy',2200);hap('light');say(LINES_MIKO[Math.floor(Math.random()*LINES_MIKO.length)],4500)}
  else if(a==='claimch')claimChapter()
  else if(a==='invite'){if(!REFLINK)return;const u='https://t.me/share/url?url='+encodeURIComponent(REFLINK)+'&text='+encodeURIComponent('بیا با هم تو اتاق ماینر ماین کنیم ⛏️');try{tg.openTelegramLink(u)}catch(e){window.open(u,'_blank')}}
  else if(a==='copyref'){if(!REFLINK)return;try{navigator.clipboard.writeText(REFLINK).then(()=>toast('لینک کپی شد ✓'),()=>toast(REFLINK))}catch(e){toast(REFLINK)}}
