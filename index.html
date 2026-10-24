@@ -462,9 +462,9 @@ function minerSvg(m,a,z){
  return box(a,.08,z,MW,1.0,MH,BODY[m.coin])+onB(1.08,`<g transform="translate(${a} ${z})">${faceArt(m)}</g>`)}
 
 /* ---------------- Rack / shelves ---------------- */
-/* ---------------- متن ساده با ضخامت سه‌بعدی (۴ لایه) ---------------- */
-const text3d=(txt,u,v,fs,side,front)=>{let s='';
- for(let i=0;i<=3;i++)s+=onB(1+.04*i,`<g transform="translate(${u} ${v}) scale(1 -1)"><text direction="ltr" text-anchor="middle" font-size="${fs}" font-weight="900" fill="${i<3?side:front}">${txt}</text></g>`);
+/* ---------------- متن ریز و ظریف که روی قفسه ایستاده (ضخامت کم) ---------------- */
+const text3d=(txt,u,v,fs,side,front,ls=0)=>{let s='';
+ for(let i=0;i<=2;i++)s+=onB(.9+.025*i,`<g transform="translate(${u} ${v}) scale(1 -1)"><text direction="ltr" text-anchor="middle" font-size="${fs}" font-weight="600" letter-spacing="${ls}" fill="${i<2?side:front}">${txt}</text></g>`);
  return s};
 
 const BAY_A=[.3,4.5],ZB=[.1,2.2,4.2],LVL_COL=['#22e6ff','#ff4fa3','#ffc247'];
@@ -477,9 +477,9 @@ function lockedShelf(k,a0,zb){
   +onB(1.2,`<rect x="${a0+.12}" y="${zb}" width="3.26" height="1.7" rx=".12" fill="${nx?'rgba(34,230,255,.06)':'rgba(120,100,255,.04)'}" stroke="${col}" stroke-opacity="${nx?.8:.45}" stroke-width=".035" stroke-dasharray=".18 .12"/>`)
   +onTop(zb+.005,`<ellipse cx="${cu}" cy="1.0" rx="1.55" ry=".3" fill="rgba(0,0,0,.4)"/>`);
  if(nx){
-  const txt=fc(SHELF_COST[k]),fs=Math.min(.95,3.0/(txt.length*.62));
-  o+=text3d(txt,cu,zb+.55,fs,'#0b5f7a','#7df3ff');
- }else o+=text3d('LOCKED',cu,zb+.6,.5,'#1b1457','#a79ddb');
+  const txt=fc(SHELF_COST[k]),fs=Math.min(.42,1.6/(txt.length*.62));
+  o+=text3d(txt,cu,zb+.06,fs,'#167a94','#8ff5ff');
+ }else o+=text3d('LOCKED',cu,zb+.06,.26,'#3a2f80','#b5aae6',.05);
  return o+`</g>`}
 
 function renderRack(){
@@ -499,10 +499,20 @@ function renderRack(){
  });
  $('#rackItems').innerHTML=o}
 
-/* ---------------- میکو روی صندلی ---------------- */
+/* ---------------- میکو پشت سیستم: از پشت دیده میشه و تایپ می‌کنه ---------------- */
 function mikoBlob(){
- const [x,y]=P(3.0,6.15,1.85),[sx,sy]=P(3.0,6.15,1.87);
- return `<ellipse cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" rx="17" ry="6" fill="url(#gShadow)"/><g class="mkhop"><g transform="translate(${x.toFixed(1)} ${(y+3).toFixed(1)}) scale(.5) translate(-50 -112)">${chibiInner()}</g></g>`}
+ const [x,y]=P(3.0,6.15,1.9),f=n=>n.toFixed(1);
+ const arm=(sh,hd,dl)=>{const [a,b]=sh,[c,d]=hd;
+  const l=(w,col)=>`<line x1="${f(a)}" y1="${f(b)}" x2="${f(c)}" y2="${f(d)}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
+  return l(8,'#2a1c6b')+l(5.5,'#5ee6f5')+`<circle cx="${f(c)}" cy="${f(d)}" r="3.4" fill="#bff7ff" stroke="#2a1c6b" stroke-width="1.2"><animateTransform attributeName="transform" type="translate" values="0 0;0 -2.2;0 0" dur=".5s" begin="${dl}s" repeatCount="indefinite"/></circle>`};
+ const keys=[0,1,2].map(i=>{const q=P(1.2+i*.15,5.5+i*.55,2.75);return `<circle cx="${f(q[0])}" cy="${f(q[1])}" r="1.2" fill="${['#22e6ff','#ff4fa3','#ffd166'][i]}" opacity="0"><animate attributeName="opacity" values="0;1;0" dur=".5s" begin="${i*.17}s" repeatCount="indefinite"/></circle>`}).join('');
+ return `<ellipse cx="${f(x)}" cy="${f(y+1)}" rx="19" ry="7" fill="url(#gShadow)"/>`
+  +arm(P(2.85,5.7,3.0),P(1.55,5.8,2.72),0)+arm(P(2.85,6.6,3.0),P(1.55,6.5,2.72),.25)
+  +`<g class="mkhop"><g transform="translate(${f(x)} ${f(y)})">
+<defs><radialGradient id="mkB" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#d4fbff"/><stop offset=".5" stop-color="#5ee6f5"/><stop offset="1" stop-color="#2597ad"/></radialGradient></defs>
+<g><animateTransform attributeName="transform" type="rotate" values="-6 0 -44;6 0 -44;-6 0 -44" dur="2.6s" repeatCount="indefinite"/><path d="M0 -42V-52" stroke="#5ee6f5" stroke-width="3" stroke-linecap="round"/><circle cy="-54" r="4" fill="#ffd166" stroke="#2a1c6b" stroke-width="1.2"/></g>
+<circle cx="-13" cy="-38" r="6" fill="#5ee6f5" stroke="#2a1c6b" stroke-width="1.6"/><circle cx="13" cy="-38" r="6" fill="#5ee6f5" stroke="#2a1c6b" stroke-width="1.6"/><circle cx="-13" cy="-38" r="2.8" fill="#ff8ec4"/><circle cx="13" cy="-38" r="2.8" fill="#ff8ec4"/><ellipse cx="-9" cy="2" rx="7" ry="3.5" fill="#2fc6d8" stroke="#2a1c6b" stroke-width="1.4"/><ellipse cx="9" cy="2" rx="7" ry="3.5" fill="#2fc6d8" stroke="#2a1c6b" stroke-width="1.4"/><path d="M-19 0C-22 -26 -12 -44 0 -44S22 -26 19 0C19 4 -19 4 -19 0Z" fill="url(#mkB)" stroke="#2a1c6b" stroke-width="1.6" stroke-linejoin="round"/>
+<path d="M-12 -30Q-10 -38 -4 -40" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".6"/></g></g>`+keys}
 
 /* ---------------- Room ---------------- */
 function buildRoom(){
