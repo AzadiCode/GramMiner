@@ -53,7 +53,7 @@ log = logging.getLogger("miko")
 app = Flask(__name__)
 if MONGO_URI:
     from pymongo import MongoClient
-    db = MongoClient(MONGO_URI, serverSelectionTimeoutMS=8000).get_database("mikominer")
+    db = MongoClient(MONGO_URI, serverSelectionTimeoutMS=8000, tz_aware=True).get_database("mikominer")
 else:
     import mongomock
     db = mongomock.MongoClient().get_database("mikominer")
@@ -74,6 +74,11 @@ MAX_AMOUNT = 1e9
 # ───────────────────────── ابزارها ─────────────────────────
 def now():
     return datetime.now(timezone.utc)
+
+
+def aware(d):
+    """Mongo/mongomock ممکنه datetime بدون منطقه‌ی زمانی برگردونه؛ همیشه UTC-aware می‌کنیم"""
+    return d.replace(tzinfo=timezone.utc) if d is not None and d.tzinfo is None else d
 
 
 def tg(method, **data):
@@ -220,7 +225,7 @@ def check_growth(p, new_worth, t):
     """
     last = float(p.get("worth", 0.0)) if p else 0.0
     bucket = float(p.get("bucket", BUCKET_START)) if p else BUCKET_START
-    bt = p.get("bt") if p else None
+    bt = aware(p.get("bt")) if p else None
     dt = max(0.0, (t - bt).total_seconds()) if bt else 0.0
     bucket = min(BUCKET_CAP, bucket + dt * MAX_WORTH_RATE)
     growth = new_worth - last
@@ -311,7 +316,7 @@ def api_get_state():
     p = db.players.find_one({"_id": u["id"]})
     off = 0
     if p:
-        ref = p.get("touch") or p.get("saved") or t
+        ref = aware(p.get("touch") or p.get("saved")) or t
         off = int(max(0, min(OFFLINE_MAX, (t - ref).total_seconds())))
         db.players.update_one({"_id": u["id"]}, {"$set": {"touch": t, "name": display_name(u)}})
         # پاداش دعوت: یک‌بار تحویل داده می‌شه و به ثروت هم اضافه می‌شه تا سقف رشد اشتباه رد نکنه
@@ -339,7 +344,7 @@ def api_put_state():
         return jsonify(error="bad state"), 400
     t = now()
     p = db.players.find_one({"_id": u["id"]})
-    if p and p.get("saved") and (t - p["saved"]).total_seconds() < SAVE_MIN_GAP:
+    if p and p.get("saved") and (t - aware(p["saved"])).total_seconds() < SAVE_MIN_GAP:
         return jsonify(ok=True, skipped=True)
     ok, bucket = check_growth(p, worth, t)
     if not ok:
