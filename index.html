@@ -213,6 +213,8 @@ const hap=t=>{try{tg&&tg.HapticFeedback&&tg.HapticFeedback.impactOccurred(t||'li
 const hapOk=()=>{try{tg&&tg.HapticFeedback&&tg.HapticFeedback.notificationOccurred('success')}catch(e){}};
 const $=s=>document.querySelector(s);
 const INIT=(tg&&tg.initData)||'';
+const UID=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.id)||'guest';
+const LSK='mr3:'+UID;   /* ذخیره‌ی محلی جدا برای هر اکانت */
 const REDUCE=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
 
 /* ---------------- Data ---------------- */
@@ -340,21 +342,23 @@ function merge(o){
 function localLoad(){
  return new Promise(res=>{
   let done=false;const fin=v=>{if(!done){done=true;res(v)}};
-  try{const v=localStorage.getItem('mr3');if(v){fin(JSON.parse(v));return}}catch(e){}
+  try{const v=localStorage.getItem(LSK);if(v){fin(JSON.parse(v));return}}catch(e){}
   if(tg&&tg.CloudStorage){setTimeout(()=>fin(null),1500);try{tg.CloudStorage.getItem('save',(err,v)=>{try{fin(!err&&v?JSON.parse(v):null)}catch(e){fin(null)}});return}catch(e){}}
   fin(null)})}
 let lastSave=0;
 async function save(force){
  const now=Date.now();if(!force&&now-lastSave<4000)return;lastSave=now;
  const p=pack(),js=JSON.stringify(p);
- try{localStorage.setItem('mr3',js)}catch(e){}
+ try{localStorage.setItem(LSK,js)}catch(e){}
  if(tg&&tg.CloudStorage){try{tg.CloudStorage.setItem('save',js)}catch(e){}}
  if(INIT&&SERVER){try{await api('/api/state',{method:'PUT',keepalive:true,body:JSON.stringify({state:p,worth:worth()})})}catch(e){}}}
 async function loadState(){
- let loaded=null,off=0;
- if(INIT){try{const r=await api('/api/state');SERVER=true;loaded=r.state||null;off=r.offline_sec||0}catch(e){SERVER=false}}
+ let loaded=null,off=0,bonus=0;
+ if(INIT){try{const r=await api('/api/state');SERVER=true;loaded=r.state||null;off=r.offline_sec||0;bonus=+r.bonus_usd||0}catch(e){SERVER=false}}
  if(!SERVER)loaded=await localLoad();   /* وقتی سرور هست، فقط سرور منبع حقیقته */
- merge(loaded);return off}
+ merge(loaded);
+ if(bonus>0){S.usd+=bonus;setTimeout(()=>{toast('🎁 پاداش دعوت: +'+fc(bonus));save(true)},2500)}
+ return off}
 function grantOffline(sec){
  sec=Math.min(sec,OFFLINE_MAX);if(sec<90)return;
  const st=stats();if(st.gross<=0)return;
@@ -694,8 +698,18 @@ function sheetHub(){
  o+=CH.slice(0,S.ch).map((x,i)=>`<div class="ok">✓ ماموریت ${i+1}: ${x.t}</div>`).join('');
  const td=new Date().toISOString().slice(0,10),can=S.dl!==td,nd=(can&&S.dl&&(Date.parse(td)-Date.parse(S.dl))/864e5===1)?Math.min(S.st,6):0;
  o+=can?`<div class="row"><div class="ico">🎁</div><div class="rb"><b>پاداش روزانه · روز ${nd+1}</b><small>هر روز بیای بیشتر می‌گیری؛ یه روز نیای از اول شروع می‌شه.</small></div><button class="btn sm" data-act="daily">${fc(DAILY[nd])}</button></div>`:`<div class="row done">🎁 پاداش امروز گرفته شد · فردا برگرد</div>`;
- o+=`<h3 class="sec">رده‌بندی ثروت</h3><div id="top"><small class="mut">در حال بارگذاری…</small></div>`;
+ o+=`<h3 class="sec">دعوت دوستان</h3><div id="ref"><small class="mut">در حال بارگذاری…</small></div><h3 class="sec">رده‌بندی ثروت</h3><div id="top"><small class="mut">در حال بارگذاری…</small></div>`;
  return o}
+let REFLINK='';
+async function loadRef(){
+ const el=$('#ref');if(!el)return;
+ if(!INIT){el.innerHTML='<small class="mut">دعوت دوستان فقط داخل تلگرام فعاله.</small>';return}
+ try{const r=await api('/api/ref'),e2=$('#ref');if(!e2)return;REFLINK=r.link||'';
+  if(!REFLINK){e2.innerHTML='<small class="mut">لینک دعوت هنوز آماده نیست.</small>';return}
+  e2.innerHTML=`<p class="hint">هر دوستی که با لینک تو وارد بشه و به ماموریت ۳ برسه، <span class="num">${fc(r.bonus)}</span> برای تو و <span class="num">${fc(r.welcome)}</span> برای خودش. ${r.next?`با <span class="num">${r.next.at}</span> زیرمجموعه‌ی فعال، <span class="num">${fc(r.next.bonus)}</span> جایزه‌ی اضافه می‌گیری.`:''}</p>
+  <div class="row"><div class="rb"><b>زیرمجموعه‌ی فعال: <span class="num">${r.active}/${r.max}</span></b><small>دعوت‌شده: <span class="num">${r.invited}</span> · درآمد دعوت: <span class="num">${fc(r.earned)}</span></small></div></div>
+  <div style="display:flex;gap:8px"><button class="btn wide" style="margin:0" data-act="invite">📨 دعوت دوستان</button><button class="btn ghost" data-act="copyref">کپی لینک</button></div>`}
+ catch(e){const e2=$('#ref');if(e2)e2.innerHTML='<small class="mut">در دسترس نیست.</small>'}}
 async function loadTop(){
  const el=$('#top');if(!el)return;
  if(!INIT){el.innerHTML='<small class="mut">رده‌بندی فقط داخل تلگرام فعاله.</small>';return}
@@ -714,7 +728,7 @@ function renderSheet(){
  const body=$('#sheetBody'),st=$('#sheet').scrollTop;
  body.innerHTML={market:sheetMarket,miners:sheetMiners,racks:sheetRacks,up:sheetUp,hub:sheetHub,slot:sheetSlot}[sheet.tab]();
  $('#sheetTitle').textContent=TITLES[sheet.tab];$('#sheet').scrollTop=st;updateLive();
- if(sheet.tab==='hub')loadTop()}
+ if(sheet.tab==='hub'){loadTop();loadRef()}}
 
 function updateLive(){
  if(!sheet.tab)return;
@@ -759,6 +773,8 @@ function act(t,e){
  else if(a==='slot'){const i=+t.dataset.i;if(S.slots[i])openSheet('slot',i);else openSheet('miners')}
  else if(a==='sellminer'){const m=mById(S.slots[sheet.slot]);if(!m)return;S.usd+=m.price*.6;S.slots[sheet.slot]=null;renderRack();toast('ماینر فروخته شد · +'+f$(m.price*.6));closeSheet();renderHUD();save(true)}
  else if(a==='daily'){const td=new Date().toISOString().slice(0,10);if(S.dl===td)return;const nd=(S.dl&&(Date.parse(td)-Date.parse(S.dl))/864e5===1)?Math.min(S.st,6):0;S.usd+=DAILY[nd];S.st=nd+1;S.dl=td;toast('پاداش روز '+(nd+1)+' · +'+fc(DAILY[nd]));setMood('happy');hapOk();afterAction();save(true)}
+ else if(a==='invite'){if(!REFLINK)return;const u='https://t.me/share/url?url='+encodeURIComponent(REFLINK)+'&text='+encodeURIComponent('بیا با هم تو اتاق ماینر ماین کنیم ⛏️');try{tg.openTelegramLink(u)}catch(e){window.open(u,'_blank')}}
+ else if(a==='copyref'){if(!REFLINK)return;try{navigator.clipboard.writeText(REFLINK).then(()=>toast('لینک کپی شد ✓'),()=>toast(REFLINK))}catch(e){toast(REFLINK)}}
  else if(a==='boost'){boostUntil=Date.now()+30000;boostShow=0;$('#boost').classList.add('hide');hapOk();centerBurst('#ffd166');toast('⚡ بوست فعال شد: ۳۰ ثانیه ماین دو برابر');renderHUD()}
 }
 function afterAction(){checkChapter();renderHUD();if(sheet.tab)renderSheet();save()}

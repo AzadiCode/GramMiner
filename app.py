@@ -16,11 +16,13 @@ Environment:
   STAR_USD    ارزش هر استار به دلار (پیش‌فرض 0.013)
   MAX_WORTH_RATE  سقف رشد ثروت بازیکن به دلار در ثانیه (پیش‌فرض 0.0003)
   BUCKET_CAP      سقف «اعتبار رشد» ذخیره‌شده به دلار (پیش‌فرض 6)
+  BOT_USERNAME    اختیاری؛ اگه خالی باشه از getMe گرفته می‌شه (برای لینک دعوت)
+  REF_BONUS / REF_WELCOME / REF_MAX / REF_DAILY_MAX  تنظیمات زیرمجموعه‌گیری
 """
 import os, re, json, time, hmac, hashlib, threading, logging
 from collections import deque
 from urllib.parse import parse_qsl
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 import requests
 from flask import Flask, request, jsonify, send_from_directory
@@ -34,6 +36,12 @@ STAR_USD = float(os.environ.get("STAR_USD", "0.013"))
 MAX_WORTH_RATE = float(os.environ.get("MAX_WORTH_RATE", "0.0003"))
 BUCKET_CAP = float(os.environ.get("BUCKET_CAP", "6"))
 BUCKET_START = 1.0
+REF_BONUS = float(os.environ.get("REF_BONUS", "0.06"))      # جایزه‌ی دعوت‌کننده برای هر زیرمجموعه‌ی فعال (دلار بازی)
+REF_WELCOME = float(os.environ.get("REF_WELCOME", "0.03"))  # جایزه‌ی دعوت‌شده
+REF_MAX = int(os.environ.get("REF_MAX", "50"))              # سقف زیرمجموعه‌ی پاداش‌دار هر نفر
+REF_DAILY_MAX = int(os.environ.get("REF_DAILY_MAX", "10"))  # سقف فعال‌سازی در ۲۴ ساعت
+REF_MILESTONES = {3: 0.10, 10: 0.40, 25: 1.00}              # پاداش پله‌ای بر اساس تعداد فعال
+REF_MIN_CH, REF_MIN_TAPS = 3, 50                            # شرط «فعال» شدن: ماموریت ۳ + ۵۰ ضربه
 PRICE_TTL = 30          # ثانیه
 OFFLINE_MAX = 4 * 3600  # باید با OFFLINE_MAX کلاینت یکی باشه
 STATE_VERSION = 3
@@ -52,6 +60,7 @@ else:
     log.warning("MONGO_URI تنظیم نشده؛ از حافظه‌ی موقت استفاده می‌شه")
 db.players.create_index("worth")
 
+BOT_USERNAME = os.environ.get("BOT_USERNAME", "").lstrip("@")
 BOT_SECRET = hashlib.sha256(("bot" + SECRET_KEY).encode()).hexdigest()[:32]
 
 # ───────────────────────── قوانین بازی (برای اعتبارسنجی) ─────────────────────────
@@ -226,6 +235,55 @@ def public_state(p):
     return p.get("state") if p else None
 
 
+# ───────────────────────── زیرمجموعه‌گیری ─────────────────────────
+def new_player(uid, name, ref=None):
+    t = now()
+    doc = {"_id": uid, "name": name, "state": None, "worth": 0.0, "bucket": BUCKET_START,
+           "bt": t, "touch": t, "saved": t, "created": t}
+    if ref:
+        doc["ref"] = ref
+    try:
+        db.players.insert_one(doc)
+        return True
+    except Exception:       # DuplicateKey: قبلاً ساخته شده
+        return False
+
+
+def register_ref(uid, name, payload):
+    """فقط برای بازیکن کاملاً جدید؛ کسی که قبلاً وارد بازی یا ربات شده، هیچ‌وقت زیرمجموعه حساب نمی‌شه."""
+    ref = None
+    m = re.fullmatch(r"ref_(\d{1,15})", payload or "")
+    if m:
+        rid = int(m.group(1))
+        if rid != uid and db.players.find_one({"_id": rid, "state": {"$ne": None}}):
+            ref = rid
+    return new_player(uid, name, ref), ref
+
+
+def activate_ref(uid):
+    """وقتی دعوت‌شده واقعاً بازی کرد (ماموریت ۳ + ۵۰ ضربه) جایزه‌ها پرداخت می‌شن. اتمیک: فقط یک‌بار."""
+    t = now()
+    p = db.players.find_one_and_update({"_id": uid, "ref": {"$exists": True}, "ref_done": {"$ne": True}},
+                                       {"$set": {"ref_done": True, "ref_done_at": t}})
+    if not p:
+        return
+    rid = p["ref"]
+    recent = db.players.count_documents({"ref": rid, "ref_done_at": {"$gte": t - timedelta(days=1)}})
+    active = db.players.count_documents({"ref": rid, "ref_done": True})
+    if active > REF_MAX or recent > REF_DAILY_MAX:
+        log.info("ref payout skipped rid=%s active=%s recent=%s", rid, active, recent)
+        return
+    bonus = REF_BONUS + REF_MILESTONES.get(active, 0.0)
+    db.players.update_one({"_id": rid}, {"$inc": {"bonus": bonus, "ref_earned": bonus}})
+    db.players.update_one({"_id": uid}, {"$inc": {"bonus": REF_WELCOME}})
+    tg("sendMessage", chat_id=rid, text=f"🎉 یکی از دوستانت وارد بازی شد!\nجایزه: ${bonus:.2f} · زیرمجموعه‌ی فعال: {active}",
+       reply_markup=PLAY_KB)
+
+
+def ref_link(uid):
+    return f"https://t.me/{BOT_USERNAME}?start=ref_{uid}" if BOT_USERNAME else ""
+
+
 # ───────────────────────── API مینی‌اپ ─────────────────────────
 @app.get("/")
 def index():
@@ -256,10 +314,16 @@ def api_get_state():
         ref = p.get("touch") or p.get("saved") or t
         off = int(max(0, min(OFFLINE_MAX, (t - ref).total_seconds())))
         db.players.update_one({"_id": u["id"]}, {"$set": {"touch": t, "name": display_name(u)}})
+        # پاداش دعوت: یک‌بار تحویل داده می‌شه و به ثروت هم اضافه می‌شه تا سقف رشد اشتباه رد نکنه
+        b = float(p.get("bonus", 0) or 0)
+        if b > 0:
+            claimed = db.players.find_one_and_update({"_id": u["id"], "bonus": {"$gt": 0}},
+                                                     {"$set": {"bonus": 0}, "$inc": {"worth": b}})
+            b = float(claimed.get("bonus", 0)) if claimed else 0.0
     else:
-        db.players.insert_one({"_id": u["id"], "name": display_name(u), "state": None, "worth": 0.0,
-                               "bucket": BUCKET_START, "bt": t, "touch": t, "saved": t, "created": t})
-    return jsonify(state=public_state(p), offline_sec=off)
+        new_player(u["id"], display_name(u))
+        b = 0.0
+    return jsonify(state=public_state(p), offline_sec=off, bonus_usd=b)
 
 
 @app.put("/api/state")
@@ -284,6 +348,8 @@ def api_put_state():
     db.players.update_one({"_id": u["id"]}, {"$set": {
         "state": st, "worth": worth, "bucket": bucket, "bt": t, "saved": t, "touch": t,
         "name": display_name(u)}}, upsert=True)
+    if p and p.get("ref") and not p.get("ref_done") and st["ch"] >= REF_MIN_CH and st["taps"] >= REF_MIN_TAPS:
+        activate_ref(u["id"])
     return jsonify(ok=True)
 
 
@@ -299,6 +365,20 @@ def api_top():
     if me and me.get("state"):
         rank = db.players.count_documents({"state": {"$ne": None}, "worth": {"$gt": me.get("worth", 0)}}) + 1
     return jsonify(top=top, rank=rank)
+
+
+@app.get("/api/ref")
+def api_ref():
+    u = auth()
+    if not u:
+        return jsonify(error="unauthorized"), 401
+    me = db.players.find_one({"_id": u["id"]}) or {}
+    invited = db.players.count_documents({"ref": u["id"]})
+    active = db.players.count_documents({"ref": u["id"], "ref_done": True})
+    nxt = next(((k, v) for k, v in sorted(REF_MILESTONES.items()) if active < k), None)
+    return jsonify(link=ref_link(u["id"]), invited=invited, active=active,
+                   earned=float(me.get("ref_earned", 0) or 0), bonus=REF_BONUS, welcome=REF_WELCOME,
+                   next={"at": nxt[0], "bonus": nxt[1]} if nxt else None, max=REF_MAX)
 
 
 # ───────────────────────── ربات ─────────────────────────
@@ -333,7 +413,7 @@ def wallet_text(uid):
 WELCOME = ("⛏️ به اتاق ماینر میکو خوش اومدی!\n\n"
            "استارز، تون و دلار رو با ماینرهات استخراج کن. ارقام ریزه، شبکه سخته و صبر پاداش داره.\n"
            "هر روز سر بزن و پاداش روزانه‌ت رو بگیر 🎁")
-HELP = ("/start — ورود به بازی\n/wallet — موجودی کیف پول\n/top — رده‌بندی ثروت\n/help — راهنما")
+HELP = ("/start — ورود به بازی\n/invite — لینک دعوت دوستان\n/wallet — موجودی کیف پول\n/top — رده‌بندی ثروت\n/help — راهنما")
 
 
 @app.post("/bot")
@@ -346,10 +426,20 @@ def bot_hook():
         if not msg or msg.get("chat", {}).get("type") != "private":
             return "ok"
         chat_id = msg["chat"]["id"]
-        cmd = (msg.get("text") or "").strip().split()[:1]
-        cmd = cmd[0][1:].split("@")[0].lower() if cmd and cmd[0].startswith("/") else ""
+        parts = (msg.get("text") or "").strip().split()
+        cmd = parts[0][1:].split("@")[0].lower() if parts and parts[0].startswith("/") else ""
+        if cmd == "start":
+            u = msg["from"]
+            _, ref = register_ref(u["id"], display_name(u), parts[1] if len(parts) > 1 else "")
+            if ref:
+                tg("sendMessage", chat_id=chat_id,
+                   text=f"🎁 با دعوت دوستت اومدی! بعد از رسیدن به ماموریت ۳ بازی، ${REF_WELCOME:.2f} هدیه می‌گیری.")
         if cmd == "top":
             tg("sendMessage", chat_id=chat_id, text=top_text(), reply_markup=PLAY_KB)
+        elif cmd == "invite":
+            link = ref_link(msg["from"]["id"])
+            tg("sendMessage", chat_id=chat_id,
+               text=("🔗 لینک دعوت تو:\n" + link) if link else "لینک دعوت هنوز آماده نیست.")
         elif cmd == "wallet":
             tg("sendMessage", chat_id=chat_id, text=wallet_text(msg["from"]["id"]), reply_markup=PLAY_KB)
         elif cmd == "help":
@@ -362,10 +452,14 @@ def bot_hook():
 
 
 def setup_bot():
+    global BOT_USERNAME
+    if not BOT_USERNAME:
+        BOT_USERNAME = (tg("getMe").get("result") or {}).get("username", "")
     r = tg("setWebhook", url=f"{BASE_URL}/bot", secret_token=BOT_SECRET,
            allowed_updates=["message"], drop_pending_updates=True)
     tg("setMyCommands", commands=[
         {"command": "start", "description": "ورود به بازی"},
+        {"command": "invite", "description": "دعوت دوستان"},
         {"command": "wallet", "description": "کیف پول"},
         {"command": "top", "description": "رده‌بندی"},
         {"command": "help", "description": "راهنما"}])
