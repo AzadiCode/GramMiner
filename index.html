@@ -1002,7 +1002,7 @@ function wSec(){
    <p class="hint">بدون کامنت بالا، واریز به حساب تو نمی‌رسه. معمولاً چند دقیقه بعد اضافه می‌شه.</p>`:'<p class="hint">واریز TON هنوز فعال نشده.</p>')
   :`<div class="chs">${[50,100,250,500].map(n=>`<button data-act="w-q" data-v="${n}">${n} ⭐</button>`).join('')}</div>${winp('تعداد Stars (حداقل '+d.min_stars+')','amt','numeric')}<button class="btn wide" data-act="w-stars">پرداخت با Stars</button><p class="hint">بعد از واریز، از «شارژ بازی» می‌تونی به بالانس بازی تبدیلش کنی.</p>`);
  if(W.v==='wd'){const a=W.wd;return wchips('wd',a,WA)+`<div class="inr">${winp('مقدار','amt')}${wmax(a)}</div>`+(a==='STAR'?'':winp('آدرس کیف پول TON','addr','text'))
-  +`<p class="hint">موجودی: <span class="num">${wnum(a,d.bal[a])}</span> · حداقل <span class="num">${d.min_wd[a]}</span> · پرداخت بعد از تأیید ادمین${a==='STAR'?' (داخل تلگرام)':''}</p>${d.wd_on?'':'<p class="hint">برای ثبت و پردازش برداشت، تنظیمات مدیریت سرور باید تکمیل شود.</p>'}<button class="btn wide" data-act="w-wd" ${d.wd_on?'':'disabled'}>درخواست برداشت</button>`}
+  +`<p class="hint">موجودی: <span class="num">${wnum(a,d.bal[a])}</span> · حداقل ارزش برداشت <span class="num">۱۰ دلار</span> (معادل مقدار این ارز با قیمت روز) · پرداخت بعد از تأیید ادمین${a==='STAR'?' (داخل تلگرام)':''}</p>${d.wd_on?'':'<p class="hint">برای ثبت و پردازش برداشت، تنظیمات مدیریت سرور باید تکمیل شود.</p>'}<button class="btn wide" data-act="w-wd" ${d.wd_on?'':'disabled'}>درخواست برداشت</button>`}
  if(W.v==='swap')return `<small class="mut">از</small>`+wchips('from',W.from,WA)+`<div class="inr">${winp('مقدار','amt')}${wmax(W.from)}</div><div class="flip"><button data-act="w-flip">⇅</button></div><small class="mut">به</small>`+wchips('to',W.to,WA)+`<div class="qt" id="qt">${wQuote()}</div><button class="btn wide" data-act="w-swap">تبدیل</button>`;
  const a=W.gm,su=d.star_usd||coin('STAR').ref;
  return `<div class="gmc"><small>بالانس فعلی بازی</small><b class="num" id="gm-bal">${f$(S.usd)}</b></div><small class="mut">از کیف پول</small>`+wchips('gm',a,WA)
@@ -1042,7 +1042,13 @@ async function wpost(path,body){
  try{const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-Init-Data':INIT},body:JSON.stringify(body)});
   const j=await r.json().catch(()=>({}));return r.ok?j:Object.assign({error:j.error||'net'},j)}
  catch(e){return {error:'net'}}finally{W.busy=false}}
-const wfail=r=>toast(WERR[r.error]||'خطا، دوباره تلاش کن');
+const wfail=r=>{
+ if(r.error==='min'){
+  const a=r.asset||W.wd, need=+(r.min||0), label=a==='STAR'?'استارز':a==='TON'?'TON':'USDT';
+  return toast(`حداقل ارزش برداشت ۱۰ دلار است؛ با قیمت فعلی باید حداقل ${wnum(a,need)} ${label} برداشت کنید. مبلغ واردشده کمتر از این حد است.`);
+ }
+ toast(WERR[r.error]||'خطا، دوباره تلاش کن')
+};
 const wdone=m=>{W.amt='';hapOk();toast(m);wLoad()};
 const wpoll=()=>[4000,15000,40000].forEach(t=>setTimeout(wLoad,t));
 

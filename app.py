@@ -194,14 +194,11 @@ def set_cfg(upd):
 WITHDRAW_MIN_USD = 10.0  # حداقل ارزش دلاری برداشت برای همه‌ی دارایی‌ها
 
 def min_wd():
-    """حداقل برداشت هر دارایی؛ هم تنظیم ادمین رعایت می‌شود و هم ارزش آن حداقل ۱۰ دلار است."""
-    c = cfg()
+    """حداقل برداشت برای همه‌ی دارایی‌ها معادل ۱۰ دلار است؛ بر اساس نرخ فعلی هر دارایی."""
     out = {}
     for a in ASSETS:
         price = asset_usd(a)
-        configured = float(c.get("min_wd_" + a, 0) or 0)
-        usd_floor = math.ceil((WITHDRAW_MIN_USD / price) * (10 ** DEC[a])) / (10 ** DEC[a]) if price > 0 else configured
-        out[a] = max(configured, usd_floor)
+        out[a] = (math.ceil((WITHDRAW_MIN_USD / price) * (10 ** DEC[a])) / (10 ** DEC[a])) if price > 0 else 0
     return out
 
 
@@ -682,8 +679,10 @@ def api_wallet_withdraw():
     a = b.get("asset")
     amt = amount_arg(b, a) if a in ASSETS else None
     addr = (b.get("address") or "").strip()
-    if not amt or amt < min_wd()[a]:
-        return jsonify(error="min", min=min_wd().get(a)), 400
+    required = min_wd().get(a, 0)
+    if not amt or required <= 0 or amt < required:
+        return jsonify(error="min", min=required, asset=a, min_usd=WITHDRAW_MIN_USD,
+                       price_usd=asset_usd(a)), 400
     if a != "STAR" and not re.fullmatch(r"(?:[EU]Q|kQ|0Q)[A-Za-z0-9_-]{46}|-?\d:[0-9a-fA-F]{64}", addr):
         return jsonify(error="address"), 400
     if not debit(u["id"], a, amt):
