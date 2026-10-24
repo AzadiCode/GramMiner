@@ -158,23 +158,63 @@ a{color:var(--cyan)}
 .lb span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* Wallet / Profile */
-#sheet.tall{max-height:88%}
+#sheet.tall{max-height:93%}
 .in{width:100%;padding:12px 13px;margin:6px 0;border-radius:13px;border:1px solid var(--line);background:rgba(8,5,24,.6);color:var(--txt);font:inherit;font-size:15px;direction:ltr;text-align:left;user-select:text;-webkit-user-select:text;outline:0}
 .in:focus{border-color:var(--cyan)}
-.pf{display:flex;gap:12px;align-items:center;padding:13px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(139,92,246,.22),rgba(34,230,255,.06))}
-.av{width:64px;height:64px;border-radius:50%;flex:none;padding:3px;background:conic-gradient(#22e6ff,#8b5cf6,#ff4fa3,#22e6ff);overflow:hidden}
-.av img,.av span{width:100%;height:100%;border-radius:50%;object-fit:cover;display:grid;place-items:center;background:linear-gradient(135deg,#9be37f,#3ddc84);color:#06210f;font-weight:900;font-size:21px}
-.pi{min-width:0;flex:1}.pi>b{font-size:16px}.pi small{display:block;color:var(--mut);font-size:11.5px;margin:2px 0 7px}
-.bd{display:flex;flex-wrap:wrap;gap:5px}.bd span{font-size:11px;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.07)}
-.tot{display:flex;justify-content:space-between;align-items:baseline;margin:12px 2px 8px}.tot small{color:var(--mut);font-size:12px}.tot b{font-size:24px;font-weight:900;color:var(--cyan)}
-.wa{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-.wa>div{padding:9px 4px;border-radius:15px;border:1px solid var(--line);background:rgba(255,255,255,.035);text-align:center;display:grid;gap:3px;justify-items:center}
-.wa b{font-size:14px}.wa small{font-size:10.5px;color:var(--mut)}
-.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:14px 0 10px;padding:4px;border-radius:15px;background:rgba(8,5,24,.6);border:1px solid var(--line)}
-.seg button{border:0;background:none;padding:9px 0;border-radius:11px;font-size:12.5px;font-weight:700;color:var(--mut)}
-.seg button.on{background:linear-gradient(135deg,#8b5cf6,#5b3fd0);color:#fff;box-shadow:0 0 14px rgba(139,92,246,.5)}
+.in.fa{direction:rtl;text-align:right}
+textarea.in{min-height:120px;resize:none;line-height:1.9;display:block}
+.pf{display:flex;gap:11px;align-items:center;padding:2px 2px 12px}
+.av{width:46px;height:46px;border-radius:50%;flex:none;padding:2px;background:conic-gradient(#22e6ff,#8b5cf6,#ff4fa3,#22e6ff);overflow:hidden}
+.av img,.av span{width:100%;height:100%;border-radius:50%;object-fit:cover;display:grid;place-items:center;background:linear-gradient(135deg,#9be37f,#3ddc84);color:#06210f;font-weight:900;font-size:15px}
+.pi{min-width:0;flex:1}.pi>b{font-size:15px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pi small{display:block;color:var(--mut);font-size:11px;margin-top:1px}
+.bd{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}.bd span{font-size:10.5px;padding:2px 8px;border-radius:99px;background:rgba(255,255,255,.07)}
+.admgo{flex:none;border:1px solid rgba(255,194,71,.55);background:rgba(255,194,71,.12);color:var(--gold);border-radius:12px;padding:8px 11px;font-size:11.5px;font-weight:800}
+
+/* hero */
+.hero{position:relative;overflow:hidden;padding:16px 15px 13px;border-radius:24px;border:1px solid rgba(255,194,71,.38);background:radial-gradient(120% 150% at 100% 0%,rgba(255,194,71,.24),transparent 58%),radial-gradient(90% 120% at 0% 100%,rgba(34,230,255,.14),transparent 60%),linear-gradient(135deg,#2c1a70,#150d3a 72%);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.hero>small{display:flex;align-items:center;gap:6px;color:#d6cdff;font-size:12px}
+.hero>small:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.hero .big{display:block;font-size:31px;font-weight:900;color:var(--gold);text-shadow:0 0 22px rgba(255,194,71,.45);margin:3px 0 12px;letter-spacing:.2px;line-height:1.3}
+.hp{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.hp>div{padding:8px 4px;border-radius:14px;background:rgba(8,5,24,.5);border:1px solid rgba(255,255,255,.08);text-align:center;min-width:0}
+.hp small{display:block;font-size:10px;color:var(--mut);margin-bottom:1px}
+.hp b{font-size:11.5px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* actions */
+.acts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:15px 0 2px}
+.acts button{border:0;background:none;display:grid;gap:6px;justify-items:center;font-size:11.5px;font-weight:700;color:var(--txt);padding:0;cursor:pointer}
+.acts i{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(139,92,246,.4),rgba(34,230,255,.12));border:1px solid var(--line);transition:transform .12s}
+.acts button:active i{transform:scale(.92)}
+.acts button.hl i{background:linear-gradient(135deg,#ffd166,#ff4fa3);border:0;box-shadow:0 6px 18px rgba(255,79,163,.35)}
+.acts svg{width:23px;height:23px;fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.acts .hl svg{stroke:#220a1c}
+.sh{display:flex;justify-content:space-between;align-items:baseline;margin:17px 2px 8px;gap:8px}.sh b{font-size:14px}.sh small{color:var(--mut);font-size:11px}
+
+/* asset rows */
+.as{display:flex;align-items:center;gap:11px;padding:10px 11px;margin-bottom:7px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.035)}
+.as .n{flex:1;min-width:0}.as .n b{display:block;font-size:13.5px}.as .n small{display:block;color:var(--mut);font-size:11px;margin-top:1px}
+.as .v{text-align:left;min-width:0}.as .v b{display:block;font-size:13px}.as .v small{display:block;color:var(--mut);font-size:11px;margin-top:1px}
+.as .btn.sm{padding:8px 12px;font-size:12px;flex:none}
+.as.mine{border-color:rgba(255,194,71,.28);background:linear-gradient(135deg,rgba(255,194,71,.07),rgba(255,255,255,.02))}
+
+/* tx */
+.tx{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid rgba(255,255,255,.05)}
+.tx:last-child{border:0}
+.ti{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;font-size:16px;flex:none;background:rgba(255,255,255,.07)}
+.ti.p{background:rgba(61,220,132,.16)}.ti.m{background:rgba(255,79,163,.16)}.ti.g{background:rgba(255,194,71,.16)}
+.tx .n{flex:1;min-width:0}.tx .n b{display:block;font-size:12.5px}.tx .n small{display:block;font-size:10.5px;color:var(--mut)}
+.tx>b{font-size:12.5px}.tx>b.p{color:var(--green)}.tx>b.m{color:var(--pink)}
+
+/* flow */
+.fh{display:flex;align-items:center;gap:9px;margin:0 0 12px}
+.fh button{width:36px;height:36px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.06);display:grid;place-items:center;padding:0}
+.fh svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.fh b{font-size:15.5px}
+.gmc{display:flex;justify-content:space-between;align-items:center;padding:13px 14px;margin-bottom:10px;border-radius:18px;border:1px solid rgba(255,194,71,.4);background:linear-gradient(135deg,rgba(255,194,71,.16),rgba(139,92,246,.1))}
+.gmc small{color:#ddd3ff;font-size:12px}.gmc b{font-size:18px;color:var(--gold)}
 .chs{display:flex;gap:6px;margin:6px 0}
-.chs button{flex:1;padding:9px 0;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);font-weight:700;font-size:12.5px}
+.chs button{flex:1;padding:9px 0;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);font-weight:700;font-size:12.5px;line-height:1.5}
+.chs button small{display:block;font-size:10px;color:var(--mut);font-weight:600}
 .chs button.on{border-color:var(--c,var(--cyan));background:rgba(255,255,255,.1)}
 .inr{position:relative}.inr .in{padding-left:64px}
 .mx{position:absolute;left:8px;top:50%;transform:translateY(-50%);border:0;border-radius:9px;padding:6px 11px;background:rgba(139,92,246,.3);font-size:12px;font-weight:700}
@@ -186,6 +226,51 @@ a{color:var(--cyan)}
 .btn.w2{width:100%;margin-top:8px;padding:11px}
 .flip{text-align:center}.flip button{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:50%;width:34px;height:34px;font-size:16px}
 .qt{padding:10px 4px;text-align:center;font-size:13px;color:var(--cyan)}
+
+/* admin */
+.admb{width:26px;height:26px;border-radius:9px;border:1px solid rgba(255,194,71,.55);background:rgba(255,194,71,.13);color:var(--gold);padding:0;display:grid;place-items:center;cursor:pointer}
+.admb.hide{display:none}
+.admb svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.atabs{display:flex;gap:6px;overflow-x:auto;padding:2px 0 11px;scrollbar-width:none}.atabs::-webkit-scrollbar{display:none}
+.atabs button{flex:none;border:1px solid var(--line);background:rgba(255,255,255,.04);padding:8px 14px;border-radius:99px;font-size:12.5px;font-weight:700;color:var(--mut)}
+.atabs button.on{background:linear-gradient(135deg,#ffd166,#ff8a3d);color:#1a1004;border:0}
+.atabs button i{font-style:normal;background:#ff4f6a;color:#fff;border-radius:99px;padding:0 6px;margin-inline-start:5px;font-size:10px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.kpi{padding:11px 12px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.04);min-width:0}
+.kpi small{display:block;font-size:11px;color:var(--mut)}
+.kpi b{display:block;font-size:19px;font-weight:900;margin:2px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kpi em{font-style:normal;font-size:10.5px;color:var(--mut);display:block}
+.kpi.wide{grid-column:1/-1}
+.kpi.warn{border-color:rgba(255,194,71,.6);background:rgba(255,194,71,.09)}.kpi.warn b{color:var(--gold)}
+.kpi.good b{color:var(--green)}
+.alert{padding:10px 12px;margin-bottom:10px;border-radius:14px;border:1px solid rgba(255,79,106,.6);background:rgba(255,79,106,.1);font-size:12px;line-height:1.9}
+.bars{display:flex;align-items:flex-end;gap:7px;height:92px;margin-top:10px}
+.bars>div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;height:100%;min-width:0}
+.bars i{display:block;width:100%;border-radius:7px 7px 3px 3px;background:linear-gradient(180deg,var(--cyan),#8b5cf6);min-height:3px}
+.bars b{font-size:10px}.bars small{font-size:9.5px;color:var(--mut)}
+.aitem{padding:11px 12px;margin-bottom:8px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.035)}
+.aitem.tap{cursor:pointer}.aitem.tap:active{background:rgba(255,255,255,.07)}
+.ah{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ah b{font-size:13.5px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.aitem small{display:block;color:var(--mut);font-size:11px;margin-top:3px;line-height:1.7}
+.am{display:flex;align-items:baseline;justify-content:space-between;margin:6px 0 2px}.am b{font-size:16px}.am em{font-style:normal;font-size:11.5px;color:var(--mut)}
+.pill{font-size:10.5px;padding:3px 9px;border-radius:99px;font-weight:700;flex:none}
+.pill.pending{background:rgba(255,194,71,.16);color:var(--gold)}
+.pill.paid,.pill.done{background:rgba(61,220,132,.16);color:var(--green)}
+.pill.rejected,.pill.ban{background:rgba(255,79,163,.16);color:var(--pink)}
+.btnrow{display:flex;gap:8px;margin-top:9px}.btnrow .btn{flex:1;padding:11px 6px}
+.btn.ok2{background:linear-gradient(135deg,#7dffb0,#22e6ff)}
+.btn.no2{background:linear-gradient(135deg,#ff6a88,#ff4fa3);color:#fff}
+.sw{width:46px;height:26px;border-radius:99px;border:0;background:#2b2550;position:relative;padding:0;flex:none;transition:background .2s}
+.sw i{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:#9a90c8;transition:right .2s,background .2s}
+.sw.on{background:linear-gradient(135deg,#7dffb0,#22e6ff)}.sw.on i{right:23px;background:#fff}
+.fld{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 2px}
+.fld>span{font-size:13px;line-height:1.5}.fld>span small{display:block;font-size:10.5px;color:var(--mut)}
+.fld .in{width:104px;margin:0;padding:9px 8px;text-align:center;flex:none}
+.srch{display:flex;gap:8px;margin-bottom:10px}.srch .in{margin:0;direction:rtl;text-align:right}.srch .btn{flex:none;padding:0 16px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}
+.fg>div{padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.04);min-width:0}
+.fg small{display:block;font-size:10.5px;color:var(--mut)}.fg b{font-size:12.5px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* Nav */
 nav{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;padding:6px 6px;padding-bottom:max(8px,env(safe-area-inset-bottom));background:rgba(8,5,24,.92);border-top:1px solid var(--line);position:relative;z-index:3}
@@ -210,7 +295,7 @@ nav button.on svg{stroke:var(--cyan);filter:drop-shadow(0 0 5px rgba(34,230,255,
     <div class="top">
       <div class="box"><small>موجودی</small><b id="bal" class="num">$0</b></div>
       <div class="box g"><small>سود خالص</small><b id="inc" class="num">0</b></div>
-      <div id="tags"><span id="boostTag" class="tag bst hide">⚡ ×۲</span><span id="liveTag" class="tag"></span></div>
+      <div id="tags"><button id="admBtn" class="admb hide" data-act="tab" data-tab="admin" aria-label="پنل مدیریت"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></button><span id="boostTag" class="tag bst hide">⚡ ×۲</span><span id="liveTag" class="tag"></span></div>
     </div>
     <div class="chips" id="chips"></div>
   </header>
@@ -297,7 +382,7 @@ const DAILY=[.01,.012,.015,.02,.025,.03,.05];
 const SHELVES=6,SLOTS=SHELVES*2,SHELF_COST=[0,.20,.70,1.8,4.5,11];
 const OFFLINE_MAX=4*3600;
 
-const S={v:3,usd:.15,wallet:{STAR:0,TON:0,USD:0},sel:'STAR',pc:0,shelves:1,slots:Array(SLOTS).fill(null),room:{},taps:0,sold:0,ch:0,rd:0,en:EMAX,et:Date.now(),dl:'',st:0};
+const S={v:3,usd:.15,wallet:{STAR:0,TON:0,USD:0},sel:'STAR',pc:0,shelves:1,slots:Array(SLOTS).fill(null),room:{},taps:0,sold:0,ch:0,rd:0,en:EMAX,et:Date.now(),dl:'',st:0,cashed:0};
 const energy=()=>Math.min(EMAX,S.en+(Date.now()-S.et)/1000/EREGEN);
 const coin=id=>COINS.find(c=>c.id===id);
 const mById=id=>MINERS.find(m=>m.id===id);
@@ -369,7 +454,7 @@ function stats(){
  const rate={};let gross=0;
  COINS.forEach(c=>{rate[c.id]=y[c.id]*bonus*RATE/c.ref;gross+=rate[c.id]*price(c.id)});
  return {bonus,nfac,pw,rate,gross,net:gross-pw}}
-function worth(){let w=S.usd;COINS.forEach(c=>w+=S.wallet[c.id]*price(c.id));S.slots.forEach(id=>{const m=id&&mById(id);if(m)w+=m.price*.6});for(let k=1;k<S.shelves;k++)w+=SHELF_COST[k]*.6;return w}
+function worth(){let w=S.usd+(S.cashed||0);COINS.forEach(c=>w+=S.wallet[c.id]*price(c.id));S.slots.forEach(id=>{const m=id&&mById(id);if(m)w+=m.price*.6});for(let k=1;k<S.shelves;k++)w+=SHELF_COST[k]*.6;return w}
 
 /* ---------------- Save / Load ---------------- */
 function pack(){return JSON.parse(JSON.stringify(S))}
@@ -383,6 +468,7 @@ function merge(o){
  if(num(o.shelves))S.shelves=Math.max(1,Math.min(SHELVES,o.shelves|0));
  if(num(o.taps))S.taps=o.taps|0;
  if(num(o.sold))S.sold=o.sold;
+ if(num(o.cashed))S.cashed=o.cashed;
  if(num(o.ch))S.ch=Math.min(CH.length,o.ch|0);
  S.rd=(num(o.rd)&&o.rd)?1:0;
  if(num(o.en)&&num(o.et)){S.en=Math.min(EMAX,o.en);S.et=Math.min(o.et,Date.now())}
@@ -398,14 +484,15 @@ function localLoad(){
   fin(null)})}
 let lastSave=0;
 async function save(force){
+ if(holdSave)return;
  const now=Date.now();if(!force&&now-lastSave<4000)return;lastSave=now;
  const p=pack(),js=JSON.stringify(p);
  try{localStorage.setItem(LSK,js)}catch(e){}
  if(tg&&tg.CloudStorage){try{tg.CloudStorage.setItem('save',js)}catch(e){}}
- if(INIT&&SERVER){try{await api('/api/state',{method:'PUT',keepalive:true,body:JSON.stringify({state:p,worth:worth()})})}catch(e){}}}
+ if(INIT&&SERVER){lastPut=api('/api/state',{method:'PUT',keepalive:true,body:JSON.stringify({state:p,worth:worth()})}).catch(()=>{});await lastPut}}
 async function loadState(){
  let loaded=null,off=0,bonus=0;
- if(INIT){try{const r=await api('/api/state');SERVER=true;loaded=r.state||null;off=r.offline_sec||0;bonus=+r.bonus_usd||0}catch(e){SERVER=false}}
+ if(INIT){try{const r=await api('/api/state');SERVER=true;setAdmin(r.is_admin);loaded=r.state||null;off=r.offline_sec||0;bonus=+r.bonus_usd||0}catch(e){SERVER=false}}
  if(!SERVER)loaded=await localLoad();   /* وقتی سرور هست، فقط سرور منبع حقیقته */
  merge(loaded);
  if(bonus>0){S.usd+=bonus;setTimeout(()=>{toast('🎁 پاداش دعوت: +'+fc(bonus));save(true)},2500)}
@@ -736,7 +823,7 @@ function fxLoop(ts){
 
 /* ---------------- Sheets ---------------- */
 const sheet={tab:null,slot:0};
-const TITLES={market:'بازار زنده',miners:'فروشگاه ماینر',racks:'قفسه‌ها',up:'ارتقا و دکوراسیون',hub:'برترین‌ها',wallet:'پروفایل و کیف پول',tasks:'ماموریت‌ها',slot:'ماینر روی قفسه'};
+const TITLES={market:'بازار زنده',miners:'فروشگاه ماینر',racks:'قفسه‌ها',up:'ارتقا و دکوراسیون',hub:'برترین‌ها',wallet:'کیف پول',admin:'پنل مدیریت',tasks:'ماموریت‌ها',slot:'ماینر روی قفسه'};
 
 const frate=(id,n)=>id==='STAR'?n.toFixed(7)+' ★/s':id==='TON'?n.toFixed(9)+' TON/s':'$'+n.toFixed(9)+'/s';
 function spark(h){
@@ -820,12 +907,14 @@ function sheetSlot(){
 
 function renderSheet(){
  const body=$('#sheetBody'),st=$('#sheet').scrollTop;
- body.innerHTML={market:sheetMarket,miners:sheetMiners,racks:sheetRacks,up:sheetUp,hub:sheetHub,wallet:sheetWallet,tasks:sheetTasks,slot:sheetSlot}[sheet.tab]();$('#sheet').classList.toggle('tall',sheet.tab==='wallet');
+ body.innerHTML={market:sheetMarket,miners:sheetMiners,racks:sheetRacks,up:sheetUp,hub:sheetHub,wallet:sheetWallet,admin:sheetAdmin,tasks:sheetTasks,slot:sheetSlot}[sheet.tab]();$('#sheet').classList.toggle('tall',sheet.tab==='wallet'||sheet.tab==='admin');
  $('#sheetTitle').textContent=TITLES[sheet.tab];$('#sheet').scrollTop=st;updateLive();
- if(sheet.tab==='hub')loadTop();if(sheet.tab==='tasks')loadRef();if(sheet.tab==='wallet'&&Date.now()-W.lt>8000)wLoad()}
+ if(sheet.tab==='hub')loadTop();if(sheet.tab==='tasks')loadRef();if(sheet.tab==='wallet'&&Date.now()-W.lt>8000)wLoad();
+ if(sheet.tab==='admin'&&Date.now()-(A.lt||0)>8000){A.lt=Date.now();aLoad()}}
 
 function updateLive(){
  if(!sheet.tab)return;
+ if(sheet.tab==='wallet')wLive();
  document.querySelectorAll('[data-cost]').forEach(b=>{
   let dis=S.usd<+b.dataset.cost;
   if(b.dataset.act==='buy')dis=dis||cnt()>=cap();
@@ -843,77 +932,151 @@ function updateLive(){
 
 function openSheet(tab,i){
  if(sheet.tab===tab&&tab!=='slot'&&i===undefined){closeSheet();return}
+ if(tab==='wallet'&&sheet.tab!=='wallet'){W.v='home';W.amt=''}
  sheet.tab=tab;if(i!==undefined)sheet.slot=i;
  $('#sheet').classList.add('open');$('#bubble').classList.add('hide');renderSheet();
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
  setTimeout(resizeFx,60)}
 function closeSheet(){sheet.tab=null;$('#sheet').classList.remove('open');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('on'));setTimeout(resizeFx,60)}
 
-/* ---------------- پروفایل و کیف پول (واقعی) ---------------- */
-const WA=[{id:'TON',n:'TON',col:'#2aa9ff'},{id:'STAR',n:'Stars',col:'#ffc247'},{id:'USDT',n:'USDT',col:'#3ddc84'}];
-const W={sec:'dep',dep:'TON',wd:'TON',from:'TON',to:'USDT',gm:'TON',amt:'',addr:'',d:null,busy:false,lt:0};
+/* ---------------- کیف پول یکپارچه: بالانس بازی + ارز ماین‌شده + دارایی واقعی ---------------- */
+const WA=[{id:'TON',n:'TON',full:'تون‌کوین',col:'#2aa9ff'},{id:'STAR',n:'Stars',full:'تلگرام استارز',col:'#ffc247'},{id:'USDT',n:'USDT',full:'تتر',col:'#3ddc84'}];
+const MAPC={STAR:'STAR',TON:'TON',USD:'USDT'};   /* ارز ماین‌شده ← دارایی کیف پول */
+const W={v:'home',dep:'TON',wd:'TON',from:'TON',to:'USDT',gm:'TON',amt:'',addr:'',d:null,busy:false,lt:0};
+let IS_ADMIN=false,holdSave=false,lastPut=null;
 const TU=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)||{};
 const RANKS=[[0,'تازه‌کار'],[.5,'ماینر'],[3,'حرفه‌ای'],[15,'استاد'],[60,'امپراتور']];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const wic=(a,s)=>coinIcon(a==='USDT'?'USD':a,s);
 const wnum=(a,v)=>a==='STAR'?Math.floor(v).toLocaleString('en-US'):(+v).toLocaleString('en-US',{maximumFractionDigits:a==='TON'?4:2});
-const WERR={balance:'موجودی کافی نیست',min:'کمتر از حداقل برداشته',address:'آدرس معتبر نیست',amount:'مقدار نامعتبره','too small':'مقدار خیلی کمه',disabled:'برداشت فعلاً فعال نیست',invoice:'ساخت فاکتور ناموفق بود',net:'اتصال به سرور برقرار نشد'};
+const fh=n=>'$'+(+n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:n<10?4:2});
+const wusd=a=>W.d?W.d.usd[a]:(a==='STAR'?coin('STAR').ref:a==='USDT'?1:price('TON'));
+const WERR={balance:'موجودی کافی نیست',min:'کمتر از حداقله',address:'آدرس معتبر نیست',amount:'مقدار نامعتبره','too small':'مقدار خیلی کمه',disabled:'این بخش فعلاً غیرفعاله',invoice:'ساخت فاکتور ناموفق بود',net:'اتصال به سرور برقرار نشد',daily:'سقف انتقال روزانه پر شده',nostate:'اول چند لحظه بازی کن تا ذخیره بشه',price:'قیمت در دسترس نیست'};
+const IC={dep:'<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>',wd:'<path d="M12 16V5M7 9l5-5 5 5M5 20h14"/>',swap:'<path d="M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/>',game:'<rect x="3" y="7" width="18" height="11" rx="4"/><path d="M8 10v5M5.5 12.5h5M15.5 11.5h.01M18 14h.01"/>',back:'<path d="M9 5l7 7-7 7"/>',shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>'};
+const svg=p=>`<svg viewBox="0 0 24 24">${p}</svg>`;
 const wchips=(k,cur,list)=>`<div class="chs">${list.map(a=>`<button data-act="w-set" data-k="${k}" data-v="${a.id}" class="${cur===a.id?'on':''}" style="--c:${a.col}">${a.n}</button>`).join('')}</div>`;
-const winp=(ph,k,m)=>`<input class="in" data-w="${k}" inputmode="${m||'decimal'}" placeholder="${ph}" value="${W[k]}" autocomplete="off">`;
+const winp=(ph,k,m)=>`<input class="in" data-w="${k}" inputmode="${m||'decimal'}" placeholder="${ph}" value="${esc(W[k])}" autocomplete="off">`;
 const wmax=a=>`<button class="mx" data-act="w-max" data-a="${a}">همه</button>`;
+const tfmt=ts=>{try{return new Date(ts).toLocaleString('fa-IR',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}catch(e){return ''}};
 
 function wQuote(){
- const d=W.d,v=+W.amt;if(!d||W.from===W.to)return 'دو ارز باید فرق کنن';if(!(v>0))return `کارمزد تبدیل ${(d.fee*100).toFixed(0)}٪`;
- const o=v*d.usd[W.from]*(1-d.fee)/d.usd[W.to];return `≈ <b class="num">${wnum(W.to,o)} ${W.to==='STAR'?'⭐':W.to}</b> · کارمزد ${(d.fee*100).toFixed(0)}٪`}
-const wGmQuote=()=>`= <b class="num">${fc((+W.amt||0)*(W.d?W.d.usd[W.gm]:0))}</b> پول بازی`;
+ const d=W.d,v=+W.amt;if(!d||W.from===W.to)return 'دو ارز باید فرق کنن';if(!(v>0))return `کارمزد تبدیل ${(d.fee*100).toFixed(1).replace(/\.0$/,'')}٪`;
+ const o=v*d.usd[W.from]*(1-d.fee)/d.usd[W.to];return `≈ <b class="num">${wnum(W.to,o)} ${W.to==='STAR'?'⭐':W.to}</b> · کارمزد ${(d.fee*100).toFixed(1).replace(/\.0$/,'')}٪`}
+const wGmQuote=()=>`= <b class="num">${f$((+W.amt||0)*wusd(W.gm))}</b> بالانس بازی · بدون کارمزد`;
+
+function wCInfo(){
+ const d=W.d,c=d&&d.cashout;
+ if(!INIT)return 'انتقال به کیف پول فقط داخل تلگرام فعاله.';
+ if(!c)return 'در حال بارگذاری…';
+ if(!c.on)return 'انتقال ارز ماین‌شده فعلاً غیرفعاله.';
+ return `${c.fee>0?`کارمزد انتقال <span class="num">${(c.fee*100).toFixed(1).replace(/\.0$/,'')}٪</span>`:'انتقال بدون کارمزد'} · حداقل <span class="num">${fc(c.min_usd)}</span> · باقی‌مانده‌ی سقف امروز <span class="num">${fc(c.left_usd)}</span><br>Stars فقط عدد صحیح منتقل می‌شه؛ اعشارش می‌مونه و با ماین بعدی کامل می‌شه.`}
+
+function wHome(){
+ const d=W.d,bal=d?d.bal:{TON:0,STAR:0,USDT:0};
+ const real=WA.reduce((s,a)=>s+bal[a.id]*wusd(a.id),0),mined=COINS.reduce((s,k)=>s+S.wallet[k.id]*price(k.id),0);
+ const acts=[['dep','واریز',IC.dep],['wd','برداشت',IC.wd],['swap','تبدیل',IC.swap],['gm','شارژ بازی',IC.game,'hl']];
+ return `<div class="hero"><small>بالانس بازی</small><b class="big num" id="wh-game">${f$(S.usd)}</b>
+  <div class="hp"><div><small>ماین‌شده</small><b class="num" id="wh-mined">${fh(mined)}</b></div><div><small>کیف پول</small><b class="num" id="wh-real">${fh(real)}</b></div><div><small>مجموع دارایی</small><b class="num" id="wh-tot">${fh(S.usd+mined+real)}</b></div></div></div>
+ <div class="acts">${acts.map(a=>`<button data-act="w-go" data-v="${a[0]}" class="${a[3]||''}"><i>${svg(a[2])}</i>${a[1]}</button>`).join('')}</div>
+ <div class="sh"><b>⛏ ماین‌شده در بازی</b><small>یک لمس تا کیف پول</small></div>
+ ${COINS.map(k=>`<div class="as mine">${coinIcon(k.id,34)}<div class="n"><b>${k.name}</b><small>← ${MAPC[k.id]==='STAR'?'Stars':MAPC[k.id]} در کیف پول</small></div><div class="v"><b class="num" id="wm-${k.id}"></b><small class="num" id="wv-${k.id}"></small></div><button class="btn sm" id="wc-${k.id}" data-act="w-cash" data-id="${k.id}">انتقال</button></div>`).join('')}
+ <p class="hint" id="wcinfo">${wCInfo()}</p>
+ <div class="sh"><b>دارایی‌های کیف پول</b><small>قیمت زنده</small></div>
+ ${WA.map(a=>`<div class="as">${wic(a.id,34)}<div class="n"><b>${a.full}</b><small class="num">${fp(a.id==='USDT'?'USD':a.id,wusd(a.id))}</small></div><div class="v"><b class="num">${wnum(a.id,bal[a.id])} ${a.n}</b><small class="num">≈ ${fh(bal[a.id]*wusd(a.id))}</small></div></div>`).join('')}
+ ${wHist()}`}
+
+function wHist(){
+ const h=W.d&&W.d.hist;if(!h||!h.length)return `<div class="sh"><b>فعالیت‌ها</b></div><p class="hint">هنوز تراکنشی نداری. اولین واریز یا انتقال ماین‌ت رو انجام بده.</p>`;
+ const L={deposit:['⬇','p','واریز'],withdraw:['⬆','m','برداشت'],swap:['⇄','','تبدیل'],togame:['🎮','g','شارژ بالانس بازی'],cashout:['⛏','p','انتقال از ماین'],admin:['🛡','g','تنظیم توسط مدیریت']},
+  T={done:'انجام شد',paid:'پرداخت شد',pending:'در انتظار تأیید ادمین',rejected:'رد شد و برگشت خورد'};
+ return `<div class="sh"><b>فعالیت‌ها</b><small>۱۵ مورد آخر</small></div>`+h.map(x=>{const l=L[x.type]||['•','',x.type],sg=x.dir>0?'+':'−',sub=(x.type==='swap'||x.type==='togame'||x.type==='cashout')&&x.to?esc(x.to):(T[x.status]||'');
+  return `<div class="tx"><div class="ti ${l[1]}">${l[0]}</div><div class="n"><b>${l[2]}</b><small class="num">${sub} · ${tfmt(x.ts)}</small></div>${x.amount?`<b class="num ${x.dir>0?'p':'m'}">${sg}${wnum(x.asset,x.amount)} ${x.asset==='STAR'?'⭐':x.asset}</b>`:''}</div>`}).join('')}
 
 function wSec(){
  const d=W.d;if(!INIT)return '<p class="hint">کیف پول فقط داخل تلگرام فعاله.</p>';
  if(!d)return '<p class="hint">در حال بارگذاری…</p>';
- if(W.sec==='dep')return wchips('dep',W.dep,[WA[0],WA[1]])+(W.dep==='TON'
-  ?(d.ton_address?`<div class="cp2"><small>آدرس واریز</small><code>${d.ton_address}</code><button data-act="w-copy" data-v="${d.ton_address}">کپی</button></div>
-   <div class="cp2"><small>کامنت (حتماً بنویس)</small><code>${d.memo}</code><button data-act="w-copy" data-v="${d.memo}">کپی</button></div>
+ if(W.v==='dep')return wchips('dep',W.dep,[WA[0],WA[1]])+(W.dep==='TON'
+  ?(d.ton_address?`<div class="cp2"><small>آدرس واریز</small><code>${esc(d.ton_address)}</code><button data-act="w-copy" data-v="${esc(d.ton_address)}">کپی</button></div>
+   <div class="cp2"><small>کامنت (حتماً بنویس)</small><code>${esc(d.memo)}</code><button data-act="w-copy" data-v="${esc(d.memo)}">کپی</button></div>
    ${winp('مقدار TON','amt')}<button class="btn wide ton" data-act="w-ton">باز کردن در کیف پول</button><button class="btn ghost w2" data-act="w-refresh">بررسی واریز</button>
    <p class="hint">بدون کامنت بالا، واریز به حساب تو نمی‌رسه. معمولاً چند دقیقه بعد اضافه می‌شه.</p>`:'<p class="hint">واریز TON هنوز فعال نشده.</p>')
-  :`<div class="chs">${[50,100,250,500].map(n=>`<button data-act="w-q" data-v="${n}">${n} ⭐</button>`).join('')}</div>${winp('تعداد Stars (حداقل '+d.min_stars+')','amt','numeric')}<button class="btn wide" data-act="w-stars">پرداخت با Stars</button>`);
- if(W.sec==='wd'){const a=W.wd;return wchips('wd',a,WA)+`<div class="inr">${winp('مقدار','amt')}${wmax(a)}</div>`+(a==='STAR'?'':winp('آدرس کیف پول TON','addr','text'))
-  +`<p class="hint">موجودی: <span class="num">${wnum(a,d.bal[a])}</span> · حداقل <span class="num">${d.min_wd[a]}</span> · پرداخت بعد از تأیید ادمین${a==='STAR'?' (داخل تلگرام)':''}</p><button class="btn wide" data-act="w-wd" ${d.wd_on?'':'disabled'}>درخواست برداشت</button>`}
- if(W.sec==='swap')return `<small class="mut">از</small>`+wchips('from',W.from,WA)+`<div class="inr">${winp('مقدار','amt')}${wmax(W.from)}</div><div class="flip"><button data-act="w-flip">⇅</button></div><small class="mut">به</small>`+wchips('to',W.to,WA)+`<div class="qt" id="qt">${wQuote()}</div><button class="btn wide" data-act="w-swap">تبدیل</button>`;
- return wchips('gm',W.gm,WA)+`<div class="inr">${winp('مقدار','amt')}${wmax(W.gm)}</div><div class="qt" id="qt">${wGmQuote()}</div><p class="hint">پول بازی برای خرید ماینر، قفسه و ارتقاست و به کیف پول برنمی‌گرده.</p><button class="btn wide" data-act="w-gm">انتقال به بازی</button>`}
-
-function wHist(){
- const h=W.d&&W.d.hist;if(!h||!h.length)return '';
- const L={deposit:'واریز',withdraw:'برداشت',swap:'تبدیل',togame:'انتقال به بازی'},T={done:'✓ انجام شد',paid:'✓ پرداخت شد',pending:'⏳ در انتظار تأیید',rejected:'✕ رد شد · برگشت خورد'};
- return `<div class="sec">تراکنش‌ها</div>`+h.slice(0,6).map(x=>`<div class="lb"><span>${L[x.type]||x.type}<em>${T[x.status]||''}</em></span><b class="num">${x.type==='deposit'?'+':'−'}${wnum(x.asset,x.amount)} ${x.asset==='STAR'?'⭐':x.asset}</b></div>`).join('')}
+  :`<div class="chs">${[50,100,250,500].map(n=>`<button data-act="w-q" data-v="${n}">${n} ⭐</button>`).join('')}</div>${winp('تعداد Stars (حداقل '+d.min_stars+')','amt','numeric')}<button class="btn wide" data-act="w-stars">پرداخت با Stars</button><p class="hint">بعد از واریز، از «شارژ بازی» می‌تونی به بالانس بازی تبدیلش کنی.</p>`);
+ if(W.v==='wd'){const a=W.wd;return wchips('wd',a,WA)+`<div class="inr">${winp('مقدار','amt')}${wmax(a)}</div>`+(a==='STAR'?'':winp('آدرس کیف پول TON','addr','text'))
+  +`<p class="hint">موجودی: <span class="num">${wnum(a,d.bal[a])}</span> · حداقل <span class="num">${d.min_wd[a]}</span> · پرداخت بعد از تأیید ادمین${a==='STAR'?' (داخل تلگرام)':''}</p><button class="btn wide" data-act="w-wd" ${d.wd_on?'':'disabled'}>${d.wd_on?'درخواست برداشت':'برداشت فعلاً غیرفعاله'}</button>`}
+ if(W.v==='swap')return `<small class="mut">از</small>`+wchips('from',W.from,WA)+`<div class="inr">${winp('مقدار','amt')}${wmax(W.from)}</div><div class="flip"><button data-act="w-flip">⇅</button></div><small class="mut">به</small>`+wchips('to',W.to,WA)+`<div class="qt" id="qt">${wQuote()}</div><button class="btn wide" data-act="w-swap">تبدیل</button>`;
+ const a=W.gm,su=d.star_usd||coin('STAR').ref;
+ return `<div class="gmc"><small>بالانس فعلی بازی</small><b class="num" id="gm-bal">${f$(S.usd)}</b></div><small class="mut">از کیف پول</small>`+wchips('gm',a,WA)
+  +`<div class="inr">${winp('مقدار','amt')}${wmax(a)}</div><p class="hint" style="margin:0">موجودی: <span class="num">${wnum(a,d.bal[a])}</span> ${a==='STAR'?'Stars':a}</p><div class="qt" id="qt">${wGmQuote()}</div><button class="btn wide" data-act="w-gm">انتقال به بالانس بازی</button>
+  <div class="sh"><b>یا مستقیم با Stars شارژ کن</b><small>همون لحظه اضافه می‌شه</small></div>
+  <div class="chs">${[20,50,100,250].map(n=>`<button data-act="w-gstar" data-v="${n}">${n} ⭐<small class="num">${fh(n*su)}</small></button>`).join('')}</div>
+  <p class="hint">بالانس بازی برای خرید ماینر، قفسه و ارتقاست. ارزهای ماین‌شده رو هم هر وقت خواستی از صفحه‌ی اصلی کیف پول به دارایی واقعی منتقل کن.</p>`}
 
 function sheetWallet(){
- const d=W.d,nm=((TU.first_name||'')+' '+(TU.last_name||'')).trim()||'بازیکن',un=TU.username?'@'+TU.username:'';
- const ti=RANKS.filter(r=>worth()>=r[0]).pop()[1];
- const av=TU.photo_url?`<img src="${TU.photo_url}" alt="" referrerpolicy="no-referrer">`:`<span>${nm.slice(0,2).toUpperCase()}</span>`;
- const bal=d?d.bal:{TON:0,STAR:0,USDT:0},us=d?d.usd:{TON:0,STAR:0,USDT:1};
- const tot=WA.reduce((s,a)=>s+bal[a.id]*us[a.id],0);
- return `<div class="pf"><div class="av">${av}</div><div class="pi"><b>${nm}</b><small>${un?`<span class="num">${un}</span>`:''}${INIT?` ${un?'· ':''}ID <span class="num">${UID}</span>`:''}</small>
-  <div class="bd"><span>🏆 رتبه ${d&&d.rank?`<b class="num">#${d.rank}</b>`:'—'}</span><span>${ti}</span><span>⛏ <b class="num">${cnt()}</b> ماینر</span></div></div></div>
-  <div class="tot"><small>موجودی کیف پول</small><b class="num">${fc(tot)}</b></div>
-  <div class="wa">${WA.map(a=>`<div>${wic(a.id,22)}<b class="num">${wnum(a.id,bal[a.id])}</b><small>${a.n}</small></div>`).join('')}</div>
-  <div class="seg">${[['dep','واریز'],['wd','برداشت'],['swap','تبدیل'],['gm','بازی']].map(s=>`<button data-act="w-sec" data-v="${s[0]}" class="${W.sec===s[0]?'on':''}">${s[1]}</button>`).join('')}</div>
-  <div id="wsec">${wSec()}</div>${wHist()}`}
+ const nm=((TU.first_name||'')+' '+(TU.last_name||'')).trim()||'بازیکن',un=TU.username?'@'+TU.username:'';
+ const ti=RANKS.filter(r=>worth()>=r[0]).pop()[1],d=W.d;
+ const av=TU.photo_url?`<img src="${esc(TU.photo_url)}" alt="" referrerpolicy="no-referrer">`:`<span>${esc(nm.slice(0,2).toUpperCase())}</span>`;
+ let o=`<div class="pf"><div class="av">${av}</div><div class="pi"><b>${esc(nm)}</b><small>${un?`<span class="num">${esc(un)}</span> · `:''}ID <span class="num">${esc(UID)}</span></small>
+  <div class="bd"><span>🏆 ${d&&d.rank?`<b class="num">#${d.rank}</b>`:'—'}</span><span>${ti}</span><span>⛏ <b class="num">${cnt()}</b> ماینر</span></div></div>${IS_ADMIN?`<button class="admgo" data-act="tab" data-tab="admin">🛡 مدیریت</button>`:''}</div>`;
+ if(W.v==='home')return o+wHome();
+ const T={dep:'واریز',wd:'برداشت',swap:'تبدیل ارز',gm:'شارژ بالانس بازی'}[W.v]||'';
+ return o+`<div class="fh"><button data-act="w-back" aria-label="بازگشت">${svg(IC.back)}</button><b>${T}</b></div>`+wSec()}
+
+function wLive(){
+ if(W.v!=='home')return;
+ const g=$('#wh-game');if(!g)return;
+ const c=W.d&&W.d.cashout,bal=W.d?W.d.bal:{TON:0,STAR:0,USDT:0};
+ g.textContent=f$(S.usd);let mined=0;
+ COINS.forEach(k=>{const w=S.wallet[k.id],v=w*price(k.id);mined+=v;
+  const a=$('#wm-'+k.id),b=$('#wv-'+k.id),bt=$('#wc-'+k.id);
+  if(a)a.textContent=fa(k.id,w);if(b)b.textContent='≈ '+f$(v);
+  if(bt)bt.disabled=!(INIT&&c&&c.on&&(k.id!=='STAR'||w>=1)&&v>=c.min_usd)});
+ const real=WA.reduce((s,a)=>s+bal[a.id]*wusd(a.id),0);
+ $('#wh-mined').textContent=fh(mined);$('#wh-real').textContent=fh(real);$('#wh-tot').textContent=fh(S.usd+mined+real)}
 
 async function wLoad(){
  if(!INIT)return;W.lt=Date.now();
- try{W.d=await api('/api/wallet')}catch(e){toast('کیف پول در دسترس نیست')}
+ try{W.d=await api('/api/wallet');if(W.d.is_admin&&!IS_ADMIN)setAdmin(true)}catch(e){toast('کیف پول در دسترس نیست')}
  if(sheet.tab==='wallet'&&!(document.activeElement&&document.activeElement.classList.contains('in')))renderSheet()}
 async function wpost(path,body){
  if(W.busy)return null;W.busy=true;
  try{const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-Init-Data':INIT},body:JSON.stringify(body)});
-  const j=await r.json().catch(()=>({}));return r.ok?j:{error:j.error||'net',min:j.min}}
+  const j=await r.json().catch(()=>({}));return r.ok?j:Object.assign({error:j.error||'net'},j)}
  catch(e){return {error:'net'}}finally{W.busy=false}}
 const wfail=r=>toast(WERR[r.error]||'خطا، دوباره تلاش کن');
 const wdone=m=>{W.amt='';hapOk();toast(m);wLoad()};
 const wpoll=()=>[4000,15000,40000].forEach(t=>setTimeout(wLoad,t));
 
+/* بالانس بازی که سرور برای ما نگه داشته (شارژ مستقیم Stars، انتقال از کیف پول، هدیه‌ی ادمین) */
+async function claimBonus(quiet){
+ try{const s=await api('/api/state'),b=+s.bonus_usd||0;
+  if(b>0){S.usd+=b;flyBal('+'+fc(b));bumpBal();renderHUD();hapOk();if(!quiet)toast('🎮 +'+f$(b)+' به بالانس بازی اضافه شد');await save(true);if(sheet.tab==='wallet')renderSheet();return true}}catch(e){}
+ return false}
+const claimPoll=()=>[2500,7000,16000,35000].forEach(t=>setTimeout(()=>claimBonus(),t));
+
+async function wCash(coin){
+ if(!INIT)return toast('فقط داخل تلگرام');
+ if(W.busy)return;
+ const k=COINS.find(x=>x.id===coin);if(!k)return;
+ try{await lastPut}catch(e){}
+ holdSave=true;
+ try{
+  try{await api('/api/state',{method:'PUT',keepalive:true,body:JSON.stringify({state:pack(),worth:worth()})})}catch(e){}   /* سرور باید آخرین ماین‌های تو رو داشته باشه */
+  const r=await wpost('/api/wallet/cashout',{coin});
+  if(!r)return;
+  if(r.error==='min')return toast('حداقل انتقال '+fc(r.min));
+  if(r.error==='daily')return toast('سقف امروز پر شده · باقی‌مونده '+fc(r.left||0));
+  if(r.error)return wfail(r);
+  S.wallet[coin]=Math.max(0,S.wallet[coin]-r.taken);S.cashed=(S.cashed||0)+r.usd;
+  hapOk();centerBurst(k.col);setMood('happy',2000);
+  toast('✓ '+wnum(r.asset,r.got)+' '+(r.asset==='STAR'?'⭐':r.asset)+' به کیف پولت رفت');
+  renderHUD()
+ }finally{holdSave=false}
+ save(true);wLoad()}
+
 async function wAct(a,t){
  const v=t.dataset.v,d=W.d;
- if(a==='w-sec'){W.sec=v;W.amt='';renderSheet()}
+ if(a==='w-go'){W.v=v;W.amt='';W.addr='';renderSheet();$('#sheet').scrollTop=0}
+ else if(a==='w-back'){W.v='home';W.amt='';renderSheet();$('#sheet').scrollTop=0}
  else if(a==='w-set'){const k=t.dataset.k;W[k]=v;W.amt='';
   if(k==='from'&&v===W.to)W.to=WA.find(x=>x.id!==v).id;if(k==='to'&&v===W.from)W.from=WA.find(x=>x.id!==v).id;renderSheet()}
  else if(a==='w-flip'){[W.from,W.to]=[W.to,W.from];renderSheet()}
@@ -921,19 +1084,154 @@ async function wAct(a,t){
  else if(a==='w-max'){if(!d)return;const x=t.dataset.a;W.amt=String(x==='STAR'?Math.floor(d.bal[x]):d.bal[x]);renderSheet()}
  else if(a==='w-copy'){try{navigator.clipboard.writeText(v).then(()=>toast('کپی شد ✓'),()=>toast(v))}catch(e){toast(v)}}
  else if(a==='w-refresh'){await wLoad();toast('موجودی به‌روز شد')}
+ else if(a==='w-cash')wCash(t.dataset.id)
  else if(a==='w-ton'){if(!d||!(+W.amt>0))return toast('مقدار TON رو وارد کن');
   const u=`https://app.tonkeeper.com/transfer/${d.ton_address}?amount=${Math.round(+W.amt*1e9)}&text=${d.memo}`;
   try{tg.openLink(u)}catch(e){window.open(u,'_blank')}wpoll()}
  else if(a==='w-stars'){const n=Math.floor(+W.amt);if(!d||n<d.min_stars)return toast('حداقل '+(d?d.min_stars:10)+' استارز');
   const r=await wpost('/api/wallet/stars',{amount:n});if(!r||r.error)return r&&wfail(r);
   try{tg.openInvoice(r.link,st=>{if(st==='paid'){W.amt='';toast('پرداخت انجام شد ⭐');wpoll()}})}catch(e){toast('فقط داخل تلگرام')}}
+ else if(a==='w-gstar'){const n=+v;
+  const r=await wpost('/api/wallet/stars',{amount:n,to_game:true});if(!r||r.error)return r&&wfail(r);
+  try{tg.openInvoice(r.link,st=>{if(st==='paid'){toast('پرداخت انجام شد ⭐ در حال شارژ بازی…');claimPoll()}})}catch(e){toast('فقط داخل تلگرام')}}
  else if(a==='w-wd'){const r=await wpost('/api/wallet/withdraw',{asset:W.wd,amount:+W.amt,address:W.addr});if(!r)return;r.error?wfail(r):wdone('درخواست برداشت ثبت شد ⏳')}
  else if(a==='w-swap'){if(W.from===W.to)return;const r=await wpost('/api/wallet/swap',{from:W.from,to:W.to,amount:+W.amt});if(!r)return;r.error?wfail(r):wdone('تبدیل انجام شد ✓')}
  else if(a==='w-gm'){const r=await wpost('/api/wallet/togame',{asset:W.gm,amount:+W.amt});if(!r)return;if(r.error)return wfail(r);
-  try{const s=await api('/api/state'),b=+s.bonus_usd||0;if(b>0){S.usd+=b;flyBal('+'+fc(b));bumpBal();renderHUD();save(true)}}catch(e){}
-  wdone('به پول بازی اضافه شد 🎮')}
+  await claimBonus(true);wdone('به بالانس بازی اضافه شد 🎮')}
 }
-document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.w;if(!k)return;W[k]=e.target.value;const q=$('#qt');if(q)q.innerHTML=W.sec==='swap'?wQuote():wGmQuote()});
+
+/* ---------------- پنل مدیریت (فقط برای ادمین؛ سرور هم دسترسی رو چک می‌کنه) ---------------- */
+const A={tab:'ov',ov:null,wds:null,wf:'pending',users:null,q:'',sel:null,cf:null,info:null,adj:{asset:'TON',amount:'',note:''},bc:'',busy:false};
+const ATABS=[['ov','نمای کلی'],['wd','برداشت‌ها'],['us','کاربران'],['cf','تنظیمات'],['bc','پیام همگانی']];
+const CFIELDS=[['swap_fee','کارمزد تبدیل ارز','درصد',1],['cashout_fee','کارمزد انتقال ماین به کیف پول','درصد',1],['cashout_min_usd','حداقل انتقال ماین','دلار',0],['cashout_daily_usd','سقف انتقال روزانه‌ی هر نفر','دلار',0],['min_wd_TON','حداقل برداشت TON','TON',0],['min_wd_STAR','حداقل برداشت Stars','Stars',0],['min_wd_USDT','حداقل برداشت USDT','USDT',0]];
+const ASTAT={pending:'در انتظار',paid:'پرداخت شد',rejected:'رد شد'};
+function setAdmin(v){IS_ADMIN=!!v;const b=$('#admBtn');if(b)b.classList.toggle('hide',!IS_ADMIN)}
+async function aApi(path,method,body){
+ const r=await fetch(path,{method:method||'GET',headers:{'Content-Type':'application/json','X-Init-Data':INIT},body:body?JSON.stringify(body):undefined});
+ const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(j.error||'http'),{code:j.error||('http'+r.status)});return j}
+const aErr=e=>toast(({forbidden:'دسترسی نداری',balance:'موجودی کاربر کافی نیست',done:'قبلاً تصمیم‌گیری شده',notfound:'کاربر پیدا نشد',amount:'مقدار نامعتبره',value:'مقدار نامعتبره',self:'نمی‌شه خودت رو مسدود کنی'})[e.code]||'خطا: '+(e.code||'اتصال'));
+const aTyping=()=>document.activeElement&&document.activeElement.classList.contains('in');
+const aDraw=()=>{if(sheet.tab==='admin'&&!aTyping())renderSheet()};
+const askOk=m=>new Promise(r=>{try{tg.showConfirm(m,r)}catch(e){r(confirm(m))}});
+
+async function aLoad(){
+ if(!IS_ADMIN)return;
+ try{
+  if(A.tab==='ov'){A.ov=await aApi('/api/admin/overview')}
+  else if(A.tab==='wd'){A.wds=(await aApi('/api/admin/withdrawals?status='+A.wf)).items;if(!A.ov)aApi('/api/admin/overview').then(o=>{A.ov=o;aDraw()}).catch(()=>{})}
+  else if(A.tab==='us'&&!A.sel){A.users=await aApi('/api/admin/users?q='+encodeURIComponent(A.q))}
+  else if(A.tab==='cf'){const r=await aApi('/api/admin/settings');A.cf=r.cfg;A.info=r.info;A.cfIn={};CFIELDS.forEach(f=>A.cfIn[f[0]]=String(+(f[3]?r.cfg[f[0]]*100:r.cfg[f[0]]).toFixed(4)))}
+  aDraw()
+ }catch(e){if(e.code==='forbidden'){setAdmin(false);closeSheet()}else aErr(e)}}
+
+function aOv(){
+ const o=A.ov;if(!o)return '<p class="hint">در حال بارگذاری…</p>';
+ const k=(l,v,s,c)=>`<div class="kpi ${c||''}"><small>${l}</small><b class="num">${v}</b>${s?`<em class="num">${s}</em>`:''}</div>`,mx=Math.max(1,...o.series.map(x=>x.n));
+ return (o.persistent?'':`<div class="alert">⚠️ <b>MONGO_URI</b> تنظیم نشده. همه‌ی اطلاعات و موجودی کاربرها با هر ری‌استارت سرور پاک می‌شه. قبل از کار با پول واقعی حتماً دیتابیس دائمی وصل کن.</div>`)
+ +`<div class="kpis">`
+ +k('کل کاربران',o.users.total.toLocaleString('en-US'),'بازیکن فعال: '+o.users.played)
+ +k('فعال ۲۴ ساعت',o.users.active24,'جدید: '+o.users.new24)
+ +k('واریز ۲۴ ساعت',fh(o.dep24_usd),o.dep24_n+' تراکنش','good')
+ +k('برداشت در انتظار',o.pend_n,fh(o.pend_usd),o.pend_n?'warn':'')
+ +k('انتقال ماین ۲۴ساعت',fh(o.cash24_usd),'از بازی به کیف پول')
+ +k('برداشت پرداخت‌شده',fh(o.wd24_usd),'۲۴ ساعت اخیر')
+ +`<div class="kpi wide"><small>موجودی کیف پول کاربران (تعهد شما)</small><b class="num">${fh(o.liab_usd)}</b><em class="num">TON ${wnum('TON',o.liab.TON)} · Stars ${wnum('STAR',o.liab.STAR)} · USDT ${wnum('USDT',o.liab.USDT)}</em></div>`
+ +`<div class="kpi wide"><small>کاربران جدید ۷ روز اخیر</small><div class="bars">${o.series.map(x=>`<div><b class="num">${x.n}</b><i style="height:${Math.max(4,x.n/mx*62)}px"></i><small class="num">${x.d}</small></div>`).join('')}</div></div></div>`
+ +(o.log&&o.log.length?`<div class="sh"><b>آخرین اقدام‌های مدیریت</b></div>`+o.log.map(x=>`<div class="tx"><div class="ti g">🛡</div><div class="n"><b>${esc(x.a)}</b><small class="num">${x.uid?'کاربر '+x.uid+' · ':''}${tfmt(x.ts)}</small></div>${x.amount?`<b class="num">${esc(x.amount)} ${esc(x.asset||'')}</b>`:''}</div>`).join(''):'')}
+
+function aWd(){
+ const n=A.ov?A.ov.pend_n:0;
+ let o=`<div class="chs">${['pending','paid','rejected'].map(s=>`<button data-act="a-wf" data-v="${s}" class="${A.wf===s?'on':''}">${ASTAT[s]}${s==='pending'&&n?` (${n})`:''}</button>`).join('')}</div>`;
+ if(!A.wds)return o+'<p class="hint">در حال بارگذاری…</p>';
+ if(!A.wds.length)return o+'<div class="row done">موردی نیست ✓</div>';
+ return o+A.wds.map(x=>`<div class="aitem"><div class="ah"><b>${esc(x.name)}</b><span class="pill ${x.status}">${ASTAT[x.status]||x.status}</span></div>
+  <div class="am"><b class="num">${wnum(x.asset,x.amount)} ${x.asset==='STAR'?'⭐ Stars':x.asset}</b><em class="num">≈ ${fh(x.usd)}</em></div>
+  <small class="num">ID ${x.uid} · ${tfmt(x.ts)}</small>
+  ${x.asset!=='STAR'?`<div class="cp2"><code>${esc(x.to)}</code><button data-act="w-copy" data-v="${esc(x.to)}">کپی</button></div>`:'<small>پرداخت Stars داخل تلگرام و دستی انجام می‌شه.</small>'}
+  ${x.status==='pending'?`<div class="btnrow"><button class="btn ok2" data-act="a-wd" data-id="${esc(x.id)}" data-ok="1">✅ پرداخت شد</button><button class="btn no2" data-act="a-wd" data-id="${esc(x.id)}" data-ok="0">❌ رد و برگشت وجه</button></div>`:''}</div>`).join('')}
+
+function aUs(){
+ if(A.sel)return aUser();
+ let o=`<div class="srch"><input class="in" data-a="q" placeholder="نام یا آیدی عددی…" value="${esc(A.q)}" autocomplete="off"><button class="btn" data-act="a-search">جستجو</button></div>`;
+ if(!A.users)return o+'<p class="hint">در حال بارگذاری…</p>';
+ if(!A.users.items.length)return o+'<div class="row done">کاربری پیدا نشد</div>';
+ return o+`<p class="hint">${A.q?'نتیجه‌ی جستجو':'آخرین کاربران فعال'} · کل: <span class="num">${A.users.total}</span></p>`+A.users.items.map(u=>`<div class="aitem tap" data-act="a-user" data-id="${u.id}"><div class="ah"><b>${esc(u.name)}</b>${u.banned?'<span class="pill ban">مسدود</span>':''}</div>
+  <small class="num">ID ${u.id} · ثروت ${fh(u.worth)} · ${u.miners} ماینر · آخرین حضور ${tfmt(u.touch)}</small></div>`).join('')}
+
+function aUser(){
+ const u=A.sel.user,tx=A.sel.txs,ad=A.adj;
+ const fg=(l,v)=>`<div><small>${l}</small><b class="num">${v}</b></div>`;
+ return `<div class="fh"><button data-act="a-back">${svg(IC.back)}</button><b>${esc(u.name)}</b>${u.banned?'<span class="pill ban">مسدود</span>':''}</div>
+ <div class="fg">${fg('آیدی',u.id)}${fg('عضویت',tfmt(u.created))}${fg('بالانس بازی',f$(u.game_usd))}${fg('ثروت کل',fh(u.worth))}${fg('ماینر / قفسه',u.miners+' / '+u.shelves)}${fg('زیرمجموعه فعال',u.active_refs)}</div>
+ <div class="sh"><b>کیف پول</b></div>
+ <div class="fg">${fg('TON',wnum('TON',u.bal.TON))}${fg('Stars',wnum('STAR',u.bal.STAR))}${fg('USDT',wnum('USDT',u.bal.USDT))}${fg('انتقال‌شده از ماین',fh(u.cashed))}</div>
+ <div class="sh"><b>تنظیم موجودی</b><small>عدد منفی = کسر</small></div>
+ <div class="chs">${[['TON','TON'],['STAR','Stars'],['USDT','USDT'],['GAME','بازی']].map(a=>`<button data-act="a-adjset" data-v="${a[0]}" class="${ad.asset===a[0]?'on':''}">${a[1]}</button>`).join('')}</div>
+ <input class="in" data-a="amount" inputmode="decimal" placeholder="${ad.asset==='GAME'?'مقدار دلار هدیه به بازی':'مقدار (مثلاً 5 یا -2)'}" value="${esc(ad.amount)}" autocomplete="off">
+ <input class="in fa" data-a="note" placeholder="توضیح (اختیاری)" value="${esc(ad.note)}" autocomplete="off">
+ <button class="btn wide" data-act="a-adj" data-id="${u.id}">ثبت</button>
+ <div class="btnrow"><button class="btn ${u.banned?'ok2':'no2'}" data-act="a-ban" data-id="${u.id}" data-v="${u.banned?0:1}">${u.banned?'رفع مسدودی':'🚫 مسدود کردن'}</button></div>
+ ${tx.length?`<div class="sh"><b>آخرین تراکنش‌ها</b></div>`+tx.map(x=>`<div class="tx"><div class="ti ${x.dir>0?'p':'m'}">${x.dir>0?'⬇':'⬆'}</div><div class="n"><b>${esc(x.type)}</b><small class="num">${esc(x.to||ASTAT[x.status]||'')} · ${tfmt(x.ts)}</small></div>${x.amount?`<b class="num ${x.dir>0?'p':'m'}">${x.dir>0?'+':'−'}${wnum(x.asset,x.amount)} ${esc(x.asset)}</b>`:''}</div>`).join(''):''}`}
+
+function aCf(){
+ if(!A.cf)return '<p class="hint">در حال بارگذاری…</p>';
+ const sw=(k,t,s)=>`<div class="fld"><span>${t}<small>${s}</small></span><button class="sw ${A.cf[k]?'on':''}" data-act="a-tog" data-v="${k}" aria-label="${t}"><i></i></button></div>`,i=A.info||{};
+ return `<div class="aitem">${sw('wd_on','برداشت','درخواست برداشت کاربرها')}${sw('cashout_on','انتقال ماین به کیف پول','تبدیل ارز ماین‌شده به دارایی واقعی')}</div>
+ <div class="aitem">${CFIELDS.map(f=>`<div class="fld"><span>${f[1]}<small>${f[2]}</small></span><input class="in" data-a="c:${f[0]}" inputmode="decimal" value="${esc(A.cfIn[f[0]])}"></div>`).join('')}</div>
+ <button class="btn wide" data-act="a-save">ذخیره‌ی تنظیمات</button>
+ <div class="sh"><b>وضعیت سرور</b></div>
+ <div class="fg"><div><small>دیتابیس</small><b>${i.persistent?'دائمی ✓':'موقت ⚠️'}</b></div><div><small>واریز TON</small><b>${i.ton_address?'فعال ✓':'غیرفعال'}</b></div><div><small>ارزش هر Star</small><b class="num">$${i.star_usd}</b></div><div><small>قیمت TON</small><b class="num">${i.ton_price?'$'+i.ton_price.toFixed(3):'—'}</b></div></div>
+ <p class="hint">ارزش Star و آدرس واریز از Environment سرور تنظیم می‌شن.</p>`}
+
+function aBc(){
+ return `<p class="hint">پیام برای همه‌ی کاربرها (به‌جز مسدودها) با دکمه‌ی ورود به بازی فرستاده می‌شه. اول تست بگیر.</p>
+ <textarea class="in fa" data-a="bc" placeholder="متن پیام…" maxlength="3000">${esc(A.bc)}</textarea>
+ <div class="btnrow"><button class="btn ghost" data-act="a-bc" data-v="1">ارسال تست برای من</button><button class="btn wide" style="margin:0" data-act="a-bc" data-v="0">📣 ارسال برای همه</button></div>`}
+
+function sheetAdmin(){
+ if(!IS_ADMIN)return '<div class="row done">دسترسی نداری</div>';
+ const n=A.ov?A.ov.pend_n:0;
+ return `<div class="atabs">${ATABS.map(t=>`<button data-act="a-tab" data-v="${t[0]}" class="${A.tab===t[0]?'on':''}">${t[1]}${t[0]==='wd'&&n?`<i class="num">${n}</i>`:''}</button>`).join('')}</div>`
+  +{ov:aOv,wd:aWd,us:aUs,cf:aCf,bc:aBc}[A.tab]()}
+
+async function aAct(a,t){
+ if(!IS_ADMIN||A.busy)return;
+ const v=t.dataset.v,id=t.dataset.id;
+ try{
+  if(a==='a-tab'){A.tab=v;A.sel=null;renderSheet();aLoad()}
+  else if(a==='a-wf'){A.wf=v;A.wds=null;renderSheet();aLoad()}
+  else if(a==='a-search'){A.users=null;renderSheet();aLoad()}
+  else if(a==='a-back'){A.sel=null;renderSheet();aLoad()}
+  else if(a==='a-user'){A.busy=true;try{A.sel=await aApi('/api/admin/user?uid='+id);A.adj={asset:'TON',amount:'',note:''}}finally{A.busy=false}renderSheet();$('#sheet').scrollTop=0}
+  else if(a==='a-adjset'){A.adj.asset=v;renderSheet()}
+  else if(a==='a-tog'){A.cf[v]=!A.cf[v];renderSheet()}
+  else if(a==='a-wd'){const ok=t.dataset.ok==='1';
+   if(!await askOk(ok?'تأیید پرداخت این برداشت؟ (مطمئن شو پول رو فرستادی)':'رد درخواست و برگشت وجه به کاربر؟'))return;
+   A.busy=true;try{await aApi('/api/admin/withdrawals/decide','POST',{id,ok})}finally{A.busy=false}
+   hapOk();toast(ok?'پرداخت ثبت شد ✓':'رد شد و وجه برگشت ✓');A.wds=null;A.ov=null;renderSheet();aLoad();aApi('/api/admin/overview').then(o=>{A.ov=o;aDraw()}).catch(()=>{})}
+  else if(a==='a-adj'){const amt=parseFloat(A.adj.amount);if(!isFinite(amt)||amt===0)return toast('مقدار رو وارد کن');
+   if(!await askOk(`${amt>0?'اضافه کردن':'کسر'} ${Math.abs(amt)} ${A.adj.asset==='GAME'?'دلار به بازی':A.adj.asset} برای این کاربر؟`))return;
+   A.busy=true;try{await aApi('/api/admin/adjust','POST',{uid:+id,asset:A.adj.asset,amount:amt,note:A.adj.note})}finally{A.busy=false}
+   hapOk();toast('ثبت شد ✓');A.adj.amount='';A.adj.note='';A.sel=await aApi('/api/admin/user?uid='+id);renderSheet()}
+  else if(a==='a-ban'){const b=v==='1';if(!await askOk(b?'این کاربر مسدود بشه؟':'مسدودی برداشته بشه؟'))return;
+   A.busy=true;try{await aApi('/api/admin/ban','POST',{uid:+id,banned:b})}finally{A.busy=false}
+   toast(b?'مسدود شد':'مسدودی برداشته شد');A.sel=await aApi('/api/admin/user?uid='+id);renderSheet()}
+  else if(a==='a-save'){const c={};
+   for(const f of CFIELDS){const x=parseFloat(A.cfIn[f[0]]);if(!isFinite(x)||x<0)return toast('مقدار «'+f[1]+'» نامعتبره');c[f[0]]=f[3]?x/100:x}
+   c.wd_on=!!A.cf.wd_on;c.cashout_on=!!A.cf.cashout_on;
+   A.busy=true;try{await aApi('/api/admin/settings','POST',{cfg:c})}finally{A.busy=false}
+   hapOk();toast('تنظیمات ذخیره شد ✓');W.lt=0;aLoad()}
+  else if(a==='a-bc'){const test=v==='1';if(!A.bc.trim())return toast('متن پیام خالیه');
+   if(!test&&!await askOk('این پیام برای همه‌ی کاربرها فرستاده بشه؟'))return;
+   A.busy=true;let r;try{r=await aApi('/api/admin/broadcast','POST',{text:A.bc,test})}finally{A.busy=false}
+   hapOk();toast(test?'تست فرستاده شد ✓':'ارسال برای '+r.n+' نفر شروع شد ✓');if(!test){A.bc='';renderSheet()}}
+ }catch(e){A.busy=false;aErr(e)}}
+
+document.addEventListener('input',e=>{
+ const d=e.target.dataset;if(!d)return;
+ if(d.w){W[d.w]=e.target.value;const q=$('#qt');if(q)q.innerHTML=W.v==='swap'?wQuote():wGmQuote()}
+ else if(d.a){const k=d.a;if(k==='q')A.q=e.target.value;else if(k==='bc')A.bc=e.target.value;else if(k==='amount'||k==='note')A.adj[k]=e.target.value;else if(k.startsWith('c:'))A.cfIn[k.slice(2)]=e.target.value}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.dataset&&e.target.dataset.a==='q'){e.preventDefault();e.target.blur();A.users=null;renderSheet();aLoad()}});
 
 /* ---------------- Actions ---------------- */
 const LINES_MIKO=['دارم کد می‌نویسم، نزن! 😤','ماینرها دارن کار می‌کنن، منم کار می‌کنم!','قلقلکم نده! 😆','من میکوام، رئیس اتاق ماینر! ✨'];
@@ -944,6 +1242,7 @@ function act(t,e){
  if(a==='tab')openSheet(t.dataset.tab);
  else if(a==='close')closeSheet();
  else if(a.startsWith('w-'))wAct(a,t);
+ else if(a.startsWith('a-'))aAct(a,t);
  else if(a==='sel'){S.sel=id;if(sheet.tab==='market')renderSheet();renderHUD();drawChart();hap('light')}
  else if(a==='sell'){const v=S.wallet[id]*price(id);if(v<=0)return toast('چیزی برای فروش نیست');S.usd+=v;S.sold+=v;S.wallet[id]=0;toast('فروش '+coin(id).short+' · +'+f$(v));setMood('happy');hap('medium');afterAction()}
  else if(a==='sellall'){let v=0;COINS.forEach(c=>{v+=S.wallet[c.id]*price(c.id);S.wallet[c.id]=0});if(v<=0)return toast('چیزی برای فروش نیست');S.usd+=v;S.sold+=v;toast('فروش همه · +'+f$(v));setMood('happy');hap('medium');afterAction()}

@@ -21,6 +21,10 @@ Environment:
   BUCKET_CAP      سقف «اعتبار رشد» ذخیره‌شده به دلار (پیش‌فرض 6)
   BOT_USERNAME    اختیاری؛ اگه خالی باشه از getMe گرفته می‌شه (برای لینک دعوت)
   REF_BONUS / REF_WELCOME / REF_MAX / REF_DAILY_MAX  تنظیمات زیرمجموعه‌گیری
+  CASHOUT_FEE / CASHOUT_MIN_USD / CASHOUT_DAILY_USD  پیش‌فرض انتقال ارز ماین‌شده به کیف پول (بعدش از پنل ادمین قابل تغییره)
+
+پنل ادمین: اگه ADMIN_ID تنظیم باشه، فقط همون کاربر دکمه‌ی 🛡 رو توی بازی می‌بینه (سرور هم همه‌ی /api/admin/* رو چک می‌کنه).
+  نمای کلی · برداشت‌ها (تأیید/رد) · کاربران (جستجو، تنظیم موجودی، مسدود) · تنظیمات (کارمزد و حداقل‌ها) · پیام همگانی
 """
 import os, re, json, time, math, hmac, hashlib, secrets, threading, logging
 from collections import deque
@@ -54,6 +58,17 @@ MIN_WD = {"TON": float(os.environ.get("MIN_WD_TON", "0.5")), "STAR": 100.0, "USD
 MIN_STARS_DEP = 10
 ASSETS = ("TON", "STAR", "USDT")
 DEC = {"TON": 9, "STAR": 0, "USDT": 6}
+CASHOUT_MAP = {"STAR": "STAR", "TON": "TON", "USD": "USDT"}   # ارز ماین‌شده ← دارایی کیف پول
+CFG_DEFAULTS = {                                               # پیش‌فرض تنظیمات؛ از پنل ادمین قابل تغییره
+    "swap_fee": SWAP_FEE,
+    "cashout_fee": float(os.environ.get("CASHOUT_FEE", "0")),
+    "cashout_min_usd": float(os.environ.get("CASHOUT_MIN_USD", "0.01")),
+    "cashout_daily_usd": float(os.environ.get("CASHOUT_DAILY_USD", "25")),
+    "cashout_on": True, "wd_on": True,
+    "min_wd_TON": MIN_WD["TON"], "min_wd_STAR": MIN_WD["STAR"], "min_wd_USDT": MIN_WD["USDT"],
+}
+CFG_LIMITS = {"swap_fee": (0, .5), "cashout_fee": (0, .5), "cashout_min_usd": (0, 1000), "cashout_daily_usd": (0, 1e6),
+              "min_wd_TON": (0, 1e6), "min_wd_STAR": (0, 1e7), "min_wd_USDT": (0, 1e6)}
 PRICE_TTL = 30          # ثانیه
 OFFLINE_MAX = 4 * 3600  # باید با OFFLINE_MAX کلاینت یکی باشه
 STATE_VERSION = 3
@@ -71,6 +86,7 @@ else:
     db = mongomock.MongoClient().get_database("mikominer")
     log.warning("MONGO_URI تنظیم نشده؛ از حافظه‌ی موقت استفاده می‌شه")
 db.players.create_index("worth")
+db.wtx.create_index("uid")
 
 BOT_USERNAME = os.environ.get("BOT_USERNAME", "").lstrip("@")
 BOT_SECRET = hashlib.sha256(("bot" + SECRET_KEY).encode()).hexdigest()[:32]
@@ -122,12 +138,70 @@ def verify_init_data(init_data):
 
 def auth():
     u = verify_init_data(request.headers.get("X-Init-Data", ""))
-    return u if u else None
+    if not u:
+        return None
+    if u["id"] != ADMIN_ID and db.players.find_one({"_id": u["id"], "banned": True}, {"_id": 1}):
+        return None          # کاربر مسدود
+    return u
+
+
+def is_admin(u):
+    return bool(ADMIN_ID) and bool(u) and u.get("id") == ADMIN_ID
 
 
 def display_name(u):
     name = (u.get("first_name") or "") + (" " + u["last_name"] if u.get("last_name") else "")
     return (name.strip() or u.get("username") or "ناشناس")[:24]
+
+
+_cfg = {"t": 0.0, "v": dict(CFG_DEFAULTS)}
+
+
+def cfg():
+    """تنظیمات فعلی (کش ۱۰ ثانیه‌ای)؛ مقدار ذخیره‌شده‌ی ادمین روی پیش‌فرض اولویت داره"""
+    if time.time() - _cfg["t"] > 10:
+        v = dict(CFG_DEFAULTS)
+        try:
+            d = db.settings.find_one({"_id": "cfg"}) or {}
+            for k, dv in CFG_DEFAULTS.items():
+                if k in d:
+                    v[k] = bool(d[k]) if isinstance(dv, bool) else float(d[k])
+        except Exception as e:
+            log.warning("cfg: %s", e)
+        _cfg["v"], _cfg["t"] = v, time.time()
+    return _cfg["v"]
+
+
+def set_cfg(upd):
+    clean = {}
+    for k, dv in CFG_DEFAULTS.items():
+        if k not in upd:
+            continue
+        if isinstance(dv, bool):
+            clean[k] = bool(upd[k])
+        else:
+            x = float(upd[k])
+            lo, hi = CFG_LIMITS[k]
+            if x != x or x < lo or x > hi:
+                raise ValueError(k)
+            clean[k] = x
+    if clean:
+        db.settings.update_one({"_id": "cfg"}, {"$set": clean}, upsert=True)
+        _cfg["t"] = 0.0
+    return clean
+
+
+def min_wd():
+    c = cfg()
+    return {a: c["min_wd_" + a] for a in ASSETS}
+
+
+def alog(action, **kw):
+    """گزارش کارهای ادمین"""
+    try:
+        db.alog.insert_one({"t": now(), "a": action, **kw})
+    except Exception:
+        pass
 
 
 def fnum(n, d=8):
@@ -228,6 +302,7 @@ def clean_state(s):
     dl = s.get("dl", "")
     out["dl"] = dl if isinstance(dl, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", dl) else ""
     out["st"] = int(_num(s.get("st", 0), 7))
+    out["cashed"] = _num(s.get("cashed", 0))      # مجموع دلارِ ارزهای ماین‌شده‌ی منتقل‌شده به کیف پول
     return out
 
 
@@ -343,7 +418,7 @@ def api_get_state():
     else:
         new_player(u["id"], display_name(u))
         b = 0.0
-    return jsonify(state=public_state(p), offline_sec=off, bonus_usd=b)
+    return jsonify(state=public_state(p), offline_sec=off, bonus_usd=b, is_admin=is_admin(u))
 
 
 @app.put("/api/state")
@@ -361,6 +436,8 @@ def api_put_state():
     p = db.players.find_one({"_id": u["id"]})
     if p and p.get("saved") and (t - aware(p["saved"])).total_seconds() < SAVE_MIN_GAP:
         return jsonify(ok=True, skipped=True)
+    if p and p.get("cash_at") and (t - aware(p["cash_at"])).total_seconds() < 3:
+        return jsonify(ok=True, skipped=True)     # درخواست ذخیره‌ی قدیمیِ در راه بعد از انتقال ماین
     ok, bucket = check_growth(p, worth, t)
     if not ok:
         log.warning("growth rejected uid=%s worth=%s last=%s", u["id"], worth, p.get("worth"))
@@ -507,14 +584,20 @@ def api_wallet():
     uid = u["id"]
     p = db.players.find_one({"_id": uid}) or {}
     hist = [{"id": str(x["_id"]), "type": x.get("type"), "asset": x.get("asset"), "amount": x.get("amount"),
-             "status": x.get("status"), "to": x.get("to"), "ts": int(aware(x["t"]).timestamp() * 1000)}
-            for x in db.wtx.find({"uid": uid}).sort("t", -1).limit(12)]
+             "status": x.get("status"), "to": x.get("to"), "ts": int(aware(x["t"]).timestamp() * 1000),
+             "dir": x.get("sign") or (1 if x.get("type") in ("deposit", "cashout") else -1)}
+            for x in db.wtx.find({"uid": uid}).sort("t", -1).limit(15)]
+    c = cfg()
     rank = None
     if p.get("state"):
         rank = db.players.count_documents({"state": {"$ne": None}, "worth": {"$gt": p.get("worth", 0)}}) + 1
     return jsonify(bal=bal_of(p), hist=hist, rank=rank, total=db.players.count_documents({"state": {"$ne": None}}),
-                   worth=p.get("worth", 0), usd={a: asset_usd(a) for a in ASSETS}, fee=SWAP_FEE, min_wd=MIN_WD,
-                   min_stars=MIN_STARS_DEP, ton_address=TON_ADDRESS, memo=f"MIKO{uid}", wd_on=bool(ADMIN_ID))
+                   worth=p.get("worth", 0), usd={a: asset_usd(a) for a in ASSETS}, fee=c["swap_fee"], min_wd=min_wd(),
+                   min_stars=MIN_STARS_DEP, ton_address=TON_ADDRESS, memo=f"MIKO{uid}",
+                   wd_on=bool(ADMIN_ID) and c["wd_on"], is_admin=is_admin(u), star_usd=STAR_USD,
+                   cashout={"on": c["cashout_on"], "fee": c["cashout_fee"], "min_usd": c["cashout_min_usd"],
+                            "daily_usd": c["cashout_daily_usd"],
+                            "left_usd": max(0.0, c["cashout_daily_usd"] - cashout_used(uid))})
 
 
 @app.post("/api/wallet/stars")
@@ -528,8 +611,10 @@ def api_wallet_stars():
         return jsonify(error="amount"), 400
     if n < MIN_STARS_DEP or n > 10000:
         return jsonify(error="amount"), 400
-    r = tg("createInvoiceLink", title="شارژ Stars", description=f"واریز {n} استارز به کیف پول بازی",
-           payload=f"dep:{u['id']}", currency="XTR", prices=[{"label": "Stars", "amount": n}])
+    to_game = bool((request.get_json(silent=True) or {}).get("to_game"))
+    r = tg("createInvoiceLink", title="شارژ بالانس بازی" if to_game else "شارژ Stars",
+           description=(f"{n} استارز ← ${n * STAR_USD:.2f} بالانس بازی" if to_game else f"واریز {n} استارز به کیف پول بازی"),
+           payload=f"{'depg' if to_game else 'dep'}:{u['id']}", currency="XTR", prices=[{"label": "Stars", "amount": n}])
     if not r.get("ok"):
         return jsonify(error="invoice"), 502
     return jsonify(link=r["result"])
@@ -548,7 +633,7 @@ def api_wallet_swap():
     pf, pt = asset_usd(fa), asset_usd(ta)
     if not amt or pf <= 0 or pt <= 0:
         return jsonify(error="amount"), 400
-    out = floor_to(ta, amt * pf * (1 - SWAP_FEE) / pt)
+    out = floor_to(ta, amt * pf * (1 - cfg()["swap_fee"]) / pt)
     if out <= 0:
         return jsonify(error="too small"), 400
     if not debit(u["id"], fa, amt):
@@ -582,14 +667,14 @@ def api_wallet_withdraw():
     u, err = need_user()
     if err:
         return err
-    if not ADMIN_ID:
+    if not ADMIN_ID or not cfg()["wd_on"]:
         return jsonify(error="disabled"), 503
     b = request.get_json(silent=True) or {}
     a = b.get("asset")
     amt = amount_arg(b, a) if a in ASSETS else None
     addr = (b.get("address") or "").strip()
-    if not amt or amt < MIN_WD[a]:
-        return jsonify(error="min", min=MIN_WD.get(a)), 400
+    if not amt or amt < min_wd()[a]:
+        return jsonify(error="min", min=min_wd().get(a)), 400
     if a != "STAR" and not re.fullmatch(r"(?:[EU]Q|kQ|0Q)[A-Za-z0-9_-]{46}|-?\d:[0-9a-fA-F]{64}", addr):
         return jsonify(error="address"), 400
     if not debit(u["id"], a, amt):
@@ -602,20 +687,327 @@ def api_wallet_withdraw():
     return jsonify(ok=True)
 
 
+def cashout_used(uid):
+    t = now() - timedelta(days=1)
+    return sum(float(x.get("usd", 0) or 0) for x in db.wtx.find({"uid": uid, "type": "cashout", "t": {"$gte": t}}))
+
+
+@app.post("/api/wallet/cashout")
+def api_wallet_cashout():
+    """انتقال ارز ماین‌شده‌ی داخل بازی (Stars / TON / USD) به کیف پول واقعی (Stars / TON / USDT)"""
+    u, err = need_user()
+    if err:
+        return err
+    c = cfg()
+    if not c["cashout_on"]:
+        return jsonify(error="disabled"), 503
+    b = request.get_json(silent=True) or {}
+    coin = b.get("coin")
+    if coin not in CASHOUT_MAP:
+        return jsonify(error="amount"), 400
+    a, uid = CASHOUT_MAP[coin], u["id"]
+    p = db.players.find_one({"_id": uid}) or {}
+    st = p.get("state")
+    if not st:
+        return jsonify(error="nostate"), 409
+    have = float((st.get("wallet") or {}).get(coin, 0) or 0)
+    try:
+        want = have if b.get("amount") in (None, "all") else float(b.get("amount"))
+    except (TypeError, ValueError):
+        return jsonify(error="amount"), 400
+    f = 10 ** DEC[a]
+    amt = math.floor(min(want, have) * f) / f          # بدون epsilon تا هیچ‌وقت از موجودی بیشتر نشه
+    pr = asset_usd(a)
+    if pr <= 0:
+        return jsonify(error="price"), 503
+    usd = round(amt * pr, 8)
+    if amt <= 0 or usd < c["cashout_min_usd"]:
+        return jsonify(error="min", min=c["cashout_min_usd"]), 400
+    left = c["cashout_daily_usd"] - cashout_used(uid)
+    if usd > left + 1e-9:
+        return jsonify(error="daily", left=max(0.0, left)), 409
+    got = floor_to(a, amt * (1 - c["cashout_fee"]))
+    if got <= 0:
+        return jsonify(error="too small"), 400
+    ok = db.players.find_one_and_update(
+        {"_id": uid, f"state.wallet.{coin}": {"$gte": amt}},
+        {"$inc": {f"state.wallet.{coin}": -amt, "state.cashed": usd}, "$set": {"cash_at": now()}})
+    if not ok:
+        return jsonify(error="balance"), 409
+    credit(uid, a, got)
+    log_tx("cash:" + secrets.token_hex(6), uid=uid, type="cashout", asset=a, amount=got, to=f"{amt} {coin}", usd=usd, status="done")
+    return jsonify(ok=True, taken=amt, got=got, asset=a, usd=usd)
+
+
+# ───────────────────────── پنل ادمین (فقط ADMIN_ID) ─────────────────────────
+def admin_only():
+    u = auth()
+    if not u:
+        return None, (jsonify(error="unauthorized"), 401)
+    if not is_admin(u):
+        return None, (jsonify(error="forbidden"), 403)
+    return u, None
+
+
+def usd_of(a, v):
+    return float(v or 0) * asset_usd(a)
+
+
+def user_row(p):
+    st = p.get("state") or {}
+    return {"id": p["_id"], "name": p.get("name", "ناشناس"), "worth": float(p.get("worth", 0) or 0), "bal": bal_of(p),
+            "game_usd": float(st.get("usd", 0) or 0), "mined": {k: float((st.get("wallet") or {}).get(k, 0) or 0) for k in COINS},
+            "miners": sum(1 for m in st.get("slots", []) if m), "shelves": st.get("shelves", 0), "banned": bool(p.get("banned")),
+            "touch": int(aware(p["touch"]).timestamp() * 1000) if p.get("touch") else 0,
+            "created": int(aware(p["created"]).timestamp() * 1000) if p.get("created") else 0,
+            "active_refs": db.players.count_documents({"ref": p["_id"], "ref_done": True}),
+            "ref": p.get("ref"), "cashed": float(st.get("cashed", 0) or 0)}
+
+
+@app.get("/api/admin/overview")
+def api_admin_overview():
+    u, err = admin_only()
+    if err:
+        return err
+    t = now()
+    d1 = t - timedelta(days=1)
+    total = db.players.count_documents({})
+    played = db.players.count_documents({"state": {"$ne": None}})
+    liab = {a: 0.0 for a in ASSETS}
+    worth_sum = 0.0
+    for p in db.players.find({}, {"bal": 1, "worth": 1}):
+        worth_sum += float(p.get("worth", 0) or 0)
+        for a, v in bal_of(p).items():
+            liab[a] += v
+    days = [(t - timedelta(days=i)).date() for i in range(6, -1, -1)]
+    series = {d: {"d": d.strftime("%m/%d"), "n": 0, "dep": 0.0} for d in days}
+    for p in db.players.find({"created": {"$gte": t - timedelta(days=7)}}, {"created": 1}):
+        d = aware(p["created"]).date()
+        if d in series:
+            series[d]["n"] += 1
+    dep24 = cash24 = wd24 = 0.0
+    dep_n = 0
+    pend_n, pend_usd = 0, 0.0
+    for x in db.wtx.find({"t": {"$gte": t - timedelta(days=7)}}):
+        a, ty = x.get("asset"), x.get("type")
+        if a not in ASSETS:
+            continue
+        usd = usd_of(a, x.get("amount"))
+        d = aware(x["t"]).date()
+        if ty == "deposit":
+            if d in series:
+                series[d]["dep"] += usd
+            if aware(x["t"]) >= d1:
+                dep24 += usd
+                dep_n += 1
+        elif aware(x["t"]) >= d1:
+            if ty == "cashout":
+                cash24 += float(x.get("usd", 0) or 0)
+            elif ty == "withdraw" and x.get("status") == "paid":
+                wd24 += usd
+    for x in db.wtx.find({"type": "withdraw", "status": "pending"}):
+        pend_n += 1
+        pend_usd += usd_of(x.get("asset"), x.get("amount"))
+    lg = [{"ts": int(aware(x["t"]).timestamp() * 1000), "a": x.get("a"), "uid": x.get("uid"), "asset": x.get("asset"), "amount": x.get("amount")}
+          for x in db.alog.find({}).sort("t", -1).limit(8)]
+    return jsonify(users={"total": total, "played": played, "new24": db.players.count_documents({"created": {"$gte": d1}}),
+                          "active24": db.players.count_documents({"touch": {"$gte": d1}})},
+                   liab=liab, liab_usd=sum(usd_of(a, v) for a, v in liab.items()), worth_sum=worth_sum,
+                   dep24_usd=dep24, dep24_n=dep_n, pend_n=pend_n, pend_usd=pend_usd, cash24_usd=cash24, wd24_usd=wd24,
+                   series=[series[d] for d in days], log=lg, persistent=bool(MONGO_URI), ton_on=bool(TON_ADDRESS))
+
+
+@app.get("/api/admin/withdrawals")
+def api_admin_wds():
+    u, err = admin_only()
+    if err:
+        return err
+    status = request.args.get("status", "pending")
+    q = {"type": "withdraw"}
+    if status in ("pending", "paid", "rejected"):
+        q["status"] = status
+    rows = list(db.wtx.find(q).sort("t", -1).limit(40))
+    names = {p["_id"]: p.get("name", "ناشناس") for p in db.players.find({"_id": {"$in": list({r["uid"] for r in rows})}}, {"name": 1})}
+    return jsonify(items=[{"id": str(r["_id"])[3:], "uid": r["uid"], "name": names.get(r["uid"], "ناشناس"), "asset": r.get("asset"),
+                           "amount": r.get("amount"), "usd": usd_of(r.get("asset"), r.get("amount")), "to": r.get("to"),
+                           "status": r.get("status"), "ts": int(aware(r["t"]).timestamp() * 1000)} for r in rows])
+
+
+@app.post("/api/admin/withdrawals/decide")
+def api_admin_decide():
+    u, err = admin_only()
+    if err:
+        return err
+    b = request.get_json(silent=True) or {}
+    wid = re.sub(r"[^0-9a-f]", "", str(b.get("id") or ""))[:20]
+    res = decide_wd(wid, bool(b.get("ok")))
+    if not res:
+        return jsonify(error="done"), 409
+    return jsonify(ok=True, status=res)
+
+
+@app.get("/api/admin/users")
+def api_admin_users():
+    u, err = admin_only()
+    if err:
+        return err
+    q = (request.args.get("q") or "").strip()[:40]
+    if q.lstrip("@").isdigit():
+        flt = {"_id": int(q.lstrip("@"))}
+    elif q:
+        flt = {"name": {"$regex": re.escape(q), "$options": "i"}}
+    else:
+        flt = {}
+    rows = list(db.players.find(flt).sort("touch", -1).limit(25))
+    return jsonify(items=[user_row(p) for p in rows], total=db.players.count_documents({}))
+
+
+@app.get("/api/admin/user")
+def api_admin_user():
+    u, err = admin_only()
+    if err:
+        return err
+    try:
+        uid = int(request.args.get("uid"))
+    except (TypeError, ValueError):
+        return jsonify(error="uid"), 400
+    p = db.players.find_one({"_id": uid})
+    if not p:
+        return jsonify(error="notfound"), 404
+    txs = [{"type": x.get("type"), "asset": x.get("asset"), "amount": x.get("amount"), "status": x.get("status"), "to": x.get("to"),
+            "ts": int(aware(x["t"]).timestamp() * 1000),
+            "dir": x.get("sign") or (1 if x.get("type") in ("deposit", "cashout") else -1)}
+           for x in db.wtx.find({"uid": uid}).sort("t", -1).limit(10)]
+    return jsonify(user=user_row(p), txs=txs)
+
+
+@app.post("/api/admin/adjust")
+def api_admin_adjust():
+    """شارژ/کسر دستی موجودی کاربر (TON / STAR / USDT) یا هدیه به بالانس بازی (GAME)"""
+    u, err = admin_only()
+    if err:
+        return err
+    b = request.get_json(silent=True) or {}
+    try:
+        uid, asset, amt = int(b.get("uid")), b.get("asset"), float(b.get("amount"))
+    except (TypeError, ValueError):
+        return jsonify(error="amount"), 400
+    if amt != amt or amt == 0 or abs(amt) >= 1e9 or (asset not in ASSETS and asset != "GAME"):
+        return jsonify(error="amount"), 400
+    if not db.players.find_one({"_id": uid}, {"_id": 1}):
+        return jsonify(error="notfound"), 404
+    note = str(b.get("note") or "")[:60]
+    if asset == "GAME":
+        if amt < 0:
+            return jsonify(error="amount"), 400
+        db.players.update_one({"_id": uid}, {"$inc": {"bonus": round(amt, 8)}})        # با باز کردن بازی تحویل داده می‌شه
+        log_tx("adm:" + secrets.token_hex(6), uid=uid, type="admin", asset="STAR", amount=0, to=f"هدیه ${amt} به بازی {note}", status="done", sign=1)
+    else:
+        v = floor_to(asset, abs(amt))
+        if v <= 0:
+            return jsonify(error="amount"), 400
+        if amt > 0:
+            credit(uid, asset, v)
+        elif not debit(uid, asset, v):
+            return jsonify(error="balance"), 409
+        log_tx("adm:" + secrets.token_hex(6), uid=uid, type="admin", asset=asset, amount=v, to=note or "تنظیم توسط ادمین",
+               status="done", sign=1 if amt > 0 else -1)
+    alog("adjust", uid=uid, asset=asset, amount=amt)
+    tg("sendMessage", chat_id=uid, text="🔔 موجودی حسابت توسط مدیریت به‌روز شد.", reply_markup=PLAY_KB)
+    return jsonify(ok=True)
+
+
+@app.post("/api/admin/ban")
+def api_admin_ban():
+    u, err = admin_only()
+    if err:
+        return err
+    b = request.get_json(silent=True) or {}
+    try:
+        uid = int(b.get("uid"))
+    except (TypeError, ValueError):
+        return jsonify(error="uid"), 400
+    if uid == ADMIN_ID:
+        return jsonify(error="self"), 400
+    r = db.players.update_one({"_id": uid}, {"$set": {"banned": bool(b.get("banned"))}})
+    if not r.matched_count:
+        return jsonify(error="notfound"), 404
+    alog("ban" if b.get("banned") else "unban", uid=uid)
+    return jsonify(ok=True)
+
+
+@app.get("/api/admin/settings")
+def api_admin_settings_get():
+    u, err = admin_only()
+    if err:
+        return err
+    return jsonify(cfg=cfg(), info={"ton_address": TON_ADDRESS, "star_usd": STAR_USD, "persistent": bool(MONGO_URI),
+                                    "bot": BOT_USERNAME, "ton_price": (get_prices().get("TON") or {}).get("usd")})
+
+
+@app.post("/api/admin/settings")
+def api_admin_settings_set():
+    u, err = admin_only()
+    if err:
+        return err
+    try:
+        done = set_cfg((request.get_json(silent=True) or {}).get("cfg") or {})
+    except (ValueError, TypeError):
+        return jsonify(error="value"), 400
+    alog("settings", **{k: v for k, v in done.items()})
+    return jsonify(ok=True, cfg=cfg())
+
+
+def _broadcast(text, ids):
+    sent = 0
+    for uid in ids:
+        if tg("sendMessage", chat_id=uid, text=text, reply_markup=PLAY_KB).get("ok"):
+            sent += 1
+        time.sleep(0.05)            # زیر سقف ۳۰ پیام در ثانیه‌ی تلگرام
+    tg("sendMessage", chat_id=ADMIN_ID, text=f"📣 ارسال همگانی تموم شد: {sent} از {len(ids)} نفر")
+
+
+@app.post("/api/admin/broadcast")
+def api_admin_broadcast():
+    u, err = admin_only()
+    if err:
+        return err
+    b = request.get_json(silent=True) or {}
+    text = str(b.get("text") or "").strip()[:3000]
+    if not text:
+        return jsonify(error="empty"), 400
+    if b.get("test"):
+        ok = tg("sendMessage", chat_id=ADMIN_ID, text=text, reply_markup=PLAY_KB).get("ok")
+        return jsonify(ok=bool(ok), n=1)
+    ids = [p["_id"] for p in db.players.find({"banned": {"$ne": True}}, {"_id": 1})]
+    alog("broadcast", n=len(ids))
+    threading.Thread(target=_broadcast, args=(text, ids), daemon=True).start()
+    return jsonify(ok=True, n=len(ids))
+
+
+def decide_wd(wid, approve):
+    """تصمیم روی درخواست برداشت؛ اتمیک و فقط یک‌بار. خروجی: وضعیت جدید یا None اگه قبلاً بررسی شده"""
+    new = "paid" if approve else "rejected"
+    x = db.wtx.find_one_and_update({"_id": "wd:" + wid, "status": "pending"}, {"$set": {"status": new, "decided": now()}})
+    if not x:
+        return None
+    if not approve:
+        credit(x["uid"], x["asset"], x["amount"])
+    tg("sendMessage", chat_id=x["uid"], text=(f"✅ برداشت {x['amount']} {x['asset']} پرداخت شد." if approve
+                                              else f"❌ برداشت رد شد و {x['amount']} {x['asset']} به کیف پولت برگشت."))
+    alog("withdraw_" + new, wid=wid, uid=x["uid"], asset=x["asset"], amount=x["amount"])
+    return new
+
+
 def wd_decide(cb):
-    """تصمیم ادمین روی درخواست برداشت"""
+    """دکمه‌های شیشه‌ای تلگرام برای ادمین"""
     if (cb.get("from") or {}).get("id") != ADMIN_ID:
         return
     _, act, wid = (cb.get("data") or "wd:x:x").split(":")[:3]
-    new = "paid" if act == "ok" else "rejected"
-    x = db.wtx.find_one_and_update({"_id": "wd:" + wid, "status": "pending"}, {"$set": {"status": new}})
-    tg("answerCallbackQuery", callback_query_id=cb["id"], text="ثبت شد" if x else "قبلاً بررسی شده")
-    if not x:
+    res = decide_wd(wid, act == "ok")
+    tg("answerCallbackQuery", callback_query_id=cb["id"], text="ثبت شد" if res else "قبلاً بررسی شده")
+    if not res:
         return
-    if new == "rejected":
-        credit(x["uid"], x["asset"], x["amount"])
-    tg("sendMessage", chat_id=x["uid"], text=(f"✅ برداشت {x['amount']} {x['asset']} پرداخت شد." if new == "paid"
-                                              else f"❌ برداشت رد شد و {x['amount']} {x['asset']} به کیف پولت برگشت."))
     m = cb.get("message") or {}
     tg("editMessageReplyMarkup", chat_id=(m.get("chat") or {}).get("id"), message_id=m.get("message_id"), reply_markup={"inline_keyboard": []})
 
@@ -625,7 +1017,14 @@ def stars_paid(msg):
     if sp.get("currency") != "XTR":
         return
     uid, n = msg["from"]["id"], int(sp["total_amount"])
-    if log_tx("dep:star:" + sp["telegram_payment_charge_id"], uid=uid, type="deposit", asset="STAR", amount=n, status="done"):
+    tid = "dep:star:" + sp["telegram_payment_charge_id"]
+    if (sp.get("invoice_payload") or "").startswith("depg:"):       # شارژ مستقیم بالانس بازی
+        usd = round(n * STAR_USD, 8)
+        if log_tx(tid, uid=uid, type="togame", asset="STAR", amount=n, to=f"${usd}", status="done"):
+            db.players.update_one({"_id": uid}, {"$inc": {"bonus": usd}})
+            tg("sendMessage", chat_id=uid, text=f"✅ {n} ⭐ پرداخت شد و ${usd:.2f} به بالانس بازیت اضافه شد.\nبازی رو باز کن 🎮", reply_markup=PLAY_KB)
+        return
+    if log_tx(tid, uid=uid, type="deposit", asset="STAR", amount=n, status="done"):
         credit(uid, "STAR", n)
         tg("sendMessage", chat_id=uid, text=f"✅ {n} ⭐ به کیف پولت اضافه شد.", reply_markup=PLAY_KB)
 
@@ -702,6 +1101,15 @@ def bot_hook():
             link = ref_link(msg["from"]["id"])
             tg("sendMessage", chat_id=chat_id,
                text=("🔗 لینک دعوت تو:\n" + link) if link else "لینک دعوت هنوز آماده نیست.")
+        elif cmd == "addbal" and ADMIN_ID and msg["from"]["id"] == ADMIN_ID:      # فقط ادمین، برای تست: /addbal TON 10
+            try:
+                a, v = parts[1].upper(), float(parts[2])
+                a = "STAR" if a in ("STAR", "STARS") else a
+                assert a in ASSETS and 0 < v < 1e6
+                credit(ADMIN_ID, a, floor_to(a, v))
+                tg("sendMessage", chat_id=chat_id, text=f"✅ {floor_to(a, v)} {a} به کیف پولت اضافه شد.", reply_markup=PLAY_KB)
+            except Exception:
+                tg("sendMessage", chat_id=chat_id, text="فرمت: /addbal TON 10  (TON | STAR | USDT)")
         elif cmd == "wallet":
             tg("sendMessage", chat_id=chat_id, text=wallet_text(msg["from"]["id"]), reply_markup=PLAY_KB)
         elif cmd == "help":
