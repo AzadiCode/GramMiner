@@ -210,6 +210,7 @@ def clean_state(s):
     out["taps"] = int(_num(s.get("taps"), 1e9))
     out["sold"] = _num(s.get("sold"))
     out["ch"] = int(_num(s.get("ch"), 8))
+    out["rd"] = 1 if s.get("rd") else 0
     out["en"] = _num(s.get("en"), EMAX)
     out["et"] = _num(s.get("et"), 1e14)
     dl = s.get("dl", "")
@@ -281,7 +282,9 @@ def activate_ref(uid):
     bonus = REF_BONUS + REF_MILESTONES.get(active, 0.0)
     db.players.update_one({"_id": rid}, {"$inc": {"bonus": bonus, "ref_earned": bonus}})
     db.players.update_one({"_id": uid}, {"$inc": {"bonus": REF_WELCOME}})
-    tg("sendMessage", chat_id=rid, text=f"🎉 یکی از دوستانت وارد بازی شد!\nجایزه: ${bonus:.2f} · زیرمجموعه‌ی فعال: {active}",
+    tg("sendMessage", chat_id=rid, text=f"🎉 پاداش دعوت اضافه شد!\n{p.get('name', 'دوستت')} به ماموریت ۳ رسید.\nجایزه: ${bonus:.2f} · زیرمجموعه‌ی فعال: {active}",
+       reply_markup=PLAY_KB)
+    tg("sendMessage", chat_id=uid, text=f"🎁 هدیه‌ی خوش‌آمد اضافه شد: ${REF_WELCOME:.2f}\nدفعه‌ی بعد که بازی رو باز کنی تو موجودیت می‌بینی.",
        reply_markup=PLAY_KB)
 
 
@@ -363,13 +366,18 @@ def api_top():
     u = auth()
     if not u:
         return jsonify(error="unauthorized"), 401
-    rows = list(db.players.find({"state": {"$ne": None}}).sort("worth", -1).limit(10))
-    top = [{"name": r.get("name", "ناشناس"), "worth": r.get("worth", 0), "me": r["_id"] == u["id"]} for r in rows]
+    played = {"state": {"$ne": None}}
+    rows = list(db.players.find(played).sort("worth", -1).limit(20))
+    top = []
+    for r in rows:
+        st = r.get("state") or {}
+        top.append({"name": r.get("name", "ناشناس"), "worth": r.get("worth", 0), "me": r["_id"] == u["id"],
+                    "miners": sum(1 for m in st.get("slots", []) if m), "shelves": st.get("shelves", 1)})
     me = db.players.find_one({"_id": u["id"]})
     rank = None
     if me and me.get("state"):
         rank = db.players.count_documents({"state": {"$ne": None}, "worth": {"$gt": me.get("worth", 0)}}) + 1
-    return jsonify(top=top, rank=rank)
+    return jsonify(top=top, rank=rank, total=db.players.count_documents(played))
 
 
 @app.get("/api/ref")
@@ -439,6 +447,9 @@ def bot_hook():
             if ref:
                 tg("sendMessage", chat_id=chat_id,
                    text=f"🎁 با دعوت دوستت اومدی! بعد از رسیدن به ماموریت ۳ بازی، ${REF_WELCOME:.2f} هدیه می‌گیری.")
+                tg("sendMessage", chat_id=ref,
+                   text=f"👋 {display_name(u)} با لینک دعوت تو وارد شد!\nوقتی به ماموریت ۳ برسه، ${REF_BONUS:.2f} پاداش می‌گیری.",
+                   reply_markup=PLAY_KB)
         if cmd == "top":
             tg("sendMessage", chat_id=chat_id, text=top_text(), reply_markup=PLAY_KB)
         elif cmd == "invite":
