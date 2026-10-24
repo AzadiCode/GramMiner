@@ -14,12 +14,15 @@ Environment:
   MONGO_URI   خالی = حافظه‌ی موقت (با ری‌استارت پاک می‌شه)
   SECRET_KEY  اختیاری؛ پیش‌فرض از BOT_TOKEN ساخته می‌شه
   STAR_USD    ارزش هر استار به دلار (پیش‌فرض 0.013)
+  TON_ADDRESS    آدرس دریافت واریز TON (برای فعال شدن واریز TON)
+  ADMIN_ID       آیدی عددی ادمین (برای فعال شدن برداشت؛ تأیید دستی با دکمه)
+  TONCENTER_KEY / SWAP_FEE / MIN_WD_TON / MIN_WD_USDT  تنظیمات اختیاری کیف پول
   MAX_WORTH_RATE  سقف رشد ثروت بازیکن به دلار در ثانیه (پیش‌فرض 0.0003)
   BUCKET_CAP      سقف «اعتبار رشد» ذخیره‌شده به دلار (پیش‌فرض 6)
   BOT_USERNAME    اختیاری؛ اگه خالی باشه از getMe گرفته می‌شه (برای لینک دعوت)
   REF_BONUS / REF_WELCOME / REF_MAX / REF_DAILY_MAX  تنظیمات زیرمجموعه‌گیری
 """
-import os, re, json, time, hmac, hashlib, threading, logging
+import os, re, json, time, math, hmac, hashlib, secrets, threading, logging
 from collections import deque
 from urllib.parse import parse_qsl
 from datetime import datetime, timezone, timedelta
@@ -42,6 +45,15 @@ REF_MAX = int(os.environ.get("REF_MAX", "50"))              # سقف زیرمج�
 REF_DAILY_MAX = int(os.environ.get("REF_DAILY_MAX", "10"))  # سقف فعال‌سازی در ۲۴ ساعت
 REF_MILESTONES = {3: 0.10, 10: 0.40, 25: 1.00}              # پاداش پله‌ای بر اساس تعداد فعال
 REF_MIN_CH, REF_MIN_TAPS = 3, 50                            # شرط «فعال» شدن: ماموریت ۳ + ۵۰ ضربه
+# ── کیف پول واقعی (TON / Stars / USDT) ──
+TON_ADDRESS = os.environ.get("TON_ADDRESS", "").strip()       # آدرس دریافت واریز TON
+TONCENTER_KEY = os.environ.get("TONCENTER_KEY", "").strip()   # اختیاری؛ کلید toncenter برای محدودیت کمتر
+ADMIN_ID = int(os.environ.get("ADMIN_ID", "0") or 0)          # آیدی عددی ادمین برای تأیید برداشت‌ها
+SWAP_FEE = float(os.environ.get("SWAP_FEE", "0.02"))          # کارمزد تبدیل
+MIN_WD = {"TON": float(os.environ.get("MIN_WD_TON", "0.5")), "STAR": 100.0, "USDT": float(os.environ.get("MIN_WD_USDT", "1"))}
+MIN_STARS_DEP = 10
+ASSETS = ("TON", "STAR", "USDT")
+DEC = {"TON": 9, "STAR": 0, "USDT": 6}
 PRICE_TTL = 30          # ثانیه
 OFFLINE_MAX = 4 * 3600  # باید با OFFLINE_MAX کلاینت یکی باشه
 STATE_VERSION = 3
@@ -394,6 +406,230 @@ def api_ref():
                    next={"at": nxt[0], "bonus": nxt[1]} if nxt else None, max=REF_MAX)
 
 
+# ───────────────────────── کیف پول واقعی ─────────────────────────
+def asset_usd(a):
+    if a == "STAR":
+        return STAR_USD
+    if a == "USDT":
+        return 1.0
+    return ((get_prices().get("TON") or {}).get("usd")) or 0.0
+
+
+def floor_to(a, v):
+    f = 10 ** DEC[a]
+    return math.floor(v * f + 1e-9) / f
+
+
+def bal_of(p):
+    b = (p or {}).get("bal") or {}
+    return {a: round(float(b.get(a, 0) or 0), DEC[a]) for a in ASSETS}
+
+
+def debit(uid, a, amt):
+    return bool(db.players.find_one_and_update({"_id": uid, f"bal.{a}": {"$gte": amt}}, {"$inc": {f"bal.{a}": -amt}}))
+
+
+def credit(uid, a, amt):
+    db.players.update_one({"_id": uid}, {"$inc": {f"bal.{a}": amt}})
+
+
+def log_tx(tid, **kw):
+    """ثبت تراکنش با شناسه‌ی یکتا؛ اگه قبلاً ثبت شده باشه False برمی‌گردونه (جلوگیری از شارژ دوباره)"""
+    try:
+        db.wtx.insert_one({"_id": tid, "t": now(), **kw})
+        return True
+    except Exception:
+        return False
+
+
+_scan = {"t": 0.0}
+_scan_lock = threading.Lock()
+
+
+def scan_ton():
+    """واریزهای TON به آدرس پروژه رو با کامنت MIKO<uid> پیدا و یک‌بار اعتبار می‌ده"""
+    if not TON_ADDRESS:
+        return
+    with _scan_lock:
+        if time.time() - _scan["t"] < 8:
+            return
+        _scan["t"] = time.time()
+        try:
+            h = {"X-API-Key": TONCENTER_KEY} if TONCENTER_KEY else {}
+            r = requests.get("https://toncenter.com/api/v2/getTransactions",
+                             params={"address": TON_ADDRESS, "limit": 40}, headers=h, timeout=8).json()
+            for tx in r.get("result") or []:
+                m = tx.get("in_msg") or {}
+                mm = re.fullmatch(r"MIKO(\d{1,15})", (m.get("message") or "").strip())
+                val = int(m.get("value") or 0)
+                if not m.get("source") or val <= 0 or not mm:
+                    continue
+                uid, amt = int(mm.group(1)), val / 1e9
+                if not db.players.find_one({"_id": uid}, {"_id": 1}):
+                    continue
+                if log_tx("dep:ton:" + tx["transaction_id"]["hash"], uid=uid, type="deposit", asset="TON", amount=amt, status="done"):
+                    credit(uid, "TON", amt)
+                    tg("sendMessage", chat_id=uid, text=f"✅ واریز {amt:.4f} TON به کیف پولت اضافه شد.", reply_markup=PLAY_KB)
+        except Exception as e:
+            log.warning("scan_ton: %s", e)
+
+
+def _scan_loop():
+    while True:
+        time.sleep(45)
+        scan_ton()
+
+
+def need_user():
+    u = auth()
+    if not u:
+        return None, (jsonify(error="unauthorized"), 401)
+    if not db.players.find_one({"_id": u["id"]}, {"_id": 1}):
+        new_player(u["id"], display_name(u))
+    return u, None
+
+
+def amount_arg(body, a):
+    try:
+        v = float(body.get("amount"))
+    except (TypeError, ValueError):
+        return None
+    v = floor_to(a, v)
+    return v if v > 0 and v < 1e9 else None
+
+
+@app.get("/api/wallet")
+def api_wallet():
+    u, err = need_user()
+    if err:
+        return err
+    scan_ton()
+    uid = u["id"]
+    p = db.players.find_one({"_id": uid}) or {}
+    hist = [{"id": str(x["_id"]), "type": x.get("type"), "asset": x.get("asset"), "amount": x.get("amount"),
+             "status": x.get("status"), "to": x.get("to"), "ts": int(aware(x["t"]).timestamp() * 1000)}
+            for x in db.wtx.find({"uid": uid}).sort("t", -1).limit(12)]
+    rank = None
+    if p.get("state"):
+        rank = db.players.count_documents({"state": {"$ne": None}, "worth": {"$gt": p.get("worth", 0)}}) + 1
+    return jsonify(bal=bal_of(p), hist=hist, rank=rank, total=db.players.count_documents({"state": {"$ne": None}}),
+                   worth=p.get("worth", 0), usd={a: asset_usd(a) for a in ASSETS}, fee=SWAP_FEE, min_wd=MIN_WD,
+                   min_stars=MIN_STARS_DEP, ton_address=TON_ADDRESS, memo=f"MIKO{uid}", wd_on=bool(ADMIN_ID))
+
+
+@app.post("/api/wallet/stars")
+def api_wallet_stars():
+    u, err = need_user()
+    if err:
+        return err
+    try:
+        n = int((request.get_json(silent=True) or {}).get("amount"))
+    except (TypeError, ValueError):
+        return jsonify(error="amount"), 400
+    if n < MIN_STARS_DEP or n > 10000:
+        return jsonify(error="amount"), 400
+    r = tg("createInvoiceLink", title="شارژ Stars", description=f"واریز {n} استارز به کیف پول بازی",
+           payload=f"dep:{u['id']}", currency="XTR", prices=[{"label": "Stars", "amount": n}])
+    if not r.get("ok"):
+        return jsonify(error="invoice"), 502
+    return jsonify(link=r["result"])
+
+
+@app.post("/api/wallet/swap")
+def api_wallet_swap():
+    u, err = need_user()
+    if err:
+        return err
+    b = request.get_json(silent=True) or {}
+    fa, ta = b.get("from"), b.get("to")
+    if fa not in ASSETS or ta not in ASSETS or fa == ta:
+        return jsonify(error="pair"), 400
+    amt = amount_arg(b, fa)
+    pf, pt = asset_usd(fa), asset_usd(ta)
+    if not amt or pf <= 0 or pt <= 0:
+        return jsonify(error="amount"), 400
+    out = floor_to(ta, amt * pf * (1 - SWAP_FEE) / pt)
+    if out <= 0:
+        return jsonify(error="too small"), 400
+    if not debit(u["id"], fa, amt):
+        return jsonify(error="balance"), 409
+    credit(u["id"], ta, out)
+    log_tx("swap:" + secrets.token_hex(6), uid=u["id"], type="swap", asset=fa, amount=amt, to=f"{out} {ta}", status="done")
+    return jsonify(ok=True, out=out)
+
+
+@app.post("/api/wallet/togame")
+def api_wallet_togame():
+    u, err = need_user()
+    if err:
+        return err
+    b = request.get_json(silent=True) or {}
+    a = b.get("asset")
+    amt = amount_arg(b, a) if a in ASSETS else None
+    pr = asset_usd(a) if amt else 0
+    if not amt or pr <= 0:
+        return jsonify(error="amount"), 400
+    usd = round(amt * pr, 8)
+    if not debit(u["id"], a, amt):
+        return jsonify(error="balance"), 409
+    db.players.update_one({"_id": u["id"]}, {"$inc": {"bonus": usd}})      # با همون مسیر امن پاداش‌ها به بازی می‌رسه
+    log_tx("game:" + secrets.token_hex(6), uid=u["id"], type="togame", asset=a, amount=amt, to=f"${usd}", status="done")
+    return jsonify(ok=True, usd=usd)
+
+
+@app.post("/api/wallet/withdraw")
+def api_wallet_withdraw():
+    u, err = need_user()
+    if err:
+        return err
+    if not ADMIN_ID:
+        return jsonify(error="disabled"), 503
+    b = request.get_json(silent=True) or {}
+    a = b.get("asset")
+    amt = amount_arg(b, a) if a in ASSETS else None
+    addr = (b.get("address") or "").strip()
+    if not amt or amt < MIN_WD[a]:
+        return jsonify(error="min", min=MIN_WD.get(a)), 400
+    if a != "STAR" and not re.fullmatch(r"(?:[EU]Q|kQ|0Q)[A-Za-z0-9_-]{46}|-?\d:[0-9a-fA-F]{64}", addr):
+        return jsonify(error="address"), 400
+    if not debit(u["id"], a, amt):
+        return jsonify(error="balance"), 409
+    wid = secrets.token_hex(5)
+    log_tx("wd:" + wid, uid=u["id"], type="withdraw", asset=a, amount=amt, to=addr or "—", status="pending")
+    tg("sendMessage", chat_id=ADMIN_ID, text=f"💸 درخواست برداشت\nکاربر: {display_name(u)} ({u['id']})\nمقدار: {amt} {a}\nمقصد: {addr or 'پرداخت از داخل تلگرام'}",
+       reply_markup={"inline_keyboard": [[{"text": "✅ پرداخت شد", "callback_data": f"wd:ok:{wid}"},
+                                          {"text": "❌ رد و برگشت وجه", "callback_data": f"wd:no:{wid}"}]]})
+    return jsonify(ok=True)
+
+
+def wd_decide(cb):
+    """تصمیم ادمین روی درخواست برداشت"""
+    if (cb.get("from") or {}).get("id") != ADMIN_ID:
+        return
+    _, act, wid = (cb.get("data") or "wd:x:x").split(":")[:3]
+    new = "paid" if act == "ok" else "rejected"
+    x = db.wtx.find_one_and_update({"_id": "wd:" + wid, "status": "pending"}, {"$set": {"status": new}})
+    tg("answerCallbackQuery", callback_query_id=cb["id"], text="ثبت شد" if x else "قبلاً بررسی شده")
+    if not x:
+        return
+    if new == "rejected":
+        credit(x["uid"], x["asset"], x["amount"])
+    tg("sendMessage", chat_id=x["uid"], text=(f"✅ برداشت {x['amount']} {x['asset']} پرداخت شد." if new == "paid"
+                                              else f"❌ برداشت رد شد و {x['amount']} {x['asset']} به کیف پولت برگشت."))
+    m = cb.get("message") or {}
+    tg("editMessageReplyMarkup", chat_id=(m.get("chat") or {}).get("id"), message_id=m.get("message_id"), reply_markup={"inline_keyboard": []})
+
+
+def stars_paid(msg):
+    sp = msg["successful_payment"]
+    if sp.get("currency") != "XTR":
+        return
+    uid, n = msg["from"]["id"], int(sp["total_amount"])
+    if log_tx("dep:star:" + sp["telegram_payment_charge_id"], uid=uid, type="deposit", asset="STAR", amount=n, status="done"):
+        credit(uid, "STAR", n)
+        tg("sendMessage", chat_id=uid, text=f"✅ {n} ⭐ به کیف پولت اضافه شد.", reply_markup=PLAY_KB)
+
+
 # ───────────────────────── ربات ─────────────────────────
 PLAY_KB = {"inline_keyboard": [[{"text": "⛏️ ورود به اتاق ماینر", "web_app": {"url": BASE_URL}}]]}
 
@@ -435,7 +671,17 @@ def bot_hook():
         return "forbidden", 403
     upd = request.get_json(silent=True) or {}
     try:
+        if upd.get("callback_query"):
+            wd_decide(upd["callback_query"])
+            return "ok"
+        if upd.get("pre_checkout_query"):
+            q = upd["pre_checkout_query"]
+            tg("answerPreCheckoutQuery", pre_checkout_query_id=q["id"], ok=q.get("currency") == "XTR")
+            return "ok"
         msg = upd.get("message")
+        if msg and msg.get("successful_payment"):
+            stars_paid(msg)
+            return "ok"
         if not msg or msg.get("chat", {}).get("type") != "private":
             return "ok"
         chat_id = msg["chat"]["id"]
@@ -472,7 +718,7 @@ def setup_bot():
     if not BOT_USERNAME:
         BOT_USERNAME = (tg("getMe").get("result") or {}).get("username", "")
     r = tg("setWebhook", url=f"{BASE_URL}/bot", secret_token=BOT_SECRET,
-           allowed_updates=["message"], drop_pending_updates=True)
+           allowed_updates=["message", "callback_query", "pre_checkout_query"], drop_pending_updates=True)
     tg("setMyCommands", commands=[
         {"command": "start", "description": "ورود به بازی"},
         {"command": "invite", "description": "دعوت دوستان"},
@@ -484,6 +730,7 @@ def setup_bot():
 
 
 setup_bot()
+threading.Thread(target=_scan_loop, daemon=True).start()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))

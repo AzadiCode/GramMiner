@@ -157,9 +157,39 @@ a{color:var(--cyan)}
 .lb i{font-style:normal;width:22px;text-align:center;color:var(--gold);font-weight:800}
 .lb span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
+/* Wallet / Profile */
+#sheet.tall{max-height:88%}
+.in{width:100%;padding:12px 13px;margin:6px 0;border-radius:13px;border:1px solid var(--line);background:rgba(8,5,24,.6);color:var(--txt);font:inherit;font-size:15px;direction:ltr;text-align:left;user-select:text;-webkit-user-select:text;outline:0}
+.in:focus{border-color:var(--cyan)}
+.pf{display:flex;gap:12px;align-items:center;padding:13px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(139,92,246,.22),rgba(34,230,255,.06))}
+.av{width:64px;height:64px;border-radius:50%;flex:none;padding:3px;background:conic-gradient(#22e6ff,#8b5cf6,#ff4fa3,#22e6ff);overflow:hidden}
+.av img,.av span{width:100%;height:100%;border-radius:50%;object-fit:cover;display:grid;place-items:center;background:linear-gradient(135deg,#9be37f,#3ddc84);color:#06210f;font-weight:900;font-size:21px}
+.pi{min-width:0;flex:1}.pi>b{font-size:16px}.pi small{display:block;color:var(--mut);font-size:11.5px;margin:2px 0 7px}
+.bd{display:flex;flex-wrap:wrap;gap:5px}.bd span{font-size:11px;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.07)}
+.tot{display:flex;justify-content:space-between;align-items:baseline;margin:12px 2px 8px}.tot small{color:var(--mut);font-size:12px}.tot b{font-size:24px;font-weight:900;color:var(--cyan)}
+.wa{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.wa>div{padding:9px 4px;border-radius:15px;border:1px solid var(--line);background:rgba(255,255,255,.035);text-align:center;display:grid;gap:3px;justify-items:center}
+.wa b{font-size:14px}.wa small{font-size:10.5px;color:var(--mut)}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:14px 0 10px;padding:4px;border-radius:15px;background:rgba(8,5,24,.6);border:1px solid var(--line)}
+.seg button{border:0;background:none;padding:9px 0;border-radius:11px;font-size:12.5px;font-weight:700;color:var(--mut)}
+.seg button.on{background:linear-gradient(135deg,#8b5cf6,#5b3fd0);color:#fff;box-shadow:0 0 14px rgba(139,92,246,.5)}
+.chs{display:flex;gap:6px;margin:6px 0}
+.chs button{flex:1;padding:9px 0;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);font-weight:700;font-size:12.5px}
+.chs button.on{border-color:var(--c,var(--cyan));background:rgba(255,255,255,.1)}
+.inr{position:relative}.inr .in{padding-left:64px}
+.mx{position:absolute;left:8px;top:50%;transform:translateY(-50%);border:0;border-radius:9px;padding:6px 11px;background:rgba(139,92,246,.3);font-size:12px;font-weight:700}
+.cp2{display:flex;align-items:center;gap:8px;padding:9px 11px;margin:6px 0;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.035);flex-wrap:wrap}
+.cp2 small{flex:1 0 100%;color:var(--mut);font-size:11px}
+.cp2 code{flex:1;min-width:0;direction:ltr;text-align:left;font-size:11.5px;word-break:break-all;user-select:text;-webkit-user-select:text}
+.cp2 button{border:0;border-radius:9px;padding:6px 11px;background:rgba(139,92,246,.3);font-size:12px;font-weight:700}
+.btn.ton{background:linear-gradient(135deg,#38b6ff,#1f7be0);color:#fff}
+.btn.w2{width:100%;margin-top:8px;padding:11px}
+.flip{text-align:center}.flip button{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:50%;width:34px;height:34px;font-size:16px}
+.qt{padding:10px 4px;text-align:center;font-size:13px;color:var(--cyan)}
+
 /* Nav */
-nav{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:6px 6px;padding-bottom:max(8px,env(safe-area-inset-bottom));background:rgba(8,5,24,.92);border-top:1px solid var(--line);position:relative;z-index:3}
-nav button{background:none;border:0;padding:7px 2px 5px;border-radius:14px;font-size:11px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:3px;transition:background .2s,color .2s}
+nav{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;padding:6px 6px;padding-bottom:max(8px,env(safe-area-inset-bottom));background:rgba(8,5,24,.92);border-top:1px solid var(--line);position:relative;z-index:3}
+nav button{background:none;border:0;padding:7px 2px 5px;border-radius:14px;font-size:10.5px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:3px;transition:background .2s,color .2s}
 nav button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 nav button.on{color:var(--txt);background:rgba(139,92,246,.24)}
 nav button.on svg{stroke:var(--cyan);filter:drop-shadow(0 0 5px rgba(34,230,255,.7))}
@@ -207,6 +237,7 @@ nav button.on svg{stroke:var(--cyan);filter:drop-shadow(0 0 5px rgba(34,230,255,
     <button data-act="tab" data-tab="racks"><svg viewBox="0 0 24 24"><path d="M3 8h18M3 14h18M3 20h18"/><rect x="5" y="3" width="5" height="5" rx="1"/><rect x="13" y="9" width="5" height="5" rx="1"/></svg>قفسه</button>
     <button data-act="tab" data-tab="up"><svg viewBox="0 0 24 24"><path d="M13 2L5 14h6l-1 8 8-12h-6z"/></svg>ارتقا</button>
     <button data-act="tab" data-tab="hub"><svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 01-8 0V4z"/><path d="M8 6H4v1a3 3 0 003 3M16 6h4v1a3 3 0 01-3 3"/><path d="M12 13v4M8 21h8M9 17h6"/></svg>برترین‌ها</button>
+    <button data-act="tab" data-tab="wallet"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="3"/><path d="M3 10h18M16 15h2"/><path d="M6 6l9-3 1 3"/></svg>کیف پول</button>
   </nav>
 
   <div id="intro">
@@ -705,7 +736,7 @@ function fxLoop(ts){
 
 /* ---------------- Sheets ---------------- */
 const sheet={tab:null,slot:0};
-const TITLES={market:'بازار زنده',miners:'فروشگاه ماینر',racks:'قفسه‌ها',up:'ارتقا و دکوراسیون',hub:'برترین‌ها',tasks:'ماموریت‌ها',slot:'ماینر روی قفسه'};
+const TITLES={market:'بازار زنده',miners:'فروشگاه ماینر',racks:'قفسه‌ها',up:'ارتقا و دکوراسیون',hub:'برترین‌ها',wallet:'پروفایل و کیف پول',tasks:'ماموریت‌ها',slot:'ماینر روی قفسه'};
 
 const frate=(id,n)=>id==='STAR'?n.toFixed(7)+' ★/s':id==='TON'?n.toFixed(9)+' TON/s':'$'+n.toFixed(9)+'/s';
 function spark(h){
@@ -789,9 +820,9 @@ function sheetSlot(){
 
 function renderSheet(){
  const body=$('#sheetBody'),st=$('#sheet').scrollTop;
- body.innerHTML={market:sheetMarket,miners:sheetMiners,racks:sheetRacks,up:sheetUp,hub:sheetHub,tasks:sheetTasks,slot:sheetSlot}[sheet.tab]();
+ body.innerHTML={market:sheetMarket,miners:sheetMiners,racks:sheetRacks,up:sheetUp,hub:sheetHub,wallet:sheetWallet,tasks:sheetTasks,slot:sheetSlot}[sheet.tab]();$('#sheet').classList.toggle('tall',sheet.tab==='wallet');
  $('#sheetTitle').textContent=TITLES[sheet.tab];$('#sheet').scrollTop=st;updateLive();
- if(sheet.tab==='hub')loadTop();if(sheet.tab==='tasks')loadRef()}
+ if(sheet.tab==='hub')loadTop();if(sheet.tab==='tasks')loadRef();if(sheet.tab==='wallet'&&Date.now()-W.lt>8000)wLoad()}
 
 function updateLive(){
  if(!sheet.tab)return;
@@ -818,6 +849,92 @@ function openSheet(tab,i){
  setTimeout(resizeFx,60)}
 function closeSheet(){sheet.tab=null;$('#sheet').classList.remove('open');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('on'));setTimeout(resizeFx,60)}
 
+/* ---------------- پروفایل و کیف پول (واقعی) ---------------- */
+const WA=[{id:'TON',n:'TON',col:'#2aa9ff'},{id:'STAR',n:'Stars',col:'#ffc247'},{id:'USDT',n:'USDT',col:'#3ddc84'}];
+const W={sec:'dep',dep:'TON',wd:'TON',from:'TON',to:'USDT',gm:'TON',amt:'',addr:'',d:null,busy:false,lt:0};
+const TU=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)||{};
+const RANKS=[[0,'تازه‌کار'],[.5,'ماینر'],[3,'حرفه‌ای'],[15,'استاد'],[60,'امپراتور']];
+const wic=(a,s)=>coinIcon(a==='USDT'?'USD':a,s);
+const wnum=(a,v)=>a==='STAR'?Math.floor(v).toLocaleString('en-US'):(+v).toLocaleString('en-US',{maximumFractionDigits:a==='TON'?4:2});
+const WERR={balance:'موجودی کافی نیست',min:'کمتر از حداقل برداشته',address:'آدرس معتبر نیست',amount:'مقدار نامعتبره','too small':'مقدار خیلی کمه',disabled:'برداشت فعلاً فعال نیست',invoice:'ساخت فاکتور ناموفق بود',net:'اتصال به سرور برقرار نشد'};
+const wchips=(k,cur,list)=>`<div class="chs">${list.map(a=>`<button data-act="w-set" data-k="${k}" data-v="${a.id}" class="${cur===a.id?'on':''}" style="--c:${a.col}">${a.n}</button>`).join('')}</div>`;
+const winp=(ph,k,m)=>`<input class="in" data-w="${k}" inputmode="${m||'decimal'}" placeholder="${ph}" value="${W[k]}" autocomplete="off">`;
+const wmax=a=>`<button class="mx" data-act="w-max" data-a="${a}">همه</button>`;
+
+function wQuote(){
+ const d=W.d,v=+W.amt;if(!d||W.from===W.to)return 'دو ارز باید فرق کنن';if(!(v>0))return `کارمزد تبدیل ${(d.fee*100).toFixed(0)}٪`;
+ const o=v*d.usd[W.from]*(1-d.fee)/d.usd[W.to];return `≈ <b class="num">${wnum(W.to,o)} ${W.to==='STAR'?'⭐':W.to}</b> · کارمزد ${(d.fee*100).toFixed(0)}٪`}
+const wGmQuote=()=>`= <b class="num">${fc((+W.amt||0)*(W.d?W.d.usd[W.gm]:0))}</b> پول بازی`;
+
+function wSec(){
+ const d=W.d;if(!INIT)return '<p class="hint">کیف پول فقط داخل تلگرام فعاله.</p>';
+ if(!d)return '<p class="hint">در حال بارگذاری…</p>';
+ if(W.sec==='dep')return wchips('dep',W.dep,[WA[0],WA[1]])+(W.dep==='TON'
+  ?(d.ton_address?`<div class="cp2"><small>آدرس واریز</small><code>${d.ton_address}</code><button data-act="w-copy" data-v="${d.ton_address}">کپی</button></div>
+   <div class="cp2"><small>کامنت (حتماً بنویس)</small><code>${d.memo}</code><button data-act="w-copy" data-v="${d.memo}">کپی</button></div>
+   ${winp('مقدار TON','amt')}<button class="btn wide ton" data-act="w-ton">باز کردن در کیف پول</button><button class="btn ghost w2" data-act="w-refresh">بررسی واریز</button>
+   <p class="hint">بدون کامنت بالا، واریز به حساب تو نمی‌رسه. معمولاً چند دقیقه بعد اضافه می‌شه.</p>`:'<p class="hint">واریز TON هنوز فعال نشده.</p>')
+  :`<div class="chs">${[50,100,250,500].map(n=>`<button data-act="w-q" data-v="${n}">${n} ⭐</button>`).join('')}</div>${winp('تعداد Stars (حداقل '+d.min_stars+')','amt','numeric')}<button class="btn wide" data-act="w-stars">پرداخت با Stars</button>`);
+ if(W.sec==='wd'){const a=W.wd;return wchips('wd',a,WA)+`<div class="inr">${winp('مقدار','amt')}${wmax(a)}</div>`+(a==='STAR'?'':winp('آدرس کیف پول TON','addr','text'))
+  +`<p class="hint">موجودی: <span class="num">${wnum(a,d.bal[a])}</span> · حداقل <span class="num">${d.min_wd[a]}</span> · پرداخت بعد از تأیید ادمین${a==='STAR'?' (داخل تلگرام)':''}</p><button class="btn wide" data-act="w-wd" ${d.wd_on?'':'disabled'}>درخواست برداشت</button>`}
+ if(W.sec==='swap')return `<small class="mut">از</small>`+wchips('from',W.from,WA)+`<div class="inr">${winp('مقدار','amt')}${wmax(W.from)}</div><div class="flip"><button data-act="w-flip">⇅</button></div><small class="mut">به</small>`+wchips('to',W.to,WA)+`<div class="qt" id="qt">${wQuote()}</div><button class="btn wide" data-act="w-swap">تبدیل</button>`;
+ return wchips('gm',W.gm,WA)+`<div class="inr">${winp('مقدار','amt')}${wmax(W.gm)}</div><div class="qt" id="qt">${wGmQuote()}</div><p class="hint">پول بازی برای خرید ماینر، قفسه و ارتقاست و به کیف پول برنمی‌گرده.</p><button class="btn wide" data-act="w-gm">انتقال به بازی</button>`}
+
+function wHist(){
+ const h=W.d&&W.d.hist;if(!h||!h.length)return '';
+ const L={deposit:'واریز',withdraw:'برداشت',swap:'تبدیل',togame:'انتقال به بازی'},T={done:'✓ انجام شد',paid:'✓ پرداخت شد',pending:'⏳ در انتظار تأیید',rejected:'✕ رد شد · برگشت خورد'};
+ return `<div class="sec">تراکنش‌ها</div>`+h.slice(0,6).map(x=>`<div class="lb"><span>${L[x.type]||x.type}<em>${T[x.status]||''}</em></span><b class="num">${x.type==='deposit'?'+':'−'}${wnum(x.asset,x.amount)} ${x.asset==='STAR'?'⭐':x.asset}</b></div>`).join('')}
+
+function sheetWallet(){
+ const d=W.d,nm=((TU.first_name||'')+' '+(TU.last_name||'')).trim()||'بازیکن',un=TU.username?'@'+TU.username:'';
+ const ti=RANKS.filter(r=>worth()>=r[0]).pop()[1];
+ const av=TU.photo_url?`<img src="${TU.photo_url}" alt="" referrerpolicy="no-referrer">`:`<span>${nm.slice(0,2).toUpperCase()}</span>`;
+ const bal=d?d.bal:{TON:0,STAR:0,USDT:0},us=d?d.usd:{TON:0,STAR:0,USDT:1};
+ const tot=WA.reduce((s,a)=>s+bal[a.id]*us[a.id],0);
+ return `<div class="pf"><div class="av">${av}</div><div class="pi"><b>${nm}</b><small>${un?`<span class="num">${un}</span>`:''}${INIT?` ${un?'· ':''}ID <span class="num">${UID}</span>`:''}</small>
+  <div class="bd"><span>🏆 رتبه ${d&&d.rank?`<b class="num">#${d.rank}</b>`:'—'}</span><span>${ti}</span><span>⛏ <b class="num">${cnt()}</b> ماینر</span></div></div></div>
+  <div class="tot"><small>موجودی کیف پول</small><b class="num">${fc(tot)}</b></div>
+  <div class="wa">${WA.map(a=>`<div>${wic(a.id,22)}<b class="num">${wnum(a.id,bal[a.id])}</b><small>${a.n}</small></div>`).join('')}</div>
+  <div class="seg">${[['dep','واریز'],['wd','برداشت'],['swap','تبدیل'],['gm','بازی']].map(s=>`<button data-act="w-sec" data-v="${s[0]}" class="${W.sec===s[0]?'on':''}">${s[1]}</button>`).join('')}</div>
+  <div id="wsec">${wSec()}</div>${wHist()}`}
+
+async function wLoad(){
+ if(!INIT)return;W.lt=Date.now();
+ try{W.d=await api('/api/wallet')}catch(e){toast('کیف پول در دسترس نیست')}
+ if(sheet.tab==='wallet'&&!(document.activeElement&&document.activeElement.classList.contains('in')))renderSheet()}
+async function wpost(path,body){
+ if(W.busy)return null;W.busy=true;
+ try{const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-Init-Data':INIT},body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({}));return r.ok?j:{error:j.error||'net',min:j.min}}
+ catch(e){return {error:'net'}}finally{W.busy=false}}
+const wfail=r=>toast(WERR[r.error]||'خطا، دوباره تلاش کن');
+const wdone=m=>{W.amt='';hapOk();toast(m);wLoad()};
+const wpoll=()=>[4000,15000,40000].forEach(t=>setTimeout(wLoad,t));
+
+async function wAct(a,t){
+ const v=t.dataset.v,d=W.d;
+ if(a==='w-sec'){W.sec=v;W.amt='';renderSheet()}
+ else if(a==='w-set'){const k=t.dataset.k;W[k]=v;W.amt='';
+  if(k==='from'&&v===W.to)W.to=WA.find(x=>x.id!==v).id;if(k==='to'&&v===W.from)W.from=WA.find(x=>x.id!==v).id;renderSheet()}
+ else if(a==='w-flip'){[W.from,W.to]=[W.to,W.from];renderSheet()}
+ else if(a==='w-q'){W.amt=v;renderSheet()}
+ else if(a==='w-max'){if(!d)return;const x=t.dataset.a;W.amt=String(x==='STAR'?Math.floor(d.bal[x]):d.bal[x]);renderSheet()}
+ else if(a==='w-copy'){try{navigator.clipboard.writeText(v).then(()=>toast('کپی شد ✓'),()=>toast(v))}catch(e){toast(v)}}
+ else if(a==='w-refresh'){await wLoad();toast('موجودی به‌روز شد')}
+ else if(a==='w-ton'){if(!d||!(+W.amt>0))return toast('مقدار TON رو وارد کن');
+  const u=`https://app.tonkeeper.com/transfer/${d.ton_address}?amount=${Math.round(+W.amt*1e9)}&text=${d.memo}`;
+  try{tg.openLink(u)}catch(e){window.open(u,'_blank')}wpoll()}
+ else if(a==='w-stars'){const n=Math.floor(+W.amt);if(!d||n<d.min_stars)return toast('حداقل '+(d?d.min_stars:10)+' استارز');
+  const r=await wpost('/api/wallet/stars',{amount:n});if(!r||r.error)return r&&wfail(r);
+  try{tg.openInvoice(r.link,st=>{if(st==='paid'){W.amt='';toast('پرداخت انجام شد ⭐');wpoll()}})}catch(e){toast('فقط داخل تلگرام')}}
+ else if(a==='w-wd'){const r=await wpost('/api/wallet/withdraw',{asset:W.wd,amount:+W.amt,address:W.addr});if(!r)return;r.error?wfail(r):wdone('درخواست برداشت ثبت شد ⏳')}
+ else if(a==='w-swap'){if(W.from===W.to)return;const r=await wpost('/api/wallet/swap',{from:W.from,to:W.to,amount:+W.amt});if(!r)return;r.error?wfail(r):wdone('تبدیل انجام شد ✓')}
+ else if(a==='w-gm'){const r=await wpost('/api/wallet/togame',{asset:W.gm,amount:+W.amt});if(!r)return;if(r.error)return wfail(r);
+  try{const s=await api('/api/state'),b=+s.bonus_usd||0;if(b>0){S.usd+=b;flyBal('+'+fc(b));bumpBal();renderHUD();save(true)}}catch(e){}
+  wdone('به پول بازی اضافه شد 🎮')}
+}
+document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.w;if(!k)return;W[k]=e.target.value;const q=$('#qt');if(q)q.innerHTML=W.sec==='swap'?wQuote():wGmQuote()});
+
 /* ---------------- Actions ---------------- */
 const LINES_MIKO=['دارم کد می‌نویسم، نزن! 😤','ماینرها دارن کار می‌کنن، منم کار می‌کنم!','قلقلکم نده! 😆','من میکوام، رئیس اتاق ماینر! ✨'];
 const LINES_BUY=['ماینر جدید! صدای فن‌هاش عاشقانه‌ست 😍','این یکی خیلی قویه، قفسه داره می‌درخشه!','سود داره بالا میره، حس خوبیه ✨'];
@@ -826,6 +943,7 @@ function act(t,e){
  const a=t.dataset.act,id=t.dataset.id;
  if(a==='tab')openSheet(t.dataset.tab);
  else if(a==='close')closeSheet();
+ else if(a.startsWith('w-'))wAct(a,t);
  else if(a==='sel'){S.sel=id;if(sheet.tab==='market')renderSheet();renderHUD();drawChart();hap('light')}
  else if(a==='sell'){const v=S.wallet[id]*price(id);if(v<=0)return toast('چیزی برای فروش نیست');S.usd+=v;S.sold+=v;S.wallet[id]=0;toast('فروش '+coin(id).short+' · +'+f$(v));setMood('happy');hap('medium');afterAction()}
  else if(a==='sellall'){let v=0;COINS.forEach(c=>{v+=S.wallet[c.id]*price(c.id);S.wallet[c.id]=0});if(v<=0)return toast('چیزی برای فروش نیست');S.usd+=v;S.sold+=v;toast('فروش همه · +'+f$(v));setMood('happy');hap('medium');afterAction()}
