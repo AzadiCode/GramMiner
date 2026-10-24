@@ -54,7 +54,7 @@ TON_ADDRESS = os.environ.get("TON_ADDRESS", "").strip()       # آدرس دری�
 TONCENTER_KEY = os.environ.get("TONCENTER_KEY", "").strip()   # اختیاری؛ کلید toncenter برای محدودیت کمتر
 ADMIN_ID = int(os.environ.get("ADMIN_ID", "0") or 0)          # آیدی عددی ادمین برای تأیید برداشت‌ها
 SWAP_FEE = float(os.environ.get("SWAP_FEE", "0.02"))          # کارمزد تبدیل
-MIN_WD = {"TON": float(os.environ.get("MIN_WD_TON", "0.5")), "STAR": 100.0, "USDT": float(os.environ.get("MIN_WD_USDT", "1"))}
+MIN_WD = {"TON": float(os.environ.get("MIN_WD_TON", "0.5")), "STAR": 200.0, "USDT": float(os.environ.get("MIN_WD_USDT", "10"))}
 MIN_STARS_DEP = 10
 ASSETS = ("TON", "STAR", "USDT")
 DEC = {"TON": 9, "STAR": 0, "USDT": 6}
@@ -191,9 +191,18 @@ def set_cfg(upd):
     return clean
 
 
+WITHDRAW_MIN_USD = 10.0  # حداقل ارزش دلاری برداشت برای همه‌ی دارایی‌ها
+
 def min_wd():
+    """حداقل برداشت هر دارایی؛ هم تنظیم ادمین رعایت می‌شود و هم ارزش آن حداقل ۱۰ دلار است."""
     c = cfg()
-    return {a: c["min_wd_" + a] for a in ASSETS}
+    out = {}
+    for a in ASSETS:
+        price = asset_usd(a)
+        configured = float(c.get("min_wd_" + a, 0) or 0)
+        usd_floor = math.ceil((WITHDRAW_MIN_USD / price) * (10 ** DEC[a])) / (10 ** DEC[a]) if price > 0 else configured
+        out[a] = max(configured, usd_floor)
+    return out
 
 
 def alog(action, **kw):
