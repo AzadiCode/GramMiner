@@ -3,47 +3,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#06040e">
+<meta name="theme-color" content="#0B0A14">
 <title>اتاق ماینر میکو</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
 <style>
-:root{--bg:#06040e;--p1:#120c2e;--p2:#1b1245;--line:rgba(167,139,250,.24);--neon:#a78bfa;--cyan:#22e6ff;--pink:#ff4fa3;--green:#3ddc84;--gold:#ffc247;--ton:#2aa9ff;--txt:#f1ecff;--mut:#9a90c8}
+:root{
+/* ═══════════ DESIGN BRIEF «شب مایکو» — فاز ۱ ═══════════
+   مود: اتاق زیرشیبانی گیمر در شب — گرم و شخصی، نه محیط سرد دیجیتال.
+   نور: منبع اصلی نور مانیتور + تاکیدهای رنگ ارز؛ سایه‌ی تماس زیر هر آبجکت.
+   متریال: چوب/MDF گرم (میز و قفسه) · فلز مات (ماینر) · پلاستیک (دسکتاپ).
+   پالت: شبِ خنثیِ گرم + کرم؛ اکشن برند = مسی؛ هر ارز یک رنگ ثابت در همه‌جا.
+   تایپ: Vazirmatn (۹۰۰/۸۰۰ تیترها) + اعداد همیشه tabular و فشرده.
+   آیکون: گرید ۲۴ · خط ۱٫۸ · گوشه گرد · برخی دو‌رنگ؛ ایموجی ممنوع.
+   حرکت: --e-out ورود/خروج · --e-spring لمس؛ ۱۸۰ تا ۳۲۰ میلی‌ثانیه. */
+--bg0:#0B0A14;--bg1:#131022;--bg2:#1B1730;--bg3:#252040;
+--txt:#F4EFE6;--mut:#A79FC4;--mut2:#7E76A0;
+--line:rgba(244,239,230,.13);--line2:rgba(244,239,230,.22);
+--brand:#E8913A;--brand2:#F5B356;--on-brand:#241304;
+--c-star:#FFC247;--c-star-deep:#B97E14;
+--c-ton:#3AA8F0;--c-ton-deep:#1E6FB0;
+--c-usd:#3ED598;--c-usd-deep:#1D9E66;
+--up:#4CD97B;--down:#FF5C7A;--warn:#FFC247;
+--card:rgba(244,239,230,.045);--glass:rgba(19,16,34,.72);
+--e-out:cubic-bezier(.2,.8,.2,1);--e-spring:cubic-bezier(.34,1.45,.4,1);
+--t-fast:180ms;--t-med:240ms;--t-slow:320ms;
+--r-sm:10px;--r-md:14px;--r-lg:20px;--r-xl:26px;
+--sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:24px;
+--z-nav:3;--z-scrim:9;--z-sheet:10;--z-toast:12;--z-float:30;
+/* legacy (فاز ۲ به‌تدریج حذف می‌شن) */
+--bg:var(--bg0);--p1:var(--bg1);--p2:var(--bg2);--neon:#8F7BD8;--cyan:#6FD3F2;--pink:var(--down);--green:var(--up);--gold:var(--c-star);--ton:var(--c-ton)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);font-family:"Vazirmatn","Vazir","Tahoma","Segoe UI",system-ui,sans-serif;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation}
 button{font-family:inherit;color:inherit}
 a{color:var(--cyan)}
-.num{direction:ltr;unicode-bidi:isolate;display:inline-block}
+.num{direction:ltr;unicode-bidi:isolate;display:inline-block;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 .mut{color:var(--mut)}
-#app{height:100%;display:flex;flex-direction:column;max-width:520px;margin:0 auto;position:relative;background:radial-gradient(120% 60% at 80% 18%,#2a1566 0%,#150d34 46%,#06040e 100%)}
+#app{height:100%;display:flex;flex-direction:column;max-width:520px;margin:0 auto;position:relative;background:radial-gradient(120% 60% at 80% 14%,#2A2148 0%,#16122B 48%,#0B0A14 100%)}
 
 /* HUD */
-#hud{padding:max(8px,env(safe-area-inset-top)) 12px 2px;display:grid;gap:6px;position:relative;z-index:3}
-#hud .top{display:flex;align-items:flex-end;gap:10px}
+#hud{padding:max(8px,env(safe-area-inset-top)) 12px 8px;display:grid;gap:7px;position:relative;z-index:var(--z-nav)}
+#hud .top{display:flex;align-items:flex-end;gap:12px}
 #hud .box{min-width:0}
 #hud .box.g{flex:1}
-#hud small{display:block;font-size:10px;color:var(--mut);line-height:1.4}
-#hud b{font-size:17px;font-weight:800;letter-spacing:.1px;line-height:1.25}
-#bal{color:var(--gold);text-shadow:0 0 16px rgba(255,194,71,.4)}
-#inc{font-size:12px!important;font-weight:700!important}
-#bal.bump{animation:bump .9s ease-out}
+#hud small{display:block;font-size:10px;color:var(--mut);line-height:1.4;margin-bottom:1px}
+#hud b{font-size:20px;font-weight:900;letter-spacing:.2px;line-height:1.25}
+#bal{color:var(--c-star);text-shadow:0 0 16px rgba(255,194,71,.35);cursor:pointer}
+#inc{font-size:13px!important;font-weight:800!important}
+#bal.bump{animation:bump .9s var(--e-out)}
 @keyframes bump{0%{transform:scale(1)}25%{transform:scale(1.12);color:#7dffb0;text-shadow:0 0 18px rgba(77,255,176,.8)}100%{transform:scale(1)}}
-.flb{position:fixed;z-index:30;font-weight:800;font-size:14px;color:#7dffb0;text-shadow:0 0 10px rgba(77,255,176,.7);pointer-events:none;animation:riseb 1.3s ease-out forwards;direction:ltr}
+.flb{position:fixed;z-index:var(--z-float);font-weight:800;font-size:14px;color:#7dffb0;text-shadow:0 0 10px rgba(77,255,176,.7);pointer-events:none;animation:riseb 1.3s ease-out forwards;direction:ltr}
 @keyframes riseb{from{transform:translateY(0);opacity:1}to{transform:translateY(-26px);opacity:0}}
-#inc.pos{color:var(--green)}#inc.neg{color:var(--pink)}
+#inc.pos{color:var(--up)}#inc.neg{color:var(--down)}
 #tags{display:flex;gap:6px;align-items:center;margin-inline-start:auto}
-.tag{font-size:9.5px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);background:rgba(20,14,52,.7);white-space:nowrap}
-.tag.on{color:var(--green);border-color:rgba(61,220,132,.5)}
-.tag.off{color:var(--gold);border-color:rgba(255,194,71,.5)}
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);background:var(--glass);white-space:nowrap}
+.tag.on{color:var(--up);border-color:rgba(76,217,123,.45)}
+.tag.on:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--up);box-shadow:0 0 8px var(--up);animation:pls 2.2s ease-in-out infinite}
+.tag.off{color:var(--warn);border-color:rgba(255,194,71,.45)}
+.tag.off:before{content:"";width:6px;height:6px;border-radius:50%;border:1.5px solid var(--warn)}
 .tag.bst{color:#1a1004;background:linear-gradient(135deg,#ffd166,#ff9f43);border:0;font-weight:800;animation:pls 1s ease-in-out infinite}
+.tag .ic{width:11px;height:11px}
 .tag.hide{display:none}
 @keyframes pls{50%{transform:scale(1.08)}}
-.chips{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
-.chip{display:flex;align-items:center;gap:6px;padding:4px 7px;border-radius:11px;border:1px solid rgba(167,139,250,.16);background:linear-gradient(135deg,rgba(30,22,72,.7),rgba(14,10,38,.7));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer;transition:border-color .2s,box-shadow .2s,transform .12s;min-width:0}
+.chips{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.chip{display:flex;align-items:center;gap:6px;min-height:44px;padding:4px 8px;border-radius:var(--r-md);border:1px solid var(--line);background:linear-gradient(135deg,rgba(37,32,64,.75),rgba(19,16,34,.75));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer;transition:border-color var(--t-fast),box-shadow var(--t-fast),transform .12s;min-width:0}
 .chip:active{transform:scale(.97)}
-.chip.sel{border-color:var(--c);box-shadow:0 0 10px var(--cg)}
+.chip.sel{border-color:var(--c);box-shadow:0 0 12px var(--cg)}
+.chip.flash{animation:chipf .55s var(--e-out)}
+@keyframes chipf{35%{transform:scale(1.06);box-shadow:0 0 14px var(--cg)}}
 .chip>div{min-width:0}
-#hud .chip b{font-size:11px;font-weight:700;letter-spacing:0}
-#hud .chip small{font-size:9px}
+#hud .chip b{font-size:11.5px;font-weight:800;letter-spacing:0}
+#hud .chip small{font-size:9px;margin:0}
 .chip b{display:block;font-size:12.5px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .chip small{display:block;font-size:10px;color:var(--mut)}
 .ci{flex:none}
@@ -69,15 +98,22 @@ a{color:var(--cyan)}
 #fl{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .fl{position:absolute;font-weight:800;font-size:15px;animation:rise .95s ease-out forwards;text-shadow:0 0 8px currentColor;white-space:nowrap}
 @keyframes rise{from{transform:translate(-50%,0);opacity:1}to{transform:translate(-50%,-52px);opacity:0}}
-#taskBtn{position:absolute;top:8px;left:10px;z-index:3;width:36px;height:36px;border-radius:12px;border:1px solid var(--line);background:rgba(14,10,38,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:grid;place-items:center;padding:0;cursor:pointer}
-#taskBtn svg{width:19px;height:19px;fill:none;stroke:var(--cyan);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#taskBtn{position:absolute;top:10px;left:10px;z-index:var(--z-nav);width:44px;height:44px;border-radius:var(--r-md);border:1px solid var(--line2);background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:grid;place-items:center;padding:0;cursor:pointer;color:var(--cyan)}
+#taskBtn .ic{width:20px;height:20px}
 #taskBtn:active{transform:scale(.94)}
-#taskBtn .dot{position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:#ff4f6a;border:2px solid #120c2e;box-shadow:0 0 8px #ff4f6a;animation:pls 1.2s ease-in-out infinite}
+#taskBtn .dot{position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:#ff4f6a;border:2px solid var(--bg1);box-shadow:0 0 8px #ff4f6a;animation:pls 1.2s ease-in-out infinite}
 #taskBtn .dot.hide{display:none}
-#energy{position:absolute;top:8px;right:10px;z-index:3;display:flex;align-items:center;gap:5px;padding:3px 8px;height:26px;margin-top:5px;border-radius:99px;border:1px solid var(--line);background:rgba(10,8,28,.8);font-size:10.5px;pointer-events:none}#energy i{display:block;width:44px;height:6px;border-radius:9px;background:rgba(255,255,255,.12);overflow:hidden}#energy b{display:block;height:100%;width:100%;background:linear-gradient(90deg,#22e6ff,#ffd166);border-radius:9px}
-#toast{position:absolute;top:50px;left:50%;transform:translateX(-50%);background:rgba(10,8,28,.9);border:1px solid var(--line);padding:7px 14px;border-radius:99px;font-size:13px;white-space:nowrap;opacity:0;transition:opacity .25s;pointer-events:none;max-width:94%;overflow:hidden;text-overflow:ellipsis;z-index:4}
+#energy{position:absolute;top:10px;right:10px;z-index:var(--z-nav);display:flex;align-items:center;gap:6px;height:32px;padding:0 10px;border-radius:99px;border:1px solid var(--line2);background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:11px;pointer-events:none;color:var(--txt)}
+#energy .ic{width:15px;height:15px;color:var(--warn)}
+#energy i{display:block;width:52px;height:7px;border-radius:9px;background:rgba(244,239,230,.14);overflow:hidden}
+#energy b{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--c-ton),var(--c-star));border-radius:9px;transition:width .4s var(--e-out)}
+#energy.empty{border-color:rgba(255,92,122,.6);animation:emptyP 1.2s ease-in-out infinite}
+#energy.empty .ic{color:var(--down)}
+@keyframes emptyP{50%{box-shadow:0 0 12px rgba(255,92,122,.55)}}
+#toast{position:absolute;top:58px;left:50%;transform:translateX(-50%);background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line2);padding:8px 15px;border-radius:99px;font-size:13px;white-space:nowrap;opacity:0;transition:opacity .25s;pointer-events:none;max-width:92%;overflow:hidden;text-overflow:ellipsis;z-index:var(--z-toast)}
 #toast.on{opacity:1}
-#boost{position:absolute;z-index:4;border:0;border-radius:99px;padding:9px 15px;font-weight:800;font-size:13px;color:#1a1004;background:linear-gradient(135deg,#ffe08a,#ff9f43);box-shadow:0 0 22px rgba(255,170,60,.7);animation:pls 1s ease-in-out infinite;transition:opacity .3s}
+#boost{position:absolute;z-index:4;border:0;border-radius:99px;padding:9px 15px;display:flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:#1a1004;background:linear-gradient(135deg,#ffe08a,#ff9f43);box-shadow:0 0 22px rgba(255,170,60,.7);animation:pls 1s ease-in-out infinite;transition:opacity .3s}
+#boost .ic{width:15px;height:15px}
 #boost.hide{opacity:0;pointer-events:none}
 
 /* Dialogue */
@@ -96,14 +132,22 @@ a{color:var(--cyan)}
 @keyframes mkhop{50%{transform:translateY(-3.5px)}}
 @keyframes bob{50%{transform:translateY(-2px)}}
 
-/* Sheet */
-#sheet{display:none;max-height:50%;overflow:auto;overscroll-behavior:contain;background:linear-gradient(180deg,rgba(32,22,78,.97),rgba(16,11,42,.98));border-top:1px solid var(--line);border-radius:24px 24px 0 0;padding:0 14px 14px;box-shadow:0 -12px 34px rgba(0,0,0,.5);position:relative;z-index:3}
-#sheet.open{display:block;animation:up .25s ease}
-@keyframes up{from{transform:translateY(40px);opacity:0}}
-#sheetHead{position:sticky;top:0;background:#1f154f;display:flex;justify-content:space-between;align-items:center;padding:10px 0 8px;z-index:2}
-#sheetHead:before{content:"";position:absolute;top:5px;left:50%;width:38px;height:4px;margin-left:-19px;border-radius:9px;background:rgba(255,255,255,.18)}
-#sheetHead h2{margin:6px 0 0;font-size:16px}
-#sheetHead button{background:none;border:0;font-size:20px;color:var(--mut);padding:6px 8px;margin-top:4px}
+/* Sheet (فاز ۲) — اورلی با سه snap: ۴۰٪ / ۷۵٪ / ۱۰۰٪ · درگ از هدر · scrim پشت صحنه */
+#scrim{position:absolute;left:0;right:0;top:var(--hud-h,90px);bottom:calc(var(--nav-h,64px) + var(--kb,0px));background:rgba(7,6,16,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);opacity:0;pointer-events:none;transition:opacity .3s;z-index:var(--z-scrim)}
+#app.sopen #scrim{opacity:1;pointer-events:auto}
+#sheet{position:absolute;left:0;right:0;bottom:calc(var(--nav-h,64px) + var(--kb,0px));height:calc(var(--area-h,60vh) - var(--kb,0px));display:flex;flex-direction:column;background:linear-gradient(180deg,var(--bg2) 0%,var(--bg1) 62%,var(--bg1) 100%);border:1px solid var(--line2);border-bottom:0;border-radius:var(--r-xl) var(--r-xl) 0 0;box-shadow:0 -18px 44px rgba(0,0,0,.55);transform:translateY(110%);transition:transform var(--t-slow) var(--e-out);z-index:var(--z-sheet);visibility:hidden}
+#sheet.open{visibility:visible}
+#sheet.drag{transition:none}
+#sheetHead{flex:none;padding:10px 14px 6px;display:grid;gap:9px;touch-action:none;cursor:grab}
+#sheetHead:active{cursor:grabbing}
+#sheetHead .grab{width:44px;height:5px;border-radius:9px;background:rgba(244,239,230,.25);margin:0 auto}
+#sheetHead .hrow{display:flex;justify-content:space-between;align-items:center}
+#sheetHead h2{margin:0;font-size:16px;font-weight:800}
+#sheetHead button{background:none;border:0;color:var(--mut);padding:6px;border-radius:10px;display:grid;place-items:center;cursor:pointer}
+#sheetHead button:active{background:rgba(244,239,230,.08)}
+#sheetHead button .ic{width:18px;height:18px}
+#sheetBody{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:0 14px 16px;scrollbar-width:none}
+#sheetBody::-webkit-scrollbar{display:none}
 .hint{font-size:12px;color:var(--mut);margin:0 0 10px;line-height:1.8}
 .sec{font-size:13px;margin:14px 0 8px;color:var(--cyan)}
 .row{display:flex;align-items:center;gap:10px;padding:10px;margin-bottom:8px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.035)}
@@ -158,7 +202,6 @@ a{color:var(--cyan)}
 .lb span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* Wallet / Profile */
-#sheet.tall{max-height:93%}
 .in{width:100%;padding:12px 13px;margin:6px 0;border-radius:13px;border:1px solid var(--line);background:rgba(8,5,24,.6);color:var(--txt);font:inherit;font-size:15px;direction:ltr;text-align:left;user-select:text;-webkit-user-select:text;outline:0}
 .in:focus{border-color:var(--cyan)}
 .in.fa{direction:rtl;text-align:right}
@@ -272,12 +315,37 @@ textarea.in{min-height:120px;resize:none;line-height:1.9;display:block}
 .fg>div{padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.04);min-width:0}
 .fg small{display:block;font-size:10.5px;color:var(--mut)}.fg b{font-size:12.5px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* Nav */
-nav{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;padding:6px 6px;padding-bottom:max(8px,env(safe-area-inset-bottom));background:rgba(8,5,24,.92);border-top:1px solid var(--line);position:relative;z-index:3}
-nav button{background:none;border:0;padding:7px 2px 5px;border-radius:14px;font-size:10.5px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:3px;transition:background .2s,color .2s}
-nav button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-nav button.on{color:var(--txt);background:rgba(139,92,246,.24)}
-nav button.on svg{stroke:var(--cyan);filter:drop-shadow(0 0 5px rgba(34,230,255,.7))}
+/* Nav (فاز ۲) — آیکون سفارشی + حالت فعال برجسته + بج اعلان + safe-area */
+nav{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;padding:6px 6px;padding-bottom:max(10px,env(safe-area-inset-bottom));background:rgba(11,10,20,.94);border-top:1px solid var(--line);position:relative;z-index:var(--z-nav)}
+nav button{position:relative;background:none;border:0;min-height:50px;padding:6px 2px 4px;border-radius:var(--r-md);font-size:10.5px;font-weight:700;color:var(--mut);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;transition:color var(--t-fast),background var(--t-fast)}
+nav button .ic{width:23px;height:23px}
+nav button.on{color:var(--txt);background:rgba(232,145,58,.13)}
+nav button.on .ic{color:var(--brand2)}
+.nbadge{position:absolute;top:5px;right:calc(50% - 16px);width:8px;height:8px;border-radius:50%;background:var(--brand);box-shadow:0 0 6px var(--brand)}
+.nbadge.hide{display:none}
+
+/* Icon System (فاز ۱) — آیکون‌های اسپرایت؛ رنگ از currentColor */
+.ic{width:22px;height:22px;flex:none;display:block}
+.ic.s{width:16px;height:16px}
+.ic.l{width:28px;height:28px}
+#sheetHead button .ic{width:17px;height:17px;margin:0 auto}
+
+/* Style Guide (فاز ۱) — صفحه‌ی مرجع داخلی */
+.sg-pal{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sg-sw{display:grid;gap:4px;padding:8px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--card)}
+.sg-sw i{height:30px;border-radius:8px;border:1px solid rgba(244,239,230,.14)}
+.sg-sw b{font-size:11px}
+.sg-sw small{font-size:9px;color:var(--mut);direction:ltr;text-align:left;font-family:ui-monospace,Menlo,Consolas,monospace}
+.sg-lg{display:flex;align-items:center;justify-content:space-around;gap:10px;padding:16px 8px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--card)}
+.sg-mini{display:grid;gap:6px;place-items:center}
+.sg-ic{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.sg-ic>div{display:grid;gap:5px;place-items:center;padding:10px 2px 8px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--card)}
+.sg-ic small{font-size:8.5px;color:var(--mut)}
+.sg-type .t1{font-size:23px;font-weight:900;display:block;line-height:1.5}
+.sg-type .t2{font-size:16px;font-weight:800;display:block;margin-top:8px;line-height:1.6}
+.sg-type small{display:block;color:var(--mut);font-size:10.5px}
+.sg-type p{font-size:13px;line-height:1.9;margin:8px 0 0}
+.sg-row{display:flex;gap:10px;align-items:center;margin:10px 0 4px}
 
 /* Intro */
 #intro{position:absolute;inset:0;z-index:20;display:grid;place-items:center;padding:20px;background:radial-gradient(100% 70% at 50% 30%,#3a1c85 0%,#0b0724 70%)}
@@ -290,12 +358,82 @@ nav button.on svg{stroke:var(--cyan);filter:drop-shadow(0 0 5px rgba(34,230,255,
 </style>
 </head>
 <body>
+<!-- ═══ Icon System + لوگوی ارزها (فاز ۱) — اسپرایت SVG · گرید ۲۴ · خط ۱٫۸ ═══ -->
+<svg id="sprite" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+ <!-- لوگوهای ارز: سکه/نشان سه‌بعدی‌نما با bevel و درخشش لبه -->
+ <symbol id="lg-star" viewBox="0 0 24 24">
+  <defs>
+   <linearGradient id="lgStA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE8A3"/><stop offset=".5" stop-color="#FFC94D"/><stop offset="1" stop-color="#C67F12"/></linearGradient>
+   <linearGradient id="lgStB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF7DD"/><stop offset="1" stop-color="#FFD35E"/></linearGradient>
+  </defs>
+  <ellipse cx="12" cy="21.4" rx="6.4" ry="1.5" fill="#000" opacity=".25"/>
+  <polygon points="12,4.3 14,9.7 19.8,10 15.3,13.6 16.8,19.1 12,16 7.2,19.1 8.7,13.6 4.2,10 10,9.7" fill="url(#lgStA)" stroke="#8A5A0E" stroke-width=".55" stroke-linejoin="round"/>
+  <polygon points="12,7 13.4,10.6 17.3,10.8 14.2,13.2 15.3,17 12,14.9 8.7,17 9.8,13.2 6.7,10.8 10.7,10.6" fill="url(#lgStB)" opacity=".92"/>
+  <path d="M9.4 5.9L12 4.3l2.6 1.6" fill="none" stroke="#FFF3C9" stroke-width=".75" stroke-linecap="round" opacity=".85"/>
+ </symbol>
+ <symbol id="lg-ton" viewBox="0 0 24 24">
+  <defs>
+   <linearGradient id="lgTnA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A6D6F8"/><stop offset=".55" stop-color="#3E9BE8"/><stop offset="1" stop-color="#1D6DB4"/></linearGradient>
+   <linearGradient id="lgTnB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0D3B60"/><stop offset="1" stop-color="#14507F"/></linearGradient>
+   <linearGradient id="lgTnC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EAF7FF"/><stop offset=".55" stop-color="#9FD8F8"/><stop offset="1" stop-color="#5FB0EA"/></linearGradient>
+  </defs>
+  <ellipse cx="12" cy="21.4" rx="6.8" ry="1.5" fill="#000" opacity=".25"/>
+  <circle cx="12" cy="11.6" r="9.4" fill="url(#lgTnA)" stroke="#0E4E82" stroke-width=".65"/>
+  <circle cx="12" cy="11.6" r="7.4" fill="url(#lgTnB)" stroke="#8FC6EE" stroke-width=".45" stroke-dasharray="1 1.3" stroke-opacity=".6"/>
+  <polygon points="7.6,8.3 16.4,8.3 12,16.8" fill="url(#lgTnC)" stroke="#EAF7FF" stroke-width=".5" stroke-linejoin="round"/>
+  <path d="M12 8.3v8.5" fill="none" stroke="#0E4E82" stroke-width=".5" opacity=".6"/>
+  <path d="M5.4 6.9A9.4 9.4 0 0112 2.4" fill="none" stroke="#EAF7FF" stroke-width=".9" stroke-linecap="round" opacity=".75"/>
+ </symbol>
+ <symbol id="lg-usd" viewBox="0 0 24 24">
+  <defs>
+   <linearGradient id="lgUsA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A9F2C8"/><stop offset=".55" stop-color="#34C47E"/><stop offset="1" stop-color="#178A55"/></linearGradient>
+   <linearGradient id="lgUsB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B3B2A"/><stop offset="1" stop-color="#116B47"/></linearGradient>
+  </defs>
+  <ellipse cx="12" cy="21.4" rx="6.8" ry="1.5" fill="#000" opacity=".25"/>
+  <circle cx="12" cy="11.6" r="9.4" fill="url(#lgUsA)" stroke="#0E5A38" stroke-width=".65"/>
+  <circle cx="12" cy="11.6" r="7.4" fill="url(#lgUsB)" stroke="#7FE3AE" stroke-width=".45" stroke-dasharray="1 1.3" stroke-opacity=".6"/>
+  <g fill="none" stroke="#BFF5D6" stroke-linecap="round">
+   <path d="M14.5 8.9c-.6-1.2-5.2-1.3-5.3.6-.1 2.1 5.5 1.2 5.4 3.6-.1 2.1-5.1 2.1-5.6-.3" stroke-width="1.6"/>
+   <path d="M12 6.3v10.6" stroke-width="1.5"/>
+  </g>
+  <path d="M5.4 6.9A9.4 9.4 0 0112 2.4" fill="none" stroke="#E8FFF2" stroke-width=".9" stroke-linecap="round" opacity=".75"/>
+ </symbol>
+ <!-- آیکون‌های خطی -->
+ <symbol id="i-market" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.8v2.4M7 17.8v2.4M17 5.8v2M17 16.2v2"/><rect x="4.4" y="6.2" width="5.2" height="11.6" rx="1.4"/><rect x="14.4" y="7.8" width="5.2" height="8.4" rx="1.4"/></g></symbol>
+ <symbol id="i-miners" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2.6"/><rect x="9.6" y="9.6" width="4.8" height="4.8" rx="1.1"/><path d="M9 6V3.4M15 6V3.4M9 20.6V18M15 20.6V18M6 9H3.4M6 15H3.4M20.6 9H18M20.6 15H18"/></g></symbol>
+ <symbol id="i-racks" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5v15M20 4.5v15M3.4 9h17.2M3.4 15.5h17.2"/><rect x="6.5" y="4.9" width="6" height="4.1" rx="1"/><rect x="13" y="11.4" width="4.5" height="4.1" rx="1"/></g></symbol>
+ <symbol id="i-up" viewBox="0 0 24 24"><g stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13.4 2.6L5.2 13.6h5.2l-1.8 7.8 8.2-11h-5.2z" fill="currentColor" fill-opacity=".16"/></g></symbol>
+ <symbol id="i-hub" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.8h8v5.2a4 4 0 01-8 0z"/><path d="M8 5H5.2v1.4a3.4 3.4 0 003.4 3.4M16 5h2.8v1.4a3.4 3.4 0 01-3.4 3.4"/><path d="M12 13v3.4M9 20.2h6M10 16.4h4"/></g></symbol>
+ <symbol id="i-wallet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 9V7.6A2.6 2.6 0 016.1 5h10.8"/><rect x="3.5" y="9" width="17" height="9.6" rx="2.6"/><path d="M15.6 13.8h2.2" stroke-width="2.2"/></g></symbol>
+ <symbol id="i-tasks" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4.4" width="14" height="16.6" rx="2.6"/><path d="M9 3.4h6v2.8H9z" fill="currentColor" fill-opacity=".16"/><path d="M9 3.4h6v2.8H9z"/><path d="M9 12l1.9 1.9 4-4.2"/><path d="M9 17.2h6"/></g></symbol>
+ <symbol id="i-close" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.4 6.4l11.2 11.2M17.6 6.4L6.4 17.6"/></g></symbol>
+ <symbol id="i-back" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.2 5l7 7-7 7"/></g></symbol>
+ <symbol id="i-dep" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6v10.2M8.2 10.2l3.8 3.8 3.8-3.8"/><path d="M4.6 15.8v1.8a3 3 0 003 3h8.8a3 3 0 003-3v-1.8"/></g></symbol>
+ <symbol id="i-wd" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 13.8V3.6M8.2 7.4L12 3.6l3.8 3.8"/><path d="M4.6 15.8v1.8a3 3 0 003 3h8.8a3 3 0 003-3v-1.8"/></g></symbol>
+ <symbol id="i-swap" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.8 3.8L3.4 7.2l3.4 3.4"/><path d="M3.4 7.2h13.8"/><path d="M17.2 13l3.4 3.4-3.4 3.4"/><path d="M20.6 16.4H6.8"/></g></symbol>
+ <symbol id="i-game" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.8" y="7.6" width="18.4" height="9.6" rx="4.8"/><path d="M8 10.6v3.6M6.2 12.4h3.6"/><circle cx="15.3" cy="11.3" r=".6" fill="currentColor" stroke="none"/><circle cx="17.9" cy="13.6" r=".6" fill="currentColor" stroke="none"/></g></symbol>
+ <symbol id="i-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8.8" y="8.8" width="11.7" height="11.7" rx="2.6"/><path d="M5.6 15.2h-.9a2.2 2.2 0 01-2.2-2.2V4.7a2.2 2.2 0 012.2-2.2H13a2.2 2.2 0 012.2 2.2v.9"/></g></symbol>
+ <symbol id="i-energy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.8" y="8.2" width="16" height="7.6" rx="2.4"/><path d="M21.2 10.8v2.4"/><path d="M11.6 9.4l-2.7 3.9h2.1l-.6 2.7 3-4.1h-2.2z" fill="currentColor" stroke-width="1"/></g></symbol>
+ <symbol id="i-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5.4" y="10.4" width="13.2" height="9.8" rx="2.6"/><path d="M8.4 10.4V7.8a3.6 3.6 0 017.2 0v2.6"/><circle cx="12" cy="15.2" r="1.3" fill="currentColor" stroke="none"/></g></symbol>
+ <symbol id="i-check" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.6 12.6l5 5L19.4 6.6"/></g></symbol>
+ <symbol id="i-alert" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.2L2.9 19.8h18.2z"/><path d="M12 10.2v4.2"/><circle cx="12" cy="17" r=".5" fill="currentColor" stroke="none"/></g></symbol>
+ <symbol id="i-gift" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9.4" width="16" height="4" rx="1.4"/><rect x="5.6" y="13.4" width="12.8" height="7.2" rx="2"/><path d="M12 9.4v11.2"/><path d="M12 9.4C10.2 9.4 7.2 8.9 7.2 6.6a2.2 2.2 0 012.4-2.2c2.4 0 2.4 5 2.4 5zM12 9.4c1.8 0 4.8-.5 4.8-2.8a2.2 2.2 0 00-2.4-2.2c-2.4 0-2.4 5-2.4 5z"/></g></symbol>
+ <symbol id="i-cal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.8" y="5.4" width="16.4" height="15" rx="2.6"/><path d="M3.8 10.2h16.4M8.4 3.4v3.6M15.6 3.4v3.6"/><circle cx="8.6" cy="14.6" r=".6" fill="currentColor" stroke="none"/><circle cx="12" cy="14.6" r=".6" fill="currentColor" stroke="none"/><circle cx="15.4" cy="14.6" r=".6" fill="currentColor" stroke="none"/></g></symbol>
+ <symbol id="i-flame" viewBox="0 0 24 24"><g stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.2c.6 3.2-4.8 5.4-4.8 10.4a4.8 4.8 0 009.6 0c0-2.1-1-3.7-2.1-4.8.1 1.6-.9 2.5-1.9 2.7.4-2.7-.3-5.6-.8-8.3z" fill="currentColor" fill-opacity=".16"/></g></symbol>
+ <symbol id="i-user" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.8"/><path d="M4.6 20.4c1.2-3.5 4-5.4 7.4-5.4s6.2 1.9 7.4 5.4"/></g></symbol>
+ <symbol id="i-shield" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.8l8 3v6.2c0 5-3.4 8-8 9.2-4.6-1.2-8-4.2-8-9.2V5.8z"/><path d="M8.8 12l2.3 2.3 4.3-4.6"/></g></symbol>
+ <symbol id="i-sound" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.6v4.8h3.4l4.6 3.8V5.8L7.4 9.6z"/><path d="M15.4 9.4a4 4 0 010 5.2"/><path d="M17.8 7.4a7 7 0 010 9.2"/></g></symbol>
+ <symbol id="i-mute" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.6v4.8h3.4l4.6 3.8V5.8L7.4 9.6z"/><path d="M15.6 10l4.8 4.8M20.4 10l-4.8 4.8"/></g></symbol>
+ <symbol id="i-pup" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19.4V5.4M6.6 11L12 5.4 17.4 11"/></g></symbol>
+ <symbol id="i-pdn" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.6v14M6.6 13L12 18.6 17.4 13"/></g></symbol>
+ <symbol id="i-info" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 11.2v4.6"/><circle cx="12" cy="8.2" r=".5" fill="currentColor" stroke="none"/></g></symbol>
+</svg>
 <div id="app">
   <header id="hud">
     <div class="top">
-      <div class="box"><small>موجودی</small><b id="bal" class="num">$0</b></div>
-      <div class="box g"><small>سود خالص</small><b id="inc" class="num">0</b></div>
-      <div id="tags"><button id="admBtn" class="admb hide" data-act="tab" data-tab="admin" aria-label="پنل مدیریت"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></button><span id="boostTag" class="tag bst hide">⚡ ×۲</span><span id="liveTag" class="tag"></span></div>
+      <div class="box g"><small>موجودی بازی</small><b id="bal" class="num">$0</b></div>
+      <div class="box"><small>سود خالص</small><b id="inc" class="num">0</b></div>
+      <div id="tags"><button id="admBtn" class="admb hide" data-act="tab" data-tab="admin" aria-label="پنل مدیریت"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></button><span id="boostTag" class="tag bst hide"><svg class="ic" aria-hidden="true"><use href="#i-up"/></svg>×۲</span><span id="liveTag" class="tag"></span></div>
     </div>
     <div class="chips" id="chips"></div>
   </header>
@@ -304,25 +442,26 @@ nav button.on svg{stroke:var(--cyan);filter:drop-shadow(0 0 5px rgba(34,230,255,
     <svg id="room" viewBox="35 6 380 390" preserveAspectRatio="xMidYMid meet" aria-label="اتاق ماینر"></svg>
     <canvas id="fx"></canvas>
     <div id="fl"></div>
-    <button id="taskBtn" data-act="tab" data-tab="tasks" aria-label="ماموریت‌ها"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 4.5h6M9 12l2 2 4-4"/></svg><i class="dot hide" id="taskDot"></i></button>
-    <div id="energy"><span>⚡</span><i><b id="enbar"></b></i><span class="num" id="entxt">100</span></div>
-    <div id="toast"></div>
-    <button id="boost" class="hide" data-act="boost">⚡ بوست ×۲</button>
+    <button id="taskBtn" data-act="tab" data-tab="tasks" aria-label="ماموریت‌ها"><svg class="ic" aria-hidden="true"><use href="#i-tasks"/></svg><i class="dot hide" id="taskDot"></i></button>
+    <div id="energy" aria-hidden="true"><svg class="ic" aria-hidden="true"><use href="#i-energy"/></svg><i><b id="enbar"></b></i><span class="num" id="entxt">100</span></div>
+    <div id="toast" role="status"></div>
+    <button id="boost" class="hide" data-act="boost"><svg class="ic" aria-hidden="true"><use href="#i-up"/></svg>بوست ×۲</button>
     <div id="bubble" class="hide"><div class="bp" id="bp"></div><div class="bt" id="bt"></div></div>
   </main>
 
-  <section id="sheet">
-    <div id="sheetHead"><h2 id="sheetTitle"></h2><button data-act="close" aria-label="بستن">✕</button></div>
+  <div id="scrim" aria-hidden="true"></div>
+  <section id="sheet" aria-hidden="true">
+    <div id="sheetHead"><i class="grab" aria-hidden="true"></i><div class="hrow"><h2 id="sheetTitle"></h2><button data-act="close" aria-label="بستن"><svg class="ic" aria-hidden="true"><use href="#i-close"/></svg></button></div></div>
     <div id="sheetBody"></div>
   </section>
 
   <nav>
-    <button data-act="tab" data-tab="market"><svg viewBox="0 0 24 24"><path d="M3 17l5-6 4 3 8-9"/><path d="M3 21h18"/></svg>بازار</button>
-    <button data-act="tab" data-tab="miners"><svg viewBox="0 0 24 24"><rect x="3.5" y="6" width="17" height="12" rx="3"/><circle cx="9" cy="12" r="2.3"/><circle cx="15.5" cy="12" r="2.3"/></svg>ماینر</button>
-    <button data-act="tab" data-tab="racks"><svg viewBox="0 0 24 24"><path d="M3 8h18M3 14h18M3 20h18"/><rect x="5" y="3" width="5" height="5" rx="1"/><rect x="13" y="9" width="5" height="5" rx="1"/></svg>قفسه</button>
-    <button data-act="tab" data-tab="up"><svg viewBox="0 0 24 24"><path d="M13 2L5 14h6l-1 8 8-12h-6z"/></svg>ارتقا</button>
-    <button data-act="tab" data-tab="hub"><svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 01-8 0V4z"/><path d="M8 6H4v1a3 3 0 003 3M16 6h4v1a3 3 0 01-3 3"/><path d="M12 13v4M8 21h8M9 17h6"/></svg>برترین‌ها</button>
-    <button data-act="tab" data-tab="wallet"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="3"/><path d="M3 10h18M16 15h2"/><path d="M6 6l9-3 1 3"/></svg>کیف پول</button>
+    <button data-act="tab" data-tab="market" aria-label="بازار"><svg class="ic" aria-hidden="true"><use href="#i-market"/></svg><span>بازار</span></button>
+    <button data-act="tab" data-tab="miners" aria-label="ماینر"><svg class="ic" aria-hidden="true"><use href="#i-miners"/></svg><span>ماینر</span><i class="nbadge hide" id="nb-miners" aria-hidden="true"></i></button>
+    <button data-act="tab" data-tab="racks" aria-label="قفسه"><svg class="ic" aria-hidden="true"><use href="#i-racks"/></svg><span>قفسه</span><i class="nbadge hide" id="nb-racks" aria-hidden="true"></i></button>
+    <button data-act="tab" data-tab="up" aria-label="ارتقا"><svg class="ic" aria-hidden="true"><use href="#i-up"/></svg><span>ارتقا</span><i class="nbadge hide" id="nb-up" aria-hidden="true"></i></button>
+    <button data-act="tab" data-tab="hub" aria-label="برترین‌ها"><svg class="ic" aria-hidden="true"><use href="#i-hub"/></svg><span>برترین‌ها</span></button>
+    <button data-act="tab" data-tab="wallet" aria-label="کیف پول"><svg class="ic" aria-hidden="true"><use href="#i-wallet"/></svg><span>کیف پول</span></button>
   </nav>
 
   <div id="intro">
@@ -343,7 +482,7 @@ nav button.on svg{stroke:var(--cyan);filter:drop-shadow(0 0 5px rgba(34,230,255,
    ذخیره‌سازی: بک‌اند (initData) ← در غیر این صورت CloudStorage / localStorage
    ============================================================ */
 const tg=window.Telegram&&window.Telegram.WebApp;
-if(tg){try{tg.ready();tg.expand();tg.setHeaderColor&&tg.setHeaderColor('#06040e');tg.setBackgroundColor&&tg.setBackgroundColor('#06040e');tg.disableVerticalSwipes&&tg.disableVerticalSwipes()}catch(e){}}
+if(tg){try{tg.ready();tg.expand();tg.setHeaderColor&&tg.setHeaderColor('#0B0A14');tg.setBackgroundColor&&tg.setBackgroundColor('#0B0A14');tg.disableVerticalSwipes&&tg.disableVerticalSwipes()}catch(e){}}
 const hap=t=>{try{tg&&tg.HapticFeedback&&tg.HapticFeedback.impactOccurred(t||'light')}catch(e){}};
 const hapOk=()=>{try{tg&&tg.HapticFeedback&&tg.HapticFeedback.notificationOccurred('success')}catch(e){}};
 const $=s=>document.querySelector(s);
@@ -355,23 +494,23 @@ const REDUCE=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').ma
 /* ---------------- Data ---------------- */
 /* ref = قیمت مرجع طراحی بازی (برای تعادل اقتصاد)، قیمت فروش همیشه قیمت زنده‌ست */
 const COINS=[
- {id:'STAR',name:'تلگرام استارز',short:'Stars',ref:.013,col:'#ffc247'},
- {id:'TON',name:'تون‌کوین',short:'TON',ref:3,col:'#2aa9ff'},
- {id:'USD',name:'دلار',short:'USD',ref:1,col:'#3ddc84'}];
+ {id:'STAR',name:'تلگرام استارز',short:'Stars',ref:.013,col:'#FFC247'},
+ {id:'TON',name:'تون‌کوین',short:'TON',ref:3,col:'#3AA8F0'},
+ {id:'USD',name:'دلار',short:'USD',ref:1,col:'#3ED598'}];
 /* y = ارزش تولید در ثانیه (دلار، در قیمت مرجع) · pw = هزینه برق در ثانیه
    اعداد از زمان بازگشت سرمایه‌ی خالص (۵ تا ۸ روز) محاسبه شده‌اند. سختی: ارزهای باارزش‌تر دیرتر برمی‌گردند.
    RATE ضریب کلی تولید است؛ برای کم/زیاد کردن کل اقتصاد فقط همین را عوض کن. */
 const RATE=1,NETD=.05,EMAX=100,EREGEN=6,TAPV=2e-6,PCY=6e-8;
 const MINERS=[
- {id:'s1',coin:'STAR',tier:1,name:'استار مینی',price:.12,y:2.85e-7,pw:6.27e-8,col:'#ffc247'},
- {id:'s2',coin:'STAR',tier:2,name:'استار پرو',price:.75,y:2.01e-6,pw:5.23e-7,col:'#ffc247'},
- {id:'s3',coin:'STAR',tier:3,name:'استار نووا',price:4.2,y:1.282e-5,pw:3.85e-6,col:'#ffc247'},
- {id:'t1',coin:'TON',tier:1,name:'تون کور',price:.30,y:6.11e-7,pw:1.34e-7,col:'#2aa9ff'},
- {id:'t2',coin:'TON',tier:2,name:'تون پرو',price:1.8,y:4.10e-6,pw:1.065e-6,col:'#2aa9ff'},
- {id:'t3',coin:'TON',tier:3,name:'تون تیتان',price:9.5,y:2.432e-5,pw:7.30e-6,col:'#2aa9ff'},
- {id:'d1',coin:'USD',tier:1,name:'دلار مینی',price:.20,y:3.56e-7,pw:7.84e-8,col:'#3ddc84'},
- {id:'d2',coin:'USD',tier:2,name:'دلار پرو',price:1.2,y:2.37e-6,pw:6.16e-7,col:'#3ddc84'},
- {id:'d3',coin:'USD',tier:3,name:'دلار کینگ',price:6.5,y:1.433e-5,pw:4.30e-6,col:'#3ddc84'}];
+ {id:'s1',coin:'STAR',tier:1,name:'استار مینی',price:.12,y:2.85e-7,pw:6.27e-8,col:'#FFC247'},
+ {id:'s2',coin:'STAR',tier:2,name:'استار پرو',price:.75,y:2.01e-6,pw:5.23e-7,col:'#FFC247'},
+ {id:'s3',coin:'STAR',tier:3,name:'استار نووا',price:4.2,y:1.282e-5,pw:3.85e-6,col:'#FFC247'},
+ {id:'t1',coin:'TON',tier:1,name:'تون کور',price:.30,y:6.11e-7,pw:1.34e-7,col:'#3AA8F0'},
+ {id:'t2',coin:'TON',tier:2,name:'تون پرو',price:1.8,y:4.10e-6,pw:1.065e-6,col:'#3AA8F0'},
+ {id:'t3',coin:'TON',tier:3,name:'تون تیتان',price:9.5,y:2.432e-5,pw:7.30e-6,col:'#3AA8F0'},
+ {id:'d1',coin:'USD',tier:1,name:'دلار مینی',price:.20,y:3.56e-7,pw:7.84e-8,col:'#3ED598'},
+ {id:'d2',coin:'USD',tier:2,name:'دلار پرو',price:1.2,y:2.37e-6,pw:6.16e-7,col:'#3ED598'},
+ {id:'d3',coin:'USD',tier:3,name:'دلار کینگ',price:6.5,y:1.433e-5,pw:4.30e-6,col:'#3ED598'}];
 const PC=[1,1.6,2.5,4,6,9],PCCOST=[0,.15,.35,.80,2,5];
 const ROOM=[
  {id:'ac',name:'کولر گازی',desc:'هزینه برق ۲۵٪ کمتر',price:.15,ico:'❄️'},
@@ -434,12 +573,12 @@ const fs=(id,n)=>id==='USD'?'+$'+n.toFixed(8):id==='STAR'?'+'+n.toFixed(6)+'★'
 const fpw=n=>'$'+n.toFixed(9);
 const starPts=(cx,cy,R,r,yUp)=>{const p=[];for(let i=0;i<10;i++){const a=Math.PI/2+i*Math.PI/5,rr=i%2?r:R;p.push((cx+Math.cos(a)*rr).toFixed(3)+','+(yUp?cy+Math.sin(a)*rr:cy-Math.sin(a)*rr).toFixed(3))}return p.join(' ')};
 
+/* آیکون از اسپرایت (فاز ۱) — icon('wallet') یا icon('close','s') */
+const icon=(n,cls)=>`<svg class="ic ${cls||''}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
+/* لوگوی ارزها: سکه/نشان سه‌بعدی‌نما از اسپرایت — همه‌جا از همین یک منبع */
 function coinIcon(id,sz){
- const c=coin(id).col;
- const g=id==='STAR'?`<polygon points="${starPts(12,12.6,7.8,3.3,false)}" fill="${c}"/>`
-  :id==='TON'?`<polygon points="6.5,8 17.5,8 12,17.8" fill="${c}"/><line x1="12" y1="8" x2="12" y2="17.8" stroke="#06101f" stroke-width="1.2"/>`
-  :`<path d="M14.8 9.2c-.5-1.4-5.6-1.4-5.6.7 0 2.3 5.8 1.2 5.8 3.6 0 2.2-5.4 2.2-6-.2" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round"/><path d="M12 6.5v11" stroke="${c}" stroke-width="1.6" stroke-linecap="round"/>`;
- return `<svg class="ci" viewBox="0 0 24 24" width="${sz}" height="${sz}"><circle cx="12" cy="12" r="11" fill="${c}22" stroke="${c}" stroke-opacity=".8"/>${g}</svg>`}
+ const k=id==='STAR'?'star':id==='TON'?'ton':'usd';
+ return `<svg class="ci" width="${sz}" height="${sz}" viewBox="0 0 24 24" aria-hidden="true"><use href="#lg-${k}"/></svg>`}
 
 /* ---------------- Economy ---------------- */
 let boostUntil=0;
@@ -727,7 +866,7 @@ function buildRoom(){
  o+=glow(onTop(.82,`<circle cx="7.05" cy="5.35" r=".5" fill="none" stroke="#22e6ff" stroke-width=".05"><animate attributeName="r" values=".42;.58;.42" dur="2.4s" repeatCount="indefinite"/></circle>`));
  const [hx,hy]=P(7.05,5.35,.82);
  o+=`<polygon points="${(hx-28).toFixed(1)},${hy.toFixed(1)} ${(hx+28).toFixed(1)},${hy.toFixed(1)} ${(hx+13).toFixed(1)},${(hy-42).toFixed(1)} ${(hx-13).toFixed(1)},${(hy-42).toFixed(1)}" fill="url(#gHolo)" class="tw"/>`;
- [['STAR','#ffc247'],['TON','#2aa9ff'],['USD','#3ddc84']].forEach((c,i)=>{
+ [['STAR','#FFC247'],['TON','#3AA8F0'],['USD','#3ED598']].forEach((c,i)=>{
   o+=`<g><circle r="4.2" fill="${c[1]}" filter="url(#glow)"/><circle r="2" fill="#fff" opacity=".9"/><animateMotion dur="4.8s" begin="${(-i*1.6).toFixed(1)}s" repeatCount="indefinite" path="M${(hx-24).toFixed(1)} ${(hy-26).toFixed(1)} a24 6 0 1 0 48 0 a24 6 0 1 0 -48 0"/></g>`});
  o+=`<g class="tap" data-act="tab" data-tab="market" transform="translate(262 238)">
   <defs><linearGradient id="gTick" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#22e6ff" stop-opacity="0"/><stop offset=".5" stop-color="#22e6ff" stop-opacity=".16"/><stop offset="1" stop-color="#22e6ff" stop-opacity="0"/></linearGradient></defs>
@@ -751,26 +890,56 @@ function buildChips(){
  $('#chips').innerHTML=COINS.map(c=>`<div class="chip" id="chip-${c.id}" style="--c:${c.col};--cg:${c.col}59" data-act="sel" data-id="${c.id}">${coinIcon(c.id,26)}<div><b class="num" id="cw-${c.id}">0</b><small>${c.short}</small></div></div>`).join('')}
 function renderTag(){
  const e=$('#liveTag');if(!e)return;
- e.textContent=LIVE?'● زنده':'○ آفلاین';e.className='tag '+(LIVE?'on':'off')}
-const kfmt=n=>n>=1e9?(n/1e9).toFixed(2)+'B':n>=1e6?(n/1e6).toFixed(2)+'M':null;
-function fchip(id,n){const k=kfmt(n);if(k)return k;return id==='STAR'?nf(n,6):nf(n,8)}
+ e.textContent=LIVE?'زنده':'آفلاین';e.className='tag '+(LIVE?'on':'off')}
+/* ---------------- Formatting HUD (فاز ۲): فشرده، خوانا، بدون ۸ رقم اعشار ---------------- */
+/* دقت تطبیقی: هرچه عدد کوچک‌تر، رقم اعشار بیشتر (حداکثر ۶) · بزرگ‌ها K/M/B */
+const kfmt=n=>n>=1e9?(n/1e9).toFixed(2)+'B':n>=1e6?(n/1e6).toFixed(2)+'M':n>=1e4?(n/1e3).toFixed(1)+'K':null;
+function fmtNum(n){const a=Math.abs(n),d=a>=1?2:a>=.01?3:a>=.001?4:a>=.00001?5:6;
+ return n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:d})}
+function fmtUsd(n){const s=n<0?'−':'',a=Math.abs(n),k=kfmt(a);
+ if(k)return s+'$'+k;if(a===0)return '$0';
+ return s+'$'+fmtNum(a)}
+const fmtChip=(id,n)=>{const k=kfmt(n);return k||fmtNum(n)};
+/* شمارنده‌ی انیمیشنی بالانس (فقط روی تغییر گسسته، نه تیک ثانیه‌ای) */
+let lastBal=null,balTgt=null,balTW=0;
+function setBal(v){
+ const el=$('#bal');
+ if(v===balTgt&&balTW)return;
+ if(lastBal===null||REDUCE||Math.abs(v-lastBal)<1e-9){lastBal=v;balTgt=v;el.textContent=fmtUsd(v);return}
+ const from=lastBal;balTgt=v;cancelAnimationFrame(balTW);const t0=performance.now();
+ const step=t=>{const k=Math.min(1,(t-t0)/450),e=1-Math.pow(1-k,3);
+  el.textContent=fmtUsd(from+(v-from)*e);
+  if(k<1)balTW=requestAnimationFrame(step);else{balTW=0;lastBal=v}};
+ balTW=requestAnimationFrame(step)}
+/* نمایش عدد دقیق با نگه‌داشتن روی بالانس */
+let balHoldT=null,balExactT=null;
+function balExact(on){
+ if(on){$('#bal').textContent=f$(S.usd);balExactT=setTimeout(()=>balExact(false),2400)}
+ else{clearTimeout(balExactT);if(!(balTgt===S.usd&&balTW))$('#bal').textContent=fmtUsd(S.usd)}}
+function flashChip(id){const el=$('#chip-'+id);if(!el||REDUCE)return;el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}
 function renderHUD(){
  const st=stats();
- $('#bal').textContent=f$(S.usd);
- const n=st.net,el=$('#inc');el.textContent=(n>=0?'+':'-')+f$(Math.abs(n))+'/s';el.className='num '+(n>=0?'pos':'neg');
- COINS.forEach(c=>{$('#cw-'+c.id).textContent=fchip(c.id,S.wallet[c.id]);$('#chip-'+c.id).classList.toggle('sel',S.sel===c.id);
+ setBal(S.usd);
+ const n=st.net,el=$('#inc');el.textContent=(n>=0?'+':'−')+fmtUsd(Math.abs(n))+'/s';el.className='num '+(n>=0?'pos':'neg');
+ COINS.forEach(c=>{$('#cw-'+c.id).textContent=fmtChip(c.id,S.wallet[c.id]);$('#chip-'+c.id).classList.toggle('sel',S.sel===c.id);
   $('#bbp-'+c.id).textContent=fp(c.id,price(c.id));
-  const t=trend(c.id),e=$('#bbt-'+c.id);e.textContent=Math.abs(t)<.005?'—':(t>=0?'▲':'▼');e.setAttribute('fill',Math.abs(t)<.005?'#9a90c8':t>=0?'#3ddc84':'#ff4fa3')});
+  const t=trend(c.id),e=$('#bbt-'+c.id);e.textContent=Math.abs(t)<.005?'—':(t>=0?'▲':'▼');e.setAttribute('fill',Math.abs(t)<.005?'#9a90c8':t>=0?'#4CD97B':'#FF5C7A')});
  $('#boostTag').classList.toggle('hide',!boosting());$('#taskDot').classList.toggle('hide',!claimable());
- const e=energy();$('#enbar').style.width=(e/EMAX*100)+'%';$('#entxt').textContent=Math.floor(e)}
+ /* بج‌های ناوبری: اقدام قابل‌انجام */
+ $('#nb-miners').classList.toggle('hide',!(cnt()<cap()&&MINERS.some(m=>S.usd>=m.price)));
+ $('#nb-racks').classList.toggle('hide',!(S.shelves<SHELVES&&S.usd>=SHELF_COST[S.shelves]));
+ const nx=S.pc+1;
+ $('#nb-up').classList.toggle('hide',!((nx<PC.length&&S.usd>=PCCOST[nx])||ROOM.some(r=>!S.room[r.id]&&S.usd>=r.price)));
+ const en=energy();$('#enbar').style.width=(en/EMAX*100)+'%';$('#entxt').textContent=Math.floor(en);
+ $('#energy').classList.toggle('empty',en<1)}
 
 function mine(e){
  const en=energy();
- if(en<1){toast('انرژی تموم شد ⚡ هر ۶ ثانیه یکی شارژ می‌شه');hap('light');return}
+ if(en<1){toast('انرژی تموم شد؛ هر ۶ ثانیه یکی شارژ می‌شه');hap('light');return}
  S.en=en-1;S.et=Date.now();
  const st=stats(),c=coin(S.sel),val=TAPV*PC[S.pc]*st.bonus*RATE,amt=val/c.ref;
  S.wallet[S.sel]+=amt;S.taps++;
- floatAt(e,fs(S.sel,amt),c.col);burst(e.clientX,e.clientY,c.col,7,3);hap('light');setMood('happy',900);
+ floatAt(e,fs(S.sel,amt),c.col);burst(e.clientX,e.clientY,c.col,7,3);hap('light');setMood('happy',900);flashChip(S.sel);
  const r=$('#room');r.classList.remove('shake');void r.offsetWidth;r.classList.add('shake');
  if(S.taps===5)updateRoomItems();
  renderHUD();checkChapter();updateLive()}
@@ -822,8 +991,74 @@ function fxLoop(ts){
  g2.globalAlpha=1}
 
 /* ---------------- Sheets ---------------- */
-const sheet={tab:null,slot:0};
-const TITLES={market:'بازار زنده',miners:'فروشگاه ماینر',racks:'قفسه‌ها',up:'ارتقا و دکوراسیون',hub:'برترین‌ها',wallet:'کیف پول',admin:'پنل مدیریت',tasks:'ماموریت‌ها',slot:'ماینر روی قفسه'};
+const SNAP=[.4,.75,1];
+const sheet={tab:null,slot:0,f:.75,t:0};
+const sheetH=()=>($('#sheet').offsetHeight||1);
+const tOf=f=>sheetH()*(1-f);
+function applyT(t){sheet.t=t;$('#sheet').style.transform='translateY('+t.toFixed(1)+'px)'}
+function setSnap(f){sheet.f=f;applyT(tOf(f))}
+let closeTO=null;
+function openSheet(tab,i){
+ if(sheet.tab===tab&&tab!=='slot'&&i===undefined){closeSheet();return}
+ if(tab==='wallet'&&sheet.tab!=='wallet'){W.v='home';W.amt=''}
+ sheet.tab=tab;if(i!==undefined)sheet.slot=i;
+ sheet.f=(tab==='slot')?.4:.75;
+ clearTimeout(closeTO);
+ const el=$('#sheet');el.classList.add('open');el.setAttribute('aria-hidden','false');
+ $('#app').classList.add('sopen');$('#bubble').classList.add('hide');
+ renderSheet();
+ applyT(tOf(sheet.f));
+ document.querySelectorAll('nav button').forEach(b=>{const on=b.dataset.tab===tab;b.classList.toggle('on',on);b.setAttribute('aria-current',on?'page':'false')})}
+function closeSheet(){
+ if(!sheet.tab)return;
+ sheet.tab=null;
+ $('#app').classList.remove('sopen');
+ applyT(sheetH()+40);
+ document.querySelectorAll('nav button').forEach(b=>{b.classList.remove('on');b.setAttribute('aria-current','false')});
+ clearTimeout(closeTO);closeTO=setTimeout(()=>{if(!sheet.tab){const el=$('#sheet');el.classList.remove('open');el.setAttribute('aria-hidden','true')}},360)}
+/* درگ هندل: انتخاب نزدیک‌ترین snap، پرتاب با سرعت، بستن با کشیدن یا ضربه به scrim */
+(function(){
+ const head=$('#sheetHead');let d=null;
+ head.addEventListener('pointerdown',e=>{
+  if(e.target.closest('button'))return;
+  d={y0:e.clientY,t0:sheet.t,y:e.clientY,ts:performance.now(),v:0,moved:false};
+  $('#sheet').classList.add('drag');
+  try{head.setPointerCapture(e.pointerId)}catch(_){}});
+ head.addEventListener('pointermove',e=>{
+  if(!d)return;
+  const now=performance.now(),dy=e.clientY-d.y0;
+  d.v=(e.clientY-d.y)/Math.max(1,now-d.ts);d.y=e.clientY;d.ts=now;
+  if(Math.abs(dy)>4)d.moved=true;
+  applyT(Math.min(d.t0+(dy>0?dy:dy*.18),sheetH()+60))});
+ const end=()=>{
+  if(!d)return;const g=d;d=null;$('#sheet').classList.remove('drag');
+  if(!g.moved){setSnap(SNAP[(SNAP.indexOf(sheet.f)+1)%SNAP.length]);return}
+  const h=sheetH(),cand=[tOf(1),tOf(.75),tOf(.4),h+40];
+  let best=cand[0],bd=1e9;
+  cand.forEach(c=>{const dd=Math.abs(sheet.t-c);if(dd<bd){bd=dd;best=c}});
+  const below=cand.filter(c=>c>g.t0+8),above=cand.filter(c=>c<g.t0-8);
+  if(g.v>.55&&below.length)best=below[0];
+  else if(g.v<-.55&&above.length)best=above[above.length-1];
+  if(best>=h+20){closeSheet();return}
+  const f=1-best/h;
+  setSnap(SNAP.reduce((a,b)=>Math.abs(b-f)<Math.abs(a-f)?b:a))};
+ head.addEventListener('pointerup',end);
+ head.addEventListener('pointercancel',end);
+})();
+$('#scrim').addEventListener('click',()=>closeSheet());
+/* متریک چیدمان → متغیر CSS برای شیت + هماهنگی با کیبورد موبایل */
+function layoutVars(){
+ const app=$('#app'),hud=$('#hud'),nav=document.querySelector('nav');
+ app.style.setProperty('--hud-h',hud.offsetHeight+'px');
+ app.style.setProperty('--nav-h',nav.offsetHeight+'px');
+ app.style.setProperty('--area-h',Math.max(120,app.offsetHeight-hud.offsetHeight-nav.offsetHeight)+'px');
+ if(sheet.tab)applyT(tOf(sheet.f));
+ else{const el=$('#sheet');el.classList.add('drag');applyT(sheetH()+40);void el.offsetWidth;el.classList.remove('drag')}}
+if(window.ResizeObserver){new ResizeObserver(layoutVars).observe($('#hud'));new ResizeObserver(layoutVars).observe(document.querySelector('nav'))}
+window.addEventListener('resize',layoutVars);
+if(window.visualViewport)visualViewport.addEventListener('resize',()=>{
+ $('#app').style.setProperty('--kb',Math.max(0,innerHeight-visualViewport.height-2)+'px');layoutVars()});
+const TITLES={market:'بازار زنده',miners:'فروشگاه ماینر',racks:'قفسه‌ها',up:'ارتقا و دکوراسیون',hub:'برترین‌ها',wallet:'کیف پول',admin:'پنل مدیریت',tasks:'ماموریت‌ها',slot:'ماینر روی قفسه',style:'راهنمای استایل'};
 
 const frate=(id,n)=>id==='STAR'?n.toFixed(7)+' ★/s':id==='TON'?n.toFixed(9)+' TON/s':'$'+n.toFixed(9)+'/s';
 function spark(h){
@@ -905,10 +1140,26 @@ function sheetSlot(){
  const c=coin(m.coin);
  return `<div class="row"><div class="ico mp">${minerPreview(m)}</div><div class="rb"><b>${m.name}</b><small>تولید <span class="num">${frate(m.coin,m.y/c.ref)}</span> · برق <span class="num">${fpw(m.pw)}/s</span></small></div></div><button class="btn wide sell" data-act="sellminer">فروش دستگاه · <span class="num">${f$(m.price*.6)}</span></button>`}
 
+/* ---------------- Style Guide (فاز ۱ · مرجع داخلی توسعه) ---------------- */
+const SG_ICONS=['market','miners','racks','up','hub','wallet','tasks','close','back','dep','wd','swap','game','copy','energy','lock','check','alert','gift','cal','flame','user','shield','sound','mute','pup','pdn','info'];
+function sheetStyle(){
+ const sw=(n,v)=>`<div class="sg-sw"><i style="background:${v}"></i><b>${n}</b><small>${v}</small></div>`;
+ return `<p class="hint">مرجع هویت بصری «شب مایکو» — فقط ابزار توسعه. با سه‌ضربه‌ی سریع روی عدد موجودی بالای صفحه هم باز می‌شه.</p>
+ <div class="sh"><b>پالت</b><small>۵ پایه · ۳ معنایی · ۳ ارز</small></div>
+ <div class="sg-pal">${sw('شب ۰','#0B0A14')}${sw('شب ۱','#131022')}${sw('شب ۲','#1B1730')}${sw('کرم','#F4EFE6')}${sw('مسی','#E8913A')}${sw('موفق','#4CD97B')}${sw('خطا','#FF5C7A')}${sw('Stars','#FFC247')}${sw('TON','#3AA8F0')}${sw('USD','#3ED598')}${sw('متن کم‌رنگ','#A79FC4')}${sw('خط','#F4EFE622')}</div>
+ <div class="sh"><b>لوگوی ارزها</b><small>یک ساختار · سه متریال</small></div>
+ <div class="sg-lg"><div>${coinIcon('STAR',46)}</div><div>${coinIcon('TON',46)}</div><div>${coinIcon('USD',46)}</div><div class="sg-mini">${coinIcon('STAR',22)}${coinIcon('TON',22)}${coinIcon('USD',22)}</div></div>
+ <div class="sh"><b>آیکون‌ها</b><small>گرید ۲۴ · خط ۱٫۸</small></div>
+ <div class="sg-ic">${SG_ICONS.map(k=>`<div>${icon(k)}<small>${k}</small></div>`).join('')}</div>
+ <div class="sh"><b>تایپوگرافی</b><small>Vazirmatn + اعداد tabular</small></div>
+ <div class="sg-type"><b class="t1">اتاق ماینر میکو</b><small>تیتر اصلی · وزن ۹۰۰</small><b class="t2">قفسه‌ی دوم رو بخر</b><small>تیتر بخش · وزن ۸۰۰</small><p>متن بدنه با ارتفاع خط ۱٫۸. اعداد همیشه هم‌عرض و فشرده: <span class="num">$0.0942</span> و <span class="num">12.5M</span> و <span class="num">3.14159</span>.</p></div>
+ <div class="sh"><b>حرکت</b><small>روی دکمه بزن</small></div>
+ <div class="sg-row"><button class="btn sm" data-act="sg-m">فنر · ۴۲۰ms</button><span class="hint" style="margin:0;direction:ltr">--e-out · --e-spring</span></div>`}
+
 function renderSheet(){
- const body=$('#sheetBody'),st=$('#sheet').scrollTop;
- body.innerHTML={market:sheetMarket,miners:sheetMiners,racks:sheetRacks,up:sheetUp,hub:sheetHub,wallet:sheetWallet,admin:sheetAdmin,tasks:sheetTasks,slot:sheetSlot}[sheet.tab]();$('#sheet').classList.toggle('tall',sheet.tab==='wallet'||sheet.tab==='admin');
- $('#sheetTitle').textContent=TITLES[sheet.tab];$('#sheet').scrollTop=st;updateLive();
+ const body=$('#sheetBody'),st=body.scrollTop;
+ body.innerHTML={market:sheetMarket,miners:sheetMiners,racks:sheetRacks,up:sheetUp,hub:sheetHub,wallet:sheetWallet,admin:sheetAdmin,tasks:sheetTasks,slot:sheetSlot,style:sheetStyle}[sheet.tab]();
+ $('#sheetTitle').textContent=TITLES[sheet.tab];body.scrollTop=st;updateLive();
  if(sheet.tab==='hub')loadTop();if(sheet.tab==='tasks')loadRef();if(sheet.tab==='wallet'&&Date.now()-W.lt>8000)wLoad();
  if(sheet.tab==='admin'&&Date.now()-(A.lt||0)>8000){A.lt=Date.now();aLoad()}}
 
@@ -930,17 +1181,8 @@ function updateLive(){
   $('#sellall').innerHTML=`فروش همه ارزها · <span class="num">+${f$(tot)}</span>`}
  if(sheet.tab==='tasks'&&CH[S.ch]&&!S.rd){const [a,b]=CH[S.ch].prog();const bar=$('#chbar'),tx=$('#chtxt');if(bar){bar.style.width=Math.min(100,a/b*100)+'%';tx.textContent=cf(CH[S.ch],Math.min(a,b))+'/'+cf(CH[S.ch],b)}}}
 
-function openSheet(tab,i){
- if(sheet.tab===tab&&tab!=='slot'&&i===undefined){closeSheet();return}
- if(tab==='wallet'&&sheet.tab!=='wallet'){W.v='home';W.amt=''}
- sheet.tab=tab;if(i!==undefined)sheet.slot=i;
- $('#sheet').classList.add('open');$('#bubble').classList.add('hide');renderSheet();
- document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
- setTimeout(resizeFx,60)}
-function closeSheet(){sheet.tab=null;$('#sheet').classList.remove('open');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('on'));setTimeout(resizeFx,60)}
-
 /* ---------------- کیف پول یکپارچه: بالانس بازی + ارز ماین‌شده + دارایی واقعی ---------------- */
-const WA=[{id:'TON',n:'TON',full:'تون‌کوین',col:'#2aa9ff'},{id:'STAR',n:'Stars',full:'تلگرام استارز',col:'#ffc247'},{id:'USDT',n:'USDT',full:'تتر',col:'#3ddc84'}];
+const WA=[{id:'TON',n:'TON',full:'تون‌کوین',col:'#3AA8F0'},{id:'STAR',n:'Stars',full:'تلگرام استارز',col:'#FFC247'},{id:'USDT',n:'USDT',full:'تتر',col:'#3ED598'}];
 const MAPC={STAR:'STAR',TON:'TON',USD:'USDT'};   /* ارز ماین‌شده ← دارایی کیف پول */
 const W={v:'home',dep:'TON',wd:'TON',from:'TON',to:'USDT',gm:'TON',amt:'',addr:'',d:null,busy:false,lt:0};
 let IS_ADMIN=false,holdSave=false,lastPut=null;
@@ -1081,8 +1323,8 @@ async function wCash(coin){
 
 async function wAct(a,t){
  const v=t.dataset.v,d=W.d;
- if(a==='w-go'){W.v=v;W.amt='';W.addr='';renderSheet();$('#sheet').scrollTop=0}
- else if(a==='w-back'){W.v='home';W.amt='';renderSheet();$('#sheet').scrollTop=0}
+ if(a==='w-go'){W.v=v;W.amt='';W.addr='';renderSheet();$('#sheetBody').scrollTop=0}
+ else if(a==='w-back'){W.v='home';W.amt='';renderSheet();$('#sheetBody').scrollTop=0}
  else if(a==='w-set'){const k=t.dataset.k;W[k]=v;W.amt='';
   if(k==='from'&&v===W.to)W.to=WA.find(x=>x.id!==v).id;if(k==='to'&&v===W.from)W.from=WA.find(x=>x.id!==v).id;renderSheet()}
  else if(a==='w-flip'){[W.from,W.to]=[W.to,W.from];renderSheet()}
@@ -1208,7 +1450,7 @@ async function aAct(a,t){
   else if(a==='a-wf'){A.wf=v;A.wds=null;renderSheet();aLoad()}
   else if(a==='a-search'){A.users=null;renderSheet();aLoad()}
   else if(a==='a-back'){A.sel=null;renderSheet();aLoad()}
-  else if(a==='a-user'){A.busy=true;try{A.sel=await aApi('/api/admin/user?uid='+id);A.adj={asset:'TON',amount:'',note:''}}finally{A.busy=false}renderSheet();$('#sheet').scrollTop=0}
+  else if(a==='a-user'){A.busy=true;try{A.sel=await aApi('/api/admin/user?uid='+id);A.adj={asset:'TON',amount:'',note:''}}finally{A.busy=false}renderSheet();$('#sheetBody').scrollTop=0}
   else if(a==='a-adjset'){A.adj.asset=v;renderSheet()}
   else if(a==='a-tog'){A.cf[v]=!A.cf[v];renderSheet()}
   else if(a==='a-wd'){const ok=t.dataset.ok==='1';
@@ -1240,8 +1482,8 @@ document.addEventListener('input',e=>{
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.dataset&&e.target.dataset.a==='q'){e.preventDefault();e.target.blur();A.users=null;renderSheet();aLoad()}});
 
 /* ---------------- Actions ---------------- */
-const LINES_MIKO=['دارم کد می‌نویسم، نزن! 😤','ماینرها دارن کار می‌کنن، منم کار می‌کنم!','قلقلکم نده! 😆','من میکوام، رئیس اتاق ماینر! ✨'];
-const LINES_BUY=['ماینر جدید! صدای فن‌هاش عاشقانه‌ست 😍','این یکی خیلی قویه، قفسه داره می‌درخشه!','سود داره بالا میره، حس خوبیه ✨'];
+const LINES_MIKO=['دارم کد می‌نویسم، نزن!','ماینرها دارن کار می‌کنن، منم کار می‌کنم!','قلقلکم نده!','من میکوام، رئیس اتاق ماینر!'];
+const LINES_BUY=['ماینر جدید! صدای فن‌هاش عاشقانه‌ست','این یکی خیلی قویه، قفسه داره می‌درخشه!','سود داره بالا می‌ره، حس خوبیه'];
 function centerBurst(col){const r=$('#scene').getBoundingClientRect();burst(r.left+r.width*.5,r.top+r.height*.45,col,16,4)}
 function act(t,e){
  const a=t.dataset.act,id=t.dataset.id;
@@ -1265,11 +1507,17 @@ function act(t,e){
  else if(a==='invite'){if(!REFLINK)return;const u='https://t.me/share/url?url='+encodeURIComponent(REFLINK)+'&text='+encodeURIComponent('بیا با هم تو اتاق ماینر ماین کنیم ⛏️');try{tg.openTelegramLink(u)}catch(e){window.open(u,'_blank')}}
  else if(a==='copyref'){if(!REFLINK)return;try{navigator.clipboard.writeText(REFLINK).then(()=>toast('لینک کپی شد ✓'),()=>toast(REFLINK))}catch(e){toast(REFLINK)}}
  else if(a==='boost'){boostUntil=Date.now()+30000;boostShow=0;$('#boost').classList.add('hide');hapOk();centerBurst('#ffd166');toast('⚡ بوست فعال شد: ۳۰ ثانیه ماین دو برابر');renderHUD()}
-}
+ else if(a==='sg-m'){hap('light');try{t.animate([{transform:'scale(1)'},{transform:'scale(1.22)'},{transform:'scale(1)'}],{duration:420,easing:'cubic-bezier(.34,1.45,.4,1)'})}catch(e){}}}
 function afterAction(){checkChapter();renderHUD();if(sheet.tab)renderSheet();save()}
 
 document.addEventListener('pointerdown',e=>{const t=e.target.closest&&e.target.closest('[data-act="mine"]');if(t){e.preventDefault();mine(e)}});
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-act]');if(!t||t.dataset.act==='mine')return;act(t,e)});
+
+/* ورود به Style Guide: سه‌ضربه‌ی سریع روی عدد موجودی (ابزار توسعه‌ی فاز ۱) */
+let sgN=0,sgLast=0;
+document.addEventListener('pointerdown',e=>{if(!e.target.closest||!e.target.closest('#bal'))return;
+ const n=Date.now();if(n-sgLast>900)sgN=0;sgLast=n;
+ if(++sgN>=3){sgN=0;openSheet('style')}});
 
 /* ---------------- Tick ---------------- */
 let boostIn=70+Math.random()*40,boostShow=0;
@@ -1292,7 +1540,8 @@ async function boot(){
  setInterval(tick,1000);setInterval(pullPrices,15000);setInterval(()=>save(),10000);
  document.addEventListener('visibilitychange',()=>{if(document.hidden)save(true)});window.addEventListener('pagehide',()=>save(true));
  const go=$('#go');go.disabled=false;go.textContent='ورود به اتاق';
- go.onclick=()=>{$('#intro').remove();resizeFx();say(CH[S.ch]?CH[S.ch].say:'خوش برگشتی!',8000)}}
+ go.onclick=()=>{$('#intro').remove();resizeFx();say(CH[S.ch]?CH[S.ch].say:'خوش برگشتی!',8000)};
+ if(/style=1/.test(location.search)){$('#intro').remove();resizeFx();openSheet('style')}}
 boot();
 </script>
 </body>
