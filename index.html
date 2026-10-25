@@ -386,6 +386,19 @@ nav button.on .ic{color:var(--brand2)}
 .sg-type p{font-size:13px;line-height:1.9;margin:8px 0 0}
 .sg-row{display:flex;gap:10px;align-items:center;margin:10px 0 4px}
 
+/* Popover ماینر (فاز ۴): کارت جزئیات بالای خود دستگاه */
+#pop{position:absolute;z-index:5;width:212px;animation:popin .22s var(--e-spring);filter:drop-shadow(0 10px 22px rgba(0,0,0,.55))}
+#pop.hide{display:none}
+#pop .pop-h{width:12px;height:12px;background:var(--glass);border:1px solid var(--line2);border-top:0;border-inline-start:0;transform:rotate(45deg);margin:0 auto -7px;position:relative;z-index:1}
+#pop .pop-b{background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line2);border-radius:var(--r-md);padding:11px 12px}
+@keyframes popin{from{opacity:0;transform:translateY(8px) scale(.94)}}
+#pop .pt{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+#pop .pt b{font-size:13.5px;flex:1}
+#pop .st{font-size:10.5px;color:var(--mut);display:grid;gap:2px;margin-bottom:9px}
+#pop .st b{color:var(--txt);font-weight:800}
+#pop .btnrow{display:flex;gap:6px}
+#pop .btnrow .btn{flex:1;padding:8px 6px;font-size:11.5px}
+
 /* Intro */
 #intro{position:absolute;inset:0;z-index:20;display:grid;place-items:center;padding:20px;background:radial-gradient(100% 70% at 50% 30%,#3a1c85 0%,#0b0724 70%)}
 #intro .card{text-align:center;max-width:340px}
@@ -488,6 +501,7 @@ nav button.on .ic{color:var(--brand2)}
     <div id="toast" role="status"></div>
     <button id="boost" class="hide" data-act="boost"><svg class="ic" aria-hidden="true"><use href="#i-up"/></svg>بوست ×۲</button>
     <div id="bubble" class="hide"><div class="bp" id="bp"></div><div class="bt" id="bt"></div></div>
+    <div id="pop" class="hide" role="dialog" aria-label="جزئیات ماینر"><div class="pop-h"></div><div class="pop-b"></div></div>
   </main>
 
   <div id="scrim" aria-hidden="true"></div>
@@ -585,6 +599,9 @@ async function pullPrices(){
  try{const r=await api('/api/prices');
   COINS.forEach(c=>{const d=r.coins&&r.coins[c.id];if(d&&d.usd>0){PR[c.id].usd=d.usd;if(d.hist&&d.hist.length>1)PR[c.id].hist=d.hist.slice(-60)}});
   LIVE=true}catch(e){LIVE=false}
+ /* فاز ۴: میکو از سقوط تند تون می‌ترسه */
+ const tt=trend('TON');
+ if(tt<-2.5&&Date.now()-lastScare>3e5){lastScare=Date.now();setMiko('scared',3200);say('وای، تون ریخت! بفروشیم یا صبر کنیم؟!',5200)}
  renderTag()}
 
 function simulate(){ /* فقط وقتی سرور در دسترس نیست */
@@ -682,7 +699,7 @@ function grantOffline(sec){
  const st=stats();if(st.gross<=0)return;
  const f=Math.max(0,st.net)/st.gross;let tot=0;
  COINS.forEach(c=>{const g=st.rate[c.id]*f*sec*.5;if(g>0){S.wallet[c.id]+=g;tot+=g*price(c.id)}});
- if(tot>=.01)setTimeout(()=>{toast('ماینرها وقتی نبودی '+f$(tot)+' ماین کردن');say('خوش برگشتی! وقتی نبودی ماینرها نصف توانشون کار کردن.',6000)},1500)}
+ if(tot>=.01)setTimeout(()=>{toast('ماینرها وقتی نبودی '+f$(tot)+' ماین کردن');setMiko('tired',3600);say('خوش برگشتی! وقتی نبودی ماینرها نصف توانشون کار کردن؛ خودمم خسته‌ام.',6000)},1500)}
 
 /* ---------------- Chibi (Miko) ---------------- */
 function chibiInner(){return `<g class="bob">
@@ -700,7 +717,12 @@ function chibiInner(){return `<g class="bob">
 const chibiSvg=(w,h)=>`<svg class="chibi" viewBox="0 0 100 120" ${w?`width="${w}" height="${h||w*1.2}"`:''}>${chibiInner()}</svg>`;
 const MOUTH={happy:['M41 65 Q50 80 59 65Z','#d81b60'],calm:['M44 69 Q50 73 56 69','none']};
 let moodT;
-function setMood(m,ms){const [d,f]=MOUTH[m];const mk=document.getElementById('mk3');if(mk)mk.classList.toggle('joy',m!=='calm');document.querySelectorAll('.mouth').forEach(p=>{p.setAttribute('d',d);p.setAttribute('fill',f)});clearTimeout(moodT);if(m!=='calm')moodT=setTimeout(()=>setMood('calm'),ms||1500)}
+/* فاز ۴: حالت‌های میکوی صحنه با setMiko؛ دهان چیبی جلویی (اینترو/کارت ماموریت) همین‌جا می‌مونه */
+function setMood(m,ms){const [d,f]=MOUTH[m]||MOUTH.calm;
+ document.querySelectorAll('.mouth').forEach(p=>{p.setAttribute('d',d);p.setAttribute('fill',f)});
+ clearTimeout(moodT);
+ if(m!=='calm')moodT=setTimeout(()=>{document.querySelectorAll('.mouth').forEach(p=>{p.setAttribute('d',MOUTH.calm[0]);p.setAttribute('fill',MOUTH.calm[1])})},ms||1500);
+ setMiko(m==='calm'?'work':m,ms)}
 
 /* ---------------- Isometric engine ---------------- */
 const s=22,kx=s*.866,ky=s*.5,X0=225,Y0=180,L=9,H=7.5;
@@ -739,7 +761,8 @@ function faceArt(m){
  }else if(m.coin==='TON'){
   const fans=t===1?[[.27,.74],[1.23,.74]]:t===2?[[.27,.97],[.27,.52],[1.23,.97],[1.23,.52]]:[[.27,1.03],[.27,.74],[.27,.45],[1.23,1.03],[1.23,.74],[1.23,.45]];
   const fr=t===1?.2:t===2?.15:.11;
-  fans.forEach((p,i)=>o+=fan(p[0],p[1],fr,c,(.5+i*.07).toFixed(2)+'s'));
+  /* فاز ۴: فن‌های قوی‌تر سریع‌تر می‌چرخن */
+  fans.forEach((p,i)=>o+=fan(p[0],p[1],fr,c,((1.7-t*.42)-i*.08).toFixed(2)+'s'));
   o+=`<g filter="url(#gl2)"><polygon points=".5,1.02 1,1.02 .75,.42" fill="${c}" fill-opacity=".92"><animate attributeName="fill-opacity" values=".92;.6;.92" dur="2.2s" repeatCount="indefinite"/></polygon></g>`;
   o+=`<polygon points=".5,1.02 .75,1.02 .75,.42" fill="#fff" fill-opacity=".22"/><polyline points=".75,1.02 .75,.42" fill="none" stroke="#eaf6ff" stroke-width=".03"/>`;
   o+=`<g clip-path="url(#cGem)"><rect x=".5" y=".42" width=".5" height=".035" fill="#fff" opacity=".85"><animate attributeName="y" values=".42;1;.42" dur="2.4s" repeatCount="indefinite"/></rect></g>`;
@@ -756,8 +779,10 @@ function faceArt(m){
  return o}
 
 function minerPreview(m){return `<svg viewBox="-.05 -.05 1.6 1.55"><g transform="translate(0 ${MH}) scale(1 -1)"><rect x="0" y="0" width="${MW}" height="${MH}" rx=".12" fill="${BODY[m.coin][1]}"/>${faceArt(m)}</g></svg>`}
+/* فاز ۴: ماینرهای تیر بالاتر جثه‌دارترن */
 function minerSvg(m,a,z){
- return box(a,.08,z,MW,1.0,MH,BODY[m.coin])+onB(1.08,`<g transform="translate(${a} ${z})">${faceArt(m)}</g>`)}
+ const sc=m.tier===1?.84:m.tier===2?1:1.13,w=MW*sc,h=MH*sc,x=a+(MW-w)/2;
+ return box(x,.08,z,w,1.0,h,BODY[m.coin])+onB(1.08,`<g transform="translate(${x.toFixed(3)} ${z}) scale(${sc})">${faceArt(m)}</g>`)}
 
 /* ---------------- Rack / shelves ---------------- */
 /* ---------------- متن ریز و ظریف که روی قفسه ایستاده (ضخامت کم) ---------------- */
@@ -766,18 +791,29 @@ const text3d=(txt,u,v,fs,side,front,ls=0)=>{let s='';
  return s};
 
 const BAY_A=[.3,4.5],ZB=[.1,2.2,4.2],LVL_COL=['#22e6ff','#ff4fa3','#ffc247'];
+const WOOD=['#7A5533','#54371F','#3D2716'];
 const shelfPos=k=>({bay:k<3?0:1,lv:k%3,a0:BAY_A[k<3?0:1],zb:ZB[k%3]});
+/* فاز ۴: قفسه‌ی قفل با پنل شیشه‌ای، قفل واقعی و برچسب قیمت فیزیکی */
+function lockGlyph(u,v,col){
+ return `<g transform="translate(${u.toFixed(2)} ${v.toFixed(2)}) scale(1 -1)" fill="none" stroke="${col}" stroke-width=".05">
+  <rect x="-.16" y="-.02" width=".32" height=".22" rx=".05" fill="#39414F"/>
+  <path d="M-.1 -.02 v-.09 a.1 .1 0 0 1 .2 0 v.09"/></g>`}
 function lockedShelf(k,a0,zb){
- const nx=k===S.shelves,cu=a0+1.75,col=nx?'#22e6ff':'#6b5fb5';
- const pl=nx?['rgba(34,230,255,.30)','rgba(34,230,255,.17)','rgba(34,230,255,.11)']:['rgba(124,104,255,.24)','rgba(124,104,255,.14)','rgba(124,104,255,.09)'];
- let o=`<g class="tap" data-act="shelf" data-k="${k}" opacity="${nx?1:.88}">`
-  +box(a0+.12,0,zb-.1,3.26,1.25,.1,pl)
-  +onB(1.2,`<rect x="${a0+.12}" y="${zb}" width="3.26" height="1.7" rx=".12" fill="${nx?'rgba(34,230,255,.06)':'rgba(120,100,255,.04)'}" stroke="${col}" stroke-opacity="${nx?.8:.45}" stroke-width=".035" stroke-dasharray=".18 .12"/>`)
-  +onTop(zb+.005,`<ellipse cx="${cu}" cy="1.0" rx="1.55" ry=".3" fill="rgba(0,0,0,.4)"/>`);
+ const nx=k===S.shelves,cu=a0+1.75;
+ let o=`<g class="tap" data-act="shelf" data-k="${k}" opacity="${nx?1:.92}">`
+  +box(a0+.12,0,zb-.1,3.26,1.25,.12,WOOD)
+  +onB(1.2,`<rect x="${a0+.18}" y="${zb+.02}" width="3.14" height="1.62" rx=".08" fill="rgba(140,165,205,.10)" stroke="${nx?'#8FB6D9':'#5E5E6E'}" stroke-width=".04"/>
+   <path d="M${a0+.5} ${zb+1.6} L${a0+1.25} ${zb+.06} L${a0+1.62} ${zb+.06} L${a0+.87} ${zb+1.6} Z" fill="#fff" opacity=".09"/>`)
+  +onTop(zb+.13,`<ellipse cx="${cu}" cy="1.0" rx="1.5" ry=".26" fill="rgba(0,0,0,.38)"/>`);
  if(nx){
-  const txt=fc(SHELF_COST[k]),fs=Math.min(.42,1.6/(txt.length*.62));
-  o+=text3d(txt,cu,zb+.06,fs,'#167a94','#8ff5ff');
- }else o+=text3d('LOCKED',cu,zb+.06,.26,'#3a2f80','#b5aae6',.05);
+  o+=onB(1.22,`<g transform="translate(${cu} ${zb+1.0}) scale(1 -1)">
+   <rect x="-.52" y="-.46" width="1.04" height=".36" rx=".07" fill="#20242E" stroke="#8FB6D9" stroke-width=".028"/>
+   <text y="-.2" text-anchor="middle" font-size=".21" font-weight="800" fill="#8FF5FF" direction="ltr">${fc(SHELF_COST[k])}</text></g>`)
+   +onB(1.22,lockGlyph(cu,zb+.55,'#8FB6D9'));
+ }else{
+  o+=onB(1.22,lockGlyph(cu,zb+.85,'#8A8A98'))
+   +text3d('قفل',cu,zb+.16,.23,'#3a3a44','#9A9AA8');
+ }
  return o+`</g>`}
 
 function renderRack(){
@@ -786,48 +822,120 @@ function renderRack(){
  order.forEach(k=>{
   const {a0,zb}=shelfPos(k);
   if(k>=S.shelves){o+=lockedShelf(k,a0,zb);return}
-  o+=`<g class="tap" data-act="shelf" data-k="${k}">`+box(a0+.12,0,zb-.1,3.26,1.25,.1,['#5b4dc4','#2f2674','#201a54'])
-   +glow(onB(1.26,`<rect x="${a0+.15}" y="${zb-.07}" width="3.2" height=".04" rx=".02" fill="${LVL_COL[k%3]}"><animate attributeName="opacity" values=".95;.35;.95" dur="${(2.2+k*.4).toFixed(1)}s" repeatCount="indefinite"/></rect>`))+`</g>`;
+  /* تخته‌ی چوبی + نوار LED سطح */
+  o+=`<g class="tap" data-act="shelf" data-k="${k}">`+box(a0+.12,0,zb-.1,3.26,1.25,.12,WOOD)
+   +glow(onB(1.26,`<rect x="${a0+.15}" y="${zb-.09}" width="3.2" height=".045" rx=".02" fill="${LVL_COL[k%3]}"><animate attributeName="opacity" values=".95;.35;.95" dur="${(2.2+k*.4).toFixed(1)}s" repeatCount="indefinite"/></rect>`))+`</g>`;
   [0,1].forEach(j=>{
    const i=2*k+j,a=a0+.15+j*1.7,id=S.slots[i],m=id&&mById(id);
-   if(m)o+=`<g class="tap" data-act="slot" data-i="${i}">${minerSvg(m,a,zb)}</g>`;
-   else{const cx=a+.75,cy=zb+.7;
-    o+=`<g class="tap" data-act="slot" data-i="${i}">`+onB(1.1,`<rect x="${a}" y="${zb+.05}" width="1.5" height="1.3" rx=".1" fill="rgba(167,139,250,.08)" stroke="rgba(167,139,250,.65)" stroke-width=".04" stroke-dasharray=".15 .1"/><g class="plus" fill="#c4b5fd"><rect x="${cx-.22}" y="${cy-.03}" width=".44" height=".06"/><rect x="${cx-.03}" y="${cy-.22}" width=".06" height=".44"/></g>`)+`</g>`}
+   if(m){
+    /* کابل از پشت ماینر تا لبه‌ی تخته (فاز ۴) */
+    o+=onB(.15,`<path d="M${(a+.75).toFixed(2)} ${(zb+.35).toFixed(2)} C ${(a+.75).toFixed(2)} ${(zb+.1).toFixed(2)}, ${(a+1.1).toFixed(2)} ${(zb+.02).toFixed(2)}, ${(a0+3.12).toFixed(2)} ${(zb+.08).toFixed(2)}" fill="none" stroke="#141018" stroke-width=".055" stroke-linecap="round"/>`);
+    o+=`<g class="tap" data-act="slot" data-i="${i}">${minerSvg(m,a,zb)}</g>`;
+   }else{const cx=a+.75,cy=zb+.7;
+    o+=`<g class="tap" data-act="slot" data-i="${i}">`+onB(1.1,`<rect x="${a}" y="${zb+.05}" width="1.5" height="1.3" rx=".1" fill="rgba(167,159,196,.07)" stroke="rgba(167,159,196,.6)" stroke-width=".04" stroke-dasharray=".15 .1"/><g class="plus" fill="#c4b8dd"><rect x="${cx-.22}" y="${cy-.03}" width=".44" height=".06"/><rect x="${cx-.03}" y="${cy-.22}" width=".06" height=".44"/></g>`)+`</g>`}
   })
  });
- $('#rackItems').innerHTML=o}
+ $('#rackItems').innerHTML=o;
+ /* هاله‌ی گرما: هرچی ماینر بیشتر، اتاق گرم‌تر (فاز ۴) */
+ const n0=S.slots.slice(0,6).filter(Boolean).length,n1=S.slots.slice(6).filter(Boolean).length;
+ [['heat0',n0],['heat1',n1]].forEach(([id,n])=>{const e=document.getElementById(id);if(e)e.setAttribute('opacity',Math.min(.5,n*.09).toFixed(2))})}
 
-/* ---------------- میکو پشت سیستم: از پشت دیده میشه و تایپ می‌کنه ---------------- */
+/* ---------------- میکو v2 (فاز ۴): از پشت، با هدفون؛ ۷ حالت و واکنش به رویدادها ---------------- */
+const MK_STATES={
+ work:{aL:0,aR:0,zzz:0,mug:0,sw:0},
+ happy:{aL:-98,aR:-98,zzz:0,mug:0,sw:0},
+ tired:{aL:34,aR:34,zzz:0,mug:0,sw:1},
+ surprised:{aL:-70,aR:8,zzz:0,mug:0,sw:0},
+ sleep:{aL:30,aR:38,zzz:1,mug:0,sw:0},
+ coffee:{aL:0,aR:14,zzz:0,mug:1,sw:0},
+ scared:{aL:-120,aR:-100,zzz:0,mug:0,sw:1}};
+let mkState='work',mkT=null,mkShoulders={L:[0,0],R:[0,0]},lastTouch=Date.now(),coffeeAt=Date.now()+9e4,lastScare=0;
 function mikoBlob(){
  const [x,y]=P(3.0,6.15,1.9),f=n=>n.toFixed(1);
- const arm=(sh,hd,dl)=>{const [a,b]=sh,[c,d]=hd;
-  const l=(w,col)=>`<line x1="${f(a)}" y1="${f(b)}" x2="${f(c)}" y2="${f(d)}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
-  return l(8,'#2a1c6b')+l(5.5,'#5ee6f5')+`<circle cx="${f(c)}" cy="${f(d)}" r="3.4" fill="#bff7ff" stroke="#2a1c6b" stroke-width="1.2"><animateTransform attributeName="transform" type="translate" values="0 0;0 -2.2;0 0" dur=".5s" begin="${dl}s" repeatCount="indefinite"/></circle>`};
+ const shL=P(2.85,5.7,3.0),hdL=P(1.55,5.8,2.72),shR=P(2.85,6.6,3.0),hdR=P(1.55,6.5,2.72);
+ mkShoulders={L:[shL[0],shL[1]],R:[shR[0],shR[1]]};
+ const arm=(id,sh,hd,dl)=>{const [a,b]=sh,[c,d]=hd;
+  return `<g id="${id}"><line x1="${f(a)}" y1="${f(b)}" x2="${f(c)}" y2="${f(d)}" stroke="#2a1c6b" stroke-width="8" stroke-linecap="round"/><line x1="${f(a)}" y1="${f(b)}" x2="${f(c)}" y2="${f(d)}" stroke="#5ee6f5" stroke-width="5.5" stroke-linecap="round"/><circle cx="${f(c)}" cy="${f(d)}" r="3.4" fill="#bff7ff" stroke="#2a1c6b" stroke-width="1.2"><animateTransform attributeName="transform" type="translate" values="0 0;0 -2.2;0 0" dur=".5s" begin="${dl}s" repeatCount="indefinite"/></circle></g>`};
  const keys=[0,1,2].map(i=>{const q=P(1.2+i*.15,5.5+i*.55,2.75);return `<circle cx="${f(q[0])}" cy="${f(q[1])}" r="1.2" fill="${['#22e6ff','#ff4fa3','#ffd166'][i]}" opacity="0"><animate attributeName="opacity" values="0;1;0" dur=".5s" begin="${i*.17}s" repeatCount="indefinite"/></circle>`}).join('');
+ const [mgx,mgy]=P(2.02,4.13,3.05);
  return `<ellipse cx="${f(x)}" cy="${f(y+1)}" rx="19" ry="7" fill="url(#gShadow)"/>`
-  +arm(P(2.85,5.7,3.0),P(1.55,5.8,2.72),0)+arm(P(2.85,6.6,3.0),P(1.55,6.5,2.72),.25)
+  +arm('mk-al',shL,hdL,0)+arm('mk-ar',shR,hdR,.25)
   +`<g class="mkhop"><g transform="translate(${f(x)} ${f(y)})">
 <defs><radialGradient id="mkB" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#d4fbff"/><stop offset=".5" stop-color="#5ee6f5"/><stop offset="1" stop-color="#2597ad"/></radialGradient></defs>
 <g><animateTransform attributeName="transform" type="rotate" values="-6 0 -44;6 0 -44;-6 0 -44" dur="2.6s" repeatCount="indefinite"/><path d="M0 -42V-52" stroke="#5ee6f5" stroke-width="3" stroke-linecap="round"/><circle cy="-54" r="4" fill="#ffd166" stroke="#2a1c6b" stroke-width="1.2"/></g>
-<circle cx="-13" cy="-38" r="6" fill="#5ee6f5" stroke="#2a1c6b" stroke-width="1.6"/><circle cx="13" cy="-38" r="6" fill="#5ee6f5" stroke="#2a1c6b" stroke-width="1.6"/><circle cx="-13" cy="-38" r="2.8" fill="#ff8ec4"/><circle cx="13" cy="-38" r="2.8" fill="#ff8ec4"/><ellipse cx="-9" cy="2" rx="7" ry="3.5" fill="#2fc6d8" stroke="#2a1c6b" stroke-width="1.4"/><ellipse cx="9" cy="2" rx="7" ry="3.5" fill="#2fc6d8" stroke="#2a1c6b" stroke-width="1.4"/><path d="M-19 0C-22 -26 -12 -44 0 -44S22 -26 19 0C19 4 -19 4 -19 0Z" fill="url(#mkB)" stroke="#2a1c6b" stroke-width="1.6" stroke-linejoin="round"/>
-<path d="M-12 -30Q-10 -38 -4 -40" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".6"/></g></g>`+keys}
+<circle cx="-13" cy="-38" r="6" fill="#5ee6f5" stroke="#2a1c6b" stroke-width="1.6"/><circle cx="13" cy="-38" r="6" fill="#5ee6f5" stroke="#2a1c6b" stroke-width="1.6"/>
+<path d="M-19 0C-22 -26 -12 -44 0 -44S22 -26 19 0C19 4 -19 4 -19 0Z" fill="url(#mkB)" stroke="#2a1c6b" stroke-width="1.6" stroke-linejoin="round"/>
+<path d="M0 -44L0 -2" stroke="#2a1c6b" stroke-width="1.1" opacity=".45"/>
+<path d="M-8 -40 Q0 -33 8 -40" fill="none" stroke="#2a1c6b" stroke-width="1.4"/>
+<ellipse cx="-9" cy="2" rx="7" ry="3.5" fill="#2fc6d8" stroke="#2a1c6b" stroke-width="1.4"/><ellipse cx="9" cy="2" rx="7" ry="3.5" fill="#2fc6d8" stroke="#2a1c6b" stroke-width="1.4"/>
+<path d="M-15 -46 Q0 -58 15 -46" fill="none" stroke="#E8913A" stroke-width="3.4" stroke-linecap="round"/>
+<rect x="-20" y="-43" width="8" height="10" rx="3.4" fill="#E8913A" stroke="#2a1c6b" stroke-width="1.2"/>
+<rect x="12" y="-43" width="8" height="10" rx="3.4" fill="#E8913A" stroke="#2a1c6b" stroke-width="1.2"/>
+<path d="M-12 -30Q-10 -38 -4 -40" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".6"/>
+<g id="mk-zzz" style="display:none"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -5;0 0" dur="2.2s" repeatCount="indefinite"/>
+<text x="13" y="-50" font-size="8" font-weight="800" fill="#cfd6ff" opacity=".95">z</text>
+<text x="19" y="-57" font-size="10" font-weight="800" fill="#cfd6ff" opacity=".7">z</text>
+<text x="26" y="-64" font-size="12" font-weight="800" fill="#cfd6ff" opacity=".45">z</text></g></g>
+<g id="mk-sw" style="display:none"><ellipse cx="17" cy="-42" rx="2" ry="3" fill="#9fe8ff" opacity=".9"><animate attributeName="cy" values="-42;-34;-42" dur="1.4s" repeatCount="indefinite"/></ellipse></g>
+</g></g>`
+  +`<g id="mk-mug" style="display:none"><rect x="${f(mgx-4)}" y="${f(mgy-4)}" width="8" height="7" rx="1.6" fill="#E8913A" stroke="#2a1c6b" stroke-width="1.1"/><path d="M${f(mgx+4)} ${f(mgy-2)} a2.4 2.4 0 0 1 0 4" fill="none" stroke="#E8913A" stroke-width="1.6"/><circle cx="${f(mgx)}" cy="${f(mgy-8)}" r="1.2" fill="rgba(255,255,255,.4)" class="tw"/></g>`
+  +keys}
+function setMiko(st,ms){
+ const s=MK_STATES[st]||MK_STATES.work;mkState=st;
+ const al=document.getElementById('mk-al'),ar=document.getElementById('mk-ar');
+ if(al)al.setAttribute('transform',`rotate(${s.aL} ${mkShoulders.L[0].toFixed(1)} ${mkShoulders.L[1].toFixed(1)})`);
+ if(ar)ar.setAttribute('transform',`rotate(${s.aR} ${mkShoulders.R[0].toFixed(1)} ${mkShoulders.R[1].toFixed(1)})`);
+ const vis=(id,on)=>{const e=document.getElementById(id);if(e)e.style.display=on?'':'none'};
+ vis('mk-zzz',!!s.zzz);vis('mk-mug',!!s.mug);vis('mk-sw',!!s.sw);
+ const mk=document.getElementById('mk3');if(mk)mk.classList.toggle('joy',st==='happy'||st==='surprised'||st==='scared');
+ clearTimeout(mkT);if(st!=='work')mkT=setTimeout(()=>setMiko('work'),ms||2600)}
+/* زندگی روزمره‌ی میکو: خواب بعد از بی‌کاری، قهوه‌ی بین‌راه (در tick صدا زده می‌شه) */
+function mikoIdle(){
+ const now=Date.now();
+ if(mkState==='work'){
+  if(now-lastTouch>75e3){setMiko('sleep',36e5);say('ششش… میکو خوابش برد. یه ضربه بزن بیدارش کن.',6000)}
+  else if(now>coffeeAt){setMiko('coffee',7e3);coffeeAt=now+12e4+Math.random()*12e4;say('وقت استراحته! یه قهوه برداشتم، ماینرها خودشون کار می‌کنن.',5000)}
+ }}
+/* تبدیل مختصات viewBox صحنه به پیکسل کانواس ذرات */
+function svgToScreen(x,y){
+ const r=$('#room').getBoundingClientRect();
+ const k=Math.min(r.width/380,r.height/390),ox=(r.width-380*k)/2,oy=(r.height-390*k)/2;
+ return [ox+(x-35)*k,oy+(y-6)*k]}
+/* ذره‌ی سکه به رنگ ارز از بالای ماینرها (فاز ۴) */
+function coinRain(){
+ const act=[];S.slots.forEach((id,i)=>{if(id)act.push(i)});
+ if(!act.length||parts.length>130)return;
+ const i=act[Math.floor(Math.random()*act.length)],m=mById(S.slots[i]);
+ const {a0,zb}=shelfPos(Math.floor(i/2)),a=a0+.15+(i%2)*1.7;
+ const p=P(a+.75,.55,zb+MH*1.1),[sx,sy]=svgToScreen(p[0],p[1]);
+ parts.push({x:sx,y:sy,vx:(Math.random()-.5)*.3,vy:-.5-.35*Math.random(),g:0,l:1,d:.011,r:2.6,c:m.col})}
 
-/* ---------------- Room ---------------- */
+/* ---------------- Room v2 (فاز ۴): متریال گرم، دکور شخصی، مانیتور زنده، دو حالت نور، لایه‌ی پن ---------------- */
+const LIGHT=()=>{const h=new Date().getHours();return(h>=16&&h<20)?'dusk':'night'};
+const ROOM_PAL={
+ night:{wl1:'#3D3350',wl2:'#241C33',wr1:'#332A44',wr2:'#1E1729',fl1:'#382A3C',fl2:'#1E1626',plank:'rgba(255,190,140,.055)',sky0:'#10142E',sky1:'#3A2B5E',sky2:'#B65A2E',winGlow:'rgba(255,140,70,.10)',lampOp:.5},
+ dusk:{wl1:'#4A3D5E',wl2:'#2C2340',wr1:'#3E334F',wr2:'#251D36',fl1:'#3F3044',fl2:'#221829',plank:'rgba(255,200,150,.075)',sky0:'#2A2450',sky1:'#8A4A7A',sky2:'#FF9A4D',winGlow:'rgba(255,170,90,.17)',lampOp:.4}};
+let roomLight=null;
+function checkLight(){const l=LIGHT();if(l!==roomLight){buildRoom();renderRack();updateRoomItems();drawChart()}}
 function buildRoom(){
- const dk=['#2b2457','#1c1740','#171235'],bd=['#3a2f80','#2a2063','#211a52'];
+ roomLight=LIGHT();
+ const PL=ROOM_PAL[roomLight];
+ const MET=['#4A4A56','#33333E','#26262F'],DKW=['#54371F','#3D2716','#2E1C10'];
  let o=`<defs>
- <linearGradient id="gWallL" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7452e6"/><stop offset="1" stop-color="#3d2b95"/></linearGradient>
- <linearGradient id="gWallR" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5a3ec7"/><stop offset="1" stop-color="#2e2177"/></linearGradient>
- <linearGradient id="gFloor" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#33276f"/><stop offset="1" stop-color="#171040"/></linearGradient>
- <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#150d45"/><stop offset=".6" stop-color="#6a2c8f"/><stop offset="1" stop-color="#ff8a3d"/></linearGradient>
+ <linearGradient id="gWallL" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${PL.wl1}"/><stop offset="1" stop-color="${PL.wl2}"/></linearGradient>
+ <linearGradient id="gWallR" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${PL.wr1}"/><stop offset="1" stop-color="${PL.wr2}"/></linearGradient>
+ <linearGradient id="gFloor" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${PL.fl1}"/><stop offset="1" stop-color="${PL.fl2}"/></linearGradient>
+ <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${PL.sky0}"/><stop offset=".6" stop-color="${PL.sky1}"/><stop offset="1" stop-color="${PL.sky2}"/></linearGradient>
  <linearGradient id="gScr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#150a45"/><stop offset="1" stop-color="#05102e"/></linearGradient>
  <linearGradient id="gRgb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ff3d81"/><stop offset=".5" stop-color="#7c5cff"/><stop offset="1" stop-color="#22e6ff"/></linearGradient>
- <linearGradient id="gPanel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1250"/><stop offset="1" stop-color="#090620"/></linearGradient>
+ <linearGradient id="gPanel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#241C36"/><stop offset="1" stop-color="#0E0A18"/></linearGradient>
  <linearGradient id="gSweep" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#bfe9ff" stop-opacity=".18"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
  <linearGradient id="gHolo" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#22e6ff" stop-opacity=".5"/><stop offset="1" stop-color="#22e6ff" stop-opacity="0"/></linearGradient>
  <radialGradient id="gCyan"><stop offset="0" stop-color="#22e6ff" stop-opacity=".5"/><stop offset="1" stop-color="#22e6ff" stop-opacity="0"/></radialGradient>
  <radialGradient id="gPink"><stop offset="0" stop-color="#ff4fa3" stop-opacity=".5"/><stop offset="1" stop-color="#ff4fa3" stop-opacity="0"/></radialGradient>
  <radialGradient id="gGreen"><stop offset="0" stop-color="#4dffb0" stop-opacity=".5"/><stop offset="1" stop-color="#4dffb0" stop-opacity="0"/></radialGradient>
+ <radialGradient id="gHeat"><stop offset="0" stop-color="#FF7A3D" stop-opacity=".55"/><stop offset="1" stop-color="#FF7A3D" stop-opacity="0"/></radialGradient>
+ <radialGradient id="gLamp"><stop offset="0" stop-color="#FFC46B" stop-opacity=".55"/><stop offset="1" stop-color="#FFC46B" stop-opacity="0"/></radialGradient>
  <radialGradient id="gShadow"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
  <clipPath id="winClip"><rect x=".5" y="2.2" width="2.7" height="3.7"/></clipPath>
  <clipPath id="cGem"><polygon points=".5,1.02 1,1.02 .75,.42"/></clipPath>
@@ -836,73 +944,110 @@ function buildRoom(){
  <filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
  <filter id="gl2" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation=".05" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
  </defs>`;
+ o='<g id="pan">'+o;
 
  /* slab + walls */
- o+=poly([P(L,0,0),P(L,L,0),P(L,L,-.5),P(L,0,-.5)],'#0d0926');
- o+=poly([P(0,L,0),P(L,L,0),P(L,L,-.5),P(0,L,-.5)],'#120c30');
+ o+=poly([P(L,0,0),P(L,L,0),P(L,L,-.5),P(L,0,-.5)],'#151021');
+ o+=poly([P(0,L,0),P(L,L,0),P(L,L,-.5),P(0,L,-.5)],'#191326');
  o+=poly([P(0,0,0),P(L,0,0),P(L,L,0),P(0,L,0)],'url(#gFloor)');
  o+=poly([P(0,0,0),P(0,L,0),P(0,L,H),P(0,0,H)],'url(#gWallL)');
  o+=poly([P(0,0,0),P(L,0,0),P(L,0,H),P(0,0,H)],'url(#gWallR)');
  const t=.45;
- o+=poly([P(-t,L,0),P(0,L,0),P(0,L,H),P(-t,L,H)],'#120c2e')+poly([P(-t,0,H),P(0,0,H),P(0,L,H),P(-t,L,H)],'#2c2160');
- o+=poly([P(L,-t,0),P(L,0,0),P(L,0,H),P(L,-t,H)],'#0f0a28')+poly([P(0,-t,H),P(L,-t,H),P(L,0,H),P(0,0,H)],'#2c2160');
+ o+=poly([P(-t,L,0),P(0,L,0),P(0,L,H),P(-t,L,H)],'#191326')+poly([P(-t,0,H),P(0,0,H),P(0,L,H),P(-t,L,H)],'#2E2438');
+ o+=poly([P(L,-t,0),P(L,0,0),P(L,0,H),P(L,-t,H)],'#151021')+poly([P(0,-t,H),P(L,-t,H),P(L,0,H),P(0,0,H)],'#2E2438');
+ /* قرنیز و خطوط پنل دیوار (فاز ۴) */
+ o+=onA(0,`<rect x="0" y="0" width="9" height=".2" fill="rgba(20,14,26,.8)"/>`+[1.5,3,4.5,6,7.5].map(u=>`<line x1="${u}" x2="${u}" y1=".2" y2="7.5" stroke="rgba(255,255,255,.035)" stroke-width=".025"/>`).join(''));
+ o+=onB(0,`<rect x="0" y="0" width="9" height=".2" fill="rgba(20,14,26,.8)"/>`);
 
- /* floor: grid, light pools, shadows, rug */
- let grid='';for(let i=1;i<L;i++)grid+=`<line x1="${i}" y1="0" x2="${i}" y2="${L}"/><line x1="0" y1="${i}" x2="${L}" y2="${i}"/>`;
- o+=onTop(0,`<g stroke="rgba(200,180,255,.09)" stroke-width=".03">${grid}</g>`);
- o+=onTop(.01,`<polygon points="0,.5 0,3.2 2.7,4.8 2.7,2.1" fill="rgba(255,170,90,.10)"/><ellipse cx="1.7" cy="6.2" rx="2" ry="3.4" fill="url(#gCyan)"/><ellipse cx="6.2" cy="1.4" rx="3.6" ry="1.8" fill="url(#gPink)"/><ellipse cx="7.05" cy="5.35" rx="2.1" ry="2.1" fill="rgba(34,230,255,.08)"/><ellipse cx="7.05" cy="5.35" rx="1.7" ry="1.7" fill="none" stroke="rgba(34,230,255,.35)" stroke-width=".04" stroke-dasharray=".2 .14"/>`);
+ /* floor: تخته‌های چوبی، حوضچه‌های نور، سایه‌ها */
+ let grid='';for(let i=1;i<L;i++)grid+=`<line x1="0" y1="${i}" x2="${L}" y2="${i}"/>`;
+ let seams='';for(let i=0;i<10;i++){const a1=rnd()*L,b1=rnd()*L;seams+=`<line x1="${a1.toFixed(2)}" y1="${Math.ceil(b1)}" x2="${a1.toFixed(2)}" y2="${Math.ceil(b1)+1}"/>`}
+ o+=onTop(0,`<g stroke="${PL.plank}" stroke-width=".045">${grid}${seams}</g>`);
+ o+=onTop(.01,`<polygon points="0,.5 0,3.2 2.7,4.8 2.7,2.1" fill="${PL.winGlow}"/><ellipse cx="1.7" cy="6.2" rx="2" ry="3.4" fill="url(#gCyan)"/><ellipse cx="6.2" cy="1.4" rx="3.6" ry="1.8" fill="url(#gPink)"/><ellipse cx="7.05" cy="5.35" rx="2.1" ry="2.1" fill="rgba(34,230,255,.08)"/><ellipse cx="7.05" cy="5.35" rx="1.7" ry="1.7" fill="none" stroke="rgba(34,230,255,.35)" stroke-width=".04" stroke-dasharray=".2 .14"/>`);
  o+=onTop(.015,`<ellipse cx="2.05" cy="1.2" rx="2.3" ry=".9" fill="url(#gShadow)"/><ellipse cx="6.25" cy="1.2" rx="2.3" ry=".9" fill="url(#gShadow)"/><ellipse cx="1.3" cy="6.1" rx="1.9" ry="2.7" fill="url(#gShadow)"/><ellipse cx="3.15" cy="6.2" rx=".95" ry=".95" fill="url(#gShadow)"/><ellipse cx="7.05" cy="5.35" rx="1.3" ry="1.3" fill="url(#gShadow)"/>`);
+ /* فرش زیر صندلی (فاز ۴) */
+ o+=onTop(.018,`<ellipse cx="2.55" cy="6.5" rx="2.05" ry="1.18" fill="rgba(150,70,60,.32)"/><ellipse cx="2.55" cy="6.5" rx="1.68" ry=".94" fill="none" stroke="rgba(255,190,150,.28)" stroke-width=".05"/>`);
 
- /* ---- left wall (plane a=0 : u=b) ---- */
+ /* ---- پنجره‌ی شب (دیوار چپ) ---- */
  let wi=`<rect x=".5" y="2.2" width="2.7" height="3.7" fill="url(#gSky)"/><g clip-path="url(#winClip)">`;
  for(let i=0;i<16;i++)wi+=`<circle cx="${(.55+rnd()*2.6).toFixed(2)}" cy="${(4.2+rnd()*1.6).toFixed(2)}" r=".025" fill="#fff" class="tw" style="animation-delay:${(rnd()*3).toFixed(1)}s"/>`;
  wi+=`<circle cx="2.6" cy="5.3" r=".24" fill="#fff6d6"/><circle cx="2.7" cy="5.35" r=".2" fill="#6a2c8f" opacity=".55"/>`;
  wi+=`<circle r=".05" cy="5.5" fill="#ff4f6a"><animate attributeName="cx" values=".5;3.2" dur="16s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;0;1;0;1;0" dur="16s" repeatCount="indefinite"/></circle>`;
- let x=.5;while(x<3.2){const w=.2+rnd()*.32,h=.6+rnd()*1.7;wi+=`<rect x="${x.toFixed(2)}" y="2.2" width="${w.toFixed(2)}" height="${h.toFixed(2)}" fill="#140c3a"/>`;
+ wi+=`<rect x=".5" y="4.95" width="2.7" height=".95" fill="${PL.winGlow}"/>`;
+ let x=.5;while(x<3.2){const w=.2+rnd()*.32,h=.6+rnd()*1.7;wi+=`<rect x="${x.toFixed(2)}" y="2.2" width="${w.toFixed(2)}" height="${h.toFixed(2)}" fill="#191430"/>`;
   for(let i=0;i<Math.floor(h/.22);i++)if(rnd()>.4)wi+=`<rect x="${(x+.04+rnd()*(w-.12)).toFixed(2)}" y="${(2.28+i*.22).toFixed(2)}" width=".05" height=".07" fill="${rnd()>.5?'#ffd166':'#7be7ff'}" class="tw" style="animation-delay:${(rnd()*4).toFixed(1)}s"/>`;
   x+=w+.03}
  wi+=`<polygon points=".5,2.2 1.4,2.2 .5,4" fill="#fff" opacity=".06"/></g><rect x=".5" y="2.2" width="2.7" height="3.7" fill="none" stroke="#e5deff" stroke-width=".1"/><line x1="1.85" x2="1.85" y1="2.2" y2="5.9" stroke="#e5deff" stroke-width=".07"/><line x1=".5" x2="3.2" y1="4.05" y2="4.05" stroke="#e5deff" stroke-width=".07"/>`;
  o+=onA(0,wi);
+ /* چارت دیواری (قیمت زنده) */
  o+=glow(onA(0,`<rect x="4.4" y="4.8" width="3.8" height="1.8" rx=".1" fill="#070520" stroke="#22e6ff" stroke-width=".05"/><g stroke="rgba(167,139,250,.2)" stroke-width=".02"><line x1="4.6" x2="8" y1="5.4" y2="5.4"/><line x1="4.6" x2="8" y1="5.85" y2="5.85"/><line x1="4.6" x2="8" y1="6.3" y2="6.3"/></g><polygon id="chartArea" points="" fill="#ffc247" opacity=".2"/><polyline id="chartLine" points="" fill="none" stroke="#ffc247" stroke-width=".07" stroke-linejoin="round"/>`));
- /* neon décor (shown after purchase) */
+ /* نئون‌های خریدنی */
  o+=`<g id="it-strip" class="item gone">${onTop(0.02,'<ellipse cx="2" cy="6" rx="2" ry="4" fill="url(#gGreen)"/>')}${glow(onA(0,'<rect x=".4" y="6.9" width="8.3" height=".13" rx=".06" fill="#4dffb0"/>'))}</g>`;
  o+=`<g id="it-tube" class="item gone">${onTop(0.02,'<ellipse cx="2.4" cy="3.5" rx="1.5" ry="2.2" fill="url(#gPink)"/>')}${glow(onA(0,'<rect x="3.42" y="1.4" width=".13" height="3.8" rx=".06" fill="#ff4fa3"/><rect x="3.42" y="5.2" width=".13" height=".6" rx=".06" fill="#22e6ff"/><rect x="3.1" y="2.0" width=".13" height="2.6" rx=".06" fill="#8b5cf6"/>'))}</g>`;
 
- /* ---- right wall (plane b=0 : u=a) ---- */
+ /* ---- دیوار راست: پوستر + هگز + کولر + تابلو (فاز ۴: پوستر جدید) ---- */
+ o+=onB(0,`<rect x="6.42" y="4.42" width="1.3" height="1.76" rx=".05" fill="#171221" stroke="#5E4A33" stroke-width=".07"/><rect x="6.54" y="4.54" width="1.06" height="1.52" fill="#20293E"/><polygon points="${(()=>{const cx=7.07,cy=5.02,R=.2,r=.085,p=[];for(let i=0;i<10;i++){const a=Math.PI/2+i*Math.PI/5,rr=i%2?r:R;p.push((cx+Math.cos(a)*rr).toFixed(2)+','+(cy-Math.sin(a)*rr).toFixed(2))}return p.join(' ')})()}" fill="#FFC247"/><rect x="6.68" y="5.5" width=".2" height=".4" fill="#3AA8F0"/><rect x="6.95" y="5.36" width=".2" height=".54" fill="#3ED598"/><rect x="7.22" y="5.58" width=".2" height=".32" fill="#FF5C7A"/>`);
  const hex=(cx,cy,r,c)=>`<path d="M${cx+r} ${cy} L${cx+r/2} ${cy+r*.866} L${cx-r/2} ${cy+r*.866} L${cx-r} ${cy} L${cx-r/2} ${cy-r*.866} L${cx+r/2} ${cy-r*.866}Z" fill="${c}" stroke="#fff" stroke-width=".04" stroke-opacity=".7"/>`;
  o+=`<g id="it-hex" class="item gone">${glow(onB(0,hex(8.3,3.0,.28,'#ffe28a')+hex(8.3,3.49,.28,'#c4b5fd')+hex(8.72,3.25,.28,'#7be7ff')+hex(8.3,4.0,.28,'#7be7ff')+hex(8.72,3.75,.28,'#ffe28a')))}</g>`;
  o+=`<g id="it-ac" class="item gone">${box(.5,0,6.25,3.3,.75,.95,['#f5f2ff','#ddd7f7','#c6bfea'])}${onB(.75,`<rect x=".65" y="6.42" width="3" height=".12" rx=".05" fill="#b3abdc"/><rect x=".65" y="6.62" width="3" height=".06" fill="#c6bfea"/><circle cx="3.45" cy="6.93" r=".06" fill="#4ade80"/>`)}${[0,1,2,3].map(i=>onB(.75,`<line x1="${1+i*.8}" x2="${1.05+i*.8}" y1="6.1" y2="5.55" stroke="rgba(200,240,255,.7)" stroke-width=".05" stroke-linecap="round"><animate attributeName="opacity" values="0;.9;0" dur="2.2s" begin="${i*.5}s" repeatCount="indefinite"/></line>`)).join('')}</g>`;
- o+=glow(onB(0,`<g transform="translate(4.35 6.3) scale(1 -1)"><text x="0" y="0" font-size=".8" font-weight="900" textLength="3.9" lengthAdjust="spacingAndGlyphs" fill="#ff4fa3" class="flick">MINER ROOM</text></g><rect x="4.3" y="6.15" width="4" height=".04" fill="#22e6ff" opacity=".7"/>`));
+ o+=glow(onB(0,`<g transform="translate(4.35 6.3) scale(1 -1)"><text x="0" y="0" font-size=".8" font-weight="900" textLength="3.9" lengthAdjust="spacingAndGlyphs" fill="#F5B356" class="flick">MINER ROOM</text></g><rect x="4.3" y="6.15" width="4" height=".04" fill="#E8913A" opacity=".8"/>`));
 
- /* ---- racks (back panels → dynamic items → posts/caps) ---- */
+ /* ---- رک‌ها: پنل پشت، هاله‌ی گرما، قفسه‌ها، اقلام داینامیک، ستون‌ها ---- */
  [0,1].forEach(bay=>{const a0=BAY_A[bay];
-  o+=onB(0,`<rect x="${a0}" y="0" width="3.5" height="5.8" fill="url(#gPanel)"/>`+[1,2,3,4,5].map(i=>`<line x1="${a0}" x2="${a0+3.5}" y1="${i}" y2="${i}" stroke="rgba(167,139,250,.1)" stroke-width=".03"/>`).join('')+`<g clip-path="url(#cBay${bay})"><rect x="${a0-1.2}" y="0" width="1.2" height="5.8" fill="url(#gSweep)"><animateTransform attributeName="transform" type="translate" values="0 0;5 0" dur="${7+bay*2}s" repeatCount="indefinite"/></rect></g>`);
-  o+=box(a0,0,0,3.5,1.25,.1,bd)});
+  o+=onB(0,`<rect x="${a0}" y="0" width="3.5" height="5.8" fill="url(#gPanel)"/>`+[1,2,3,4,5].map(i=>`<line x1="${a0}" x2="${a0+3.5}" y1="${i}" y2="${i}" stroke="rgba(167,159,196,.1)" stroke-width=".03"/>`).join('')+`<g clip-path="url(#cBay${bay})"><rect x="${a0-1.2}" y="0" width="1.2" height="5.8" fill="url(#gSweep)"><animateTransform attributeName="transform" type="translate" values="0 0;5 0" dur="${7+bay*2}s" repeatCount="indefinite"/></rect></g>`);
+  o+=box(a0,0,0,3.5,1.25,.1,MET)});
+ o+=onB(1.32,`<ellipse id="heat0" cx="2.05" cy="2.9" rx="2.1" ry="1.75" fill="url(#gHeat)" opacity="0"/><ellipse id="heat1" cx="6.25" cy="2.9" rx="2.1" ry="1.75" fill="url(#gHeat)" opacity="0"/>`);
  o+='<g id="rackItems"></g>';
  [0,1].forEach(bay=>{const a0=BAY_A[bay];
-  o+=box(a0,0,5.7,3.5,1.25,.08,bd)
+  o+=box(a0,0,5.7,3.5,1.25,.08,MET)
    +glow(onB(1.26,`<rect x="${a0}" y=".12" width=".06" height="5.55" rx=".03" fill="url(#gRgb)" class="rgb"/><rect x="${a0+3.44}" y=".12" width=".06" height="5.55" rx=".03" fill="url(#gRgb)" class="rgb"/>`))});
 
- /* ---- desk ---- */
- o+=box(0,3.6,0,2.4,1.1,2.4,dk)+box(0,8.35,0,.25,.25,2.4,dk)+box(2.15,8.35,0,.25,.25,2.4,dk);
- o+=box(0,3.6,2.4,2.5,5.0,.18,['#3a3170','#241d54','#1c1642']);
- o+=box(.45,5.5,2.58,.35,.4,.37,['#222','#111','#111']);
- let bars='';for(let i=0;i<14;i++){const h=(.2+rnd()*.7).toFixed(2);bars+=`<rect x="${(4.55+i*.17).toFixed(2)}" y="3.1" width=".11" height="${h}" fill="${i%3?'#22e6ff':'#ff4fa3'}"><animate attributeName="height" values="${h};${(.2+rnd()*.8).toFixed(2)};${h}" dur="${(1.2+rnd()*1.5).toFixed(1)}s" repeatCount="indefinite"/></rect>`}
- o+=`<g class="tap" data-act="mine">`+box(.5,4.4,2.95,.2,2.6,1.4,['#14102c','#0e0b22','#0b081a'])
-  +glow(onA(.7,`<rect x="4.46" y="3.01" width="2.48" height="1.28" fill="url(#gScr)"/>${bars}<rect x="4.55" y="4.05" width="1.1" height=".07" fill="#4ade80"><animate attributeName="width" values=".1;1.1;.1" dur="4s" repeatCount="indefinite"/></rect><circle cx="6.75" cy="4.1" r=".06" fill="#4ade80"><animate attributeName="opacity" values="1;.2;1" dur="1s" repeatCount="indefinite"/></circle>`))+`</g>`;
- o+=box(1.0,5.2,2.58,.55,1.9,.07,['#1a1738','#100d28','#0d0a22'])+onTop(2.65,'<rect x="1.03" y="5.25" width=".5" height="1.8" fill="url(#gRgb)" opacity=".9"/>','class="rgb"');
- o+=box(1.9,4.0,2.58,.25,.25,.3,['#fff','#e0d8ff','#cfc4ff']);
- o+=box(1.1,7.12,2.58,.22,.2,.08,['#2a2550','#1a1638','#14102c']);
- o+=`<g class="tap" data-act="mine">`+box(.35,7.35,2.58,1.3,1.1,2.3,['#1d1840','#12102c','#0f0c24'])
+ /* ---- میز چوبی با جزئیات (فاز ۴) ---- */
+ o+=box(0,3.6,0,2.4,1.1,2.4,DKW)+box(0,8.35,0,.25,.25,2.4,MET)+box(2.15,8.35,0,.25,.25,2.4,MET);
+ o+=box(0,3.6,2.4,2.5,5.0,.18,['#8A5C36','#5E3D22','#472D18']);
+ o+=box(.45,5.5,2.58,.35,.4,.37,MET);
+ /* مانیتور اصلی: چارت واقعی ارز انتخابی (dmLine/dmArea در drawChart) */
+ o+=`<g class="tap" data-act="mine">`+box(.5,4.4,2.95,.2,2.6,1.4,['#241E36','#181328','#120E20'])
+  +glow(onA(.7,`<rect x="4.46" y="3.01" width="2.48" height="1.28" fill="url(#gScr)"/>
+  <g stroke="rgba(140,220,255,.14)" stroke-width=".02"><line x1="4.5" x2="6.9" y1="3.35" y2="3.35"/><line x1="4.5" x2="6.9" y1="3.68" y2="3.68"/><line x1="4.5" x2="6.9" y1="4.01" y2="4.01"/></g>
+  <polygon id="dmArea" points="" fill="#FFC247" opacity=".22"/>
+  <polyline id="dmLine" points="" fill="none" stroke="#FFC247" stroke-width=".06" stroke-linejoin="round"/>
+  <rect x="4.55" y="4.14" width=".95" height=".06" rx=".03" fill="#4CD97B"><animate attributeName="width" values=".1;.95;.1" dur="4s" repeatCount="indefinite"/></rect>
+  <circle cx="6.78" cy="4.17" r=".05" fill="#4CD97B"><animate attributeName="opacity" values="1;.2;1" dur="1s" repeatCount="indefinite"/></circle>`))+`</g>`;
+ /* کیبورد RGB */
+ o+=box(1.0,5.2,2.58,.55,1.9,.07,['#2A2438','#1C1728','#151122'])+onTop(2.65,'<rect x="1.03" y="5.25" width=".5" height="1.8" fill="url(#gRgb)" opacity=".9"/>','class="rgb"');
+ /* مانیتور کناری: نوارهای تولید واقعی هر ارز (mBar-* در drawChart) */
+ o+=box(.85,6.9,2.58,.3,.3,.32,MET)+box(.55,6.3,2.9,.2,1.4,.95,['#241E36','#181328','#120E20'])
+  +glow(onA(.75,`<rect x="6.34" y="2.96" width="1.32" height=".82" fill="url(#gScr)"/>
+  <rect id="mBar-STAR" x="6.5" y="3.66" width=".2" height=".1" rx=".03" fill="#FFC247"/>
+  <rect id="mBar-TON" x="6.9" y="3.66" width=".2" height=".1" rx=".03" fill="#3AA8F0"/>
+  <rect id="mBar-USD" x="7.3" y="3.66" width=".2" height=".1" rx=".03" fill="#3ED598"/>`));
+ /* ماگ با بخار */
+ o+=box(1.9,4.0,2.58,.25,.25,.3,['#E8913A','#B06A24','#8A521B']);
+ const [mgx2,mgy2]=P(2.02,4.13,3.05);
+ o+=`<g class="tw" style="animation-duration:2.8s"><circle cx="${(mgx2-1).toFixed(1)}" cy="${mgy2.toFixed(1)}" r="1.1" fill="rgba(255,255,255,.35)"/><circle cx="${(mgx2+2).toFixed(1)}" cy="${(mgy2-4).toFixed(1)}" r=".8" fill="rgba(255,255,255,.25)"/></g>`;
+ /* کتاب‌ها */
+ o+=box(2.25,7.85,2.58,.5,.3,.1,['#B34A4A','#8A3434','#6E2828'])+box(2.28,7.88,2.68,.44,.26,.09,['#3E6E8A','#2C5268','#224052']);
+ /* کیس رایگیمینگ */
+ o+=box(1.1,7.12,2.58,.22,.2,.08,['#2A2438','#1C1728','#151122']);
+ o+=`<g class="tap" data-act="mine">`+box(.35,7.35,2.58,1.3,1.1,2.3,['#241E36','#181328','#120E20'])
   +onTop(4.88,'<rect x=".4" y="7.4" width="1.2" height=".08" fill="url(#gRgb)"/>','class="rgb"')
   +onA(1.65,`<rect x="7.43" y="2.66" width="1.0" height="2.14" rx=".06" fill="#07051a" stroke="#7c5cff" stroke-width=".03"/>`+[3.15,3.8,4.45].map((cy,i)=>`<g class="rgb" style="animation-delay:${i*-.8}s">${fan(7.93,cy,.26,'#ff4fa3',(.5+i*.1)+'s')}</g>`).join(''))+`</g>`;
+ /* چراغ ایستادی گرم کنار میز (فاز ۴) */
+ o+=box(8.15,1.6,0,.12,.12,2.6,MET)+box(8.0,1.45,2.6,.42,.42,.3,['#E8913A','#B06A24','#8A521B'])
+  +onTop(2.92,`<ellipse cx="8.2" cy="1.66" rx="1.7" ry="1.05" fill="url(#gLamp)" opacity="${PL.lampOp}"/>`);
 
- /* ---- chair (بلندتر شد تا میکو راحت به میز برسه) + Miko 3D ---- */
- o+=box(2.7,5.7,0,.9,.9,.12,['#2a2a4a','#1a1a35','#14142b'])+box(3.05,6.05,.12,.2,.2,1.45,['#444','#2a2a2a','#222'])+box(2.55,5.55,1.57,1.2,1.2,.28,['#f4f1ff','#c9c1ee','#b3a9e0']);
- o+=box(3.55,5.6,1.85,.2,1.1,.38,['#ff4fa3','#cc3b82','#a02d68'])+`<g id="mk3" class="tap" data-act="miko">`+mikoBlob()+`</g>`;
+ /* ---- صندلی + میکو ---- */
+ o+=box(2.7,5.7,0,.9,.9,.12,['#3A3444','#282330','#1E1A28'])+box(3.05,6.05,.12,.2,.2,1.45,MET)+box(2.55,5.55,1.57,1.2,1.2,.28,['#8C7B6E','#6B5D52','#544A41']);
+ o+=box(3.55,5.6,1.85,.2,1.1,.38,['#E8913A','#B06A24','#8A521B'])+`<g id="mk3" class="tap" data-act="miko">`+mikoBlob()+`</g>`;
 
- /* ---- holo market table ---- */
- o+=box(6.3,4.6,0,1.5,1.5,.8,['#2a2458','#1b1740','#141033']);
+ /* ---- گلدان گیاه (فاز ۴) ---- */
+ o+=box(8.2,7.85,0,.6,.6,.75,['#B0653A','#8A4A28','#6E3A1E']);
+ const [plx,ply]=P(8.5,8.15,1.05);
+ o+=`<g><ellipse cx="${(plx-4).toFixed(1)}" cy="${ply.toFixed(1)}" rx="6" ry="4.5" fill="#3E7A4A"/><ellipse cx="${(plx+5).toFixed(1)}" cy="${(ply-3).toFixed(1)}" rx="5" ry="4" fill="#54A05E"/><ellipse cx="${plx.toFixed(1)}" cy="${(ply-6).toFixed(1)}" rx="4.2" ry="3.4" fill="#2E6238"/><g class="bob"><ellipse cx="${(plx+1).toFixed(1)}" cy="${(ply-9).toFixed(1)}" rx="3" ry="2.6" fill="#54A05E"/></g></g>`;
+
+ /* ---- میز هولوگرام بازار ---- */
+ o+=box(6.3,4.6,0,1.5,1.5,.8,['#2A2438','#1C1728','#151122']);
  o+=onTop(.8,`<rect x="6.35" y="4.65" width="1.4" height="1.4" fill="#0a0824"/>`);
  o+=glow(onTop(.82,`<circle cx="7.05" cy="5.35" r=".5" fill="none" stroke="#22e6ff" stroke-width=".05"><animate attributeName="r" values=".42;.58;.42" dur="2.4s" repeatCount="indefinite"/></circle>`));
  const [hx,hy]=P(7.05,5.35,.82);
@@ -915,16 +1060,23 @@ function buildRoom(){
   <rect x="-34" y="-9.5" width="68" height="1" fill="#22e6ff" opacity=".55"/><rect x="-34" y="36.5" width="68" height="1" fill="#22e6ff" opacity=".25"/>`
   +COINS.map((c,i)=>`<g transform="translate(0 ${6+i*14})"><circle cx="-29" cy="0" r="3" fill="${c.col}" filter="url(#gl2)"/><text direction="ltr" x="-22" y="3.1" font-size="8.5" font-weight="700" fill="#e9fbff" id="bbp-${c.id}"></text><text direction="ltr" x="32" y="3.1" font-size="8" text-anchor="end" font-weight="800" id="bbt-${c.id}"></text></g>`).join('')+`</g>`;
 
-
  /* hint + sparkles */
  o+=`<circle id="hint" cx="94" cy="196" r="14" fill="none" stroke="#22e6ff" stroke-width="2"><animate attributeName="r" values="12;26;12" dur="1.6s" repeatCount="indefinite"/><animate attributeName="opacity" values=".9;0;.9" dur="1.6s" repeatCount="indefinite"/></circle>`;
- $('#room').innerHTML=o}
+ $('#room').innerHTML=o+'</g>'}
 
 function updateRoomItems(){['ac','strip','tube','hex'].forEach(k=>$('#it-'+k).classList.toggle('gone',!S.room[k]));$('#hint').style.display=S.taps>=5?'none':''}
 function drawChart(){
  const h=PR[S.sel].hist,c=coin(S.sel),mn=Math.min(...h),mx=Math.max(...h),rg=(mx-mn)||1,n=h.length-1||1;
  const p=h.map((v,i)=>`${(4.6+i*(3.4/n)).toFixed(2)},${(5.2+(v-mn)/rg*1.1).toFixed(2)}`).join(' ');
- const ln=$('#chartLine'),ar=$('#chartArea');ln.setAttribute('points',p);ar.setAttribute('points',`4.6,4.95 ${p} 8.0,4.95`);ln.setAttribute('stroke',c.col);ar.setAttribute('fill',c.col)}
+ const ln=$('#chartLine'),ar=$('#chartArea');ln.setAttribute('points',p);ar.setAttribute('points',`4.6,4.95 ${p} 8.0,4.95`);ln.setAttribute('stroke',c.col);ar.setAttribute('fill',c.col);
+ /* فاز ۴: مانیتور روی میز همون چارت زنده‌ی ارز انتخابی رو نشون می‌ده */
+ const dm=$('#dmLine'),da=$('#dmArea');
+ if(dm){const q=h.map((v,i)=>`${(4.55+i*(2.35/n)).toFixed(2)},${(3.1+(1-(v-mn)/rg)*1.0).toFixed(2)}`).join(' ');
+  dm.setAttribute('points',q);da.setAttribute('points',`4.55,4.18 ${q} 6.9,4.18`);dm.setAttribute('stroke',c.col);da.setAttribute('fill',c.col)}
+ /* فاز ۴: نوارهای تولید واقعی هر ارز روی مانیتور کناری */
+ const st=stats(),mxc=Math.max(1e-9,...COINS.map(cc=>st.rate[cc.id]));
+ COINS.forEach(cc=>{const e=document.getElementById('mBar-'+cc.id);if(e){const v=Math.max(.06,st.rate[cc.id]/mxc);
+  e.setAttribute('height',(v*.58).toFixed(2));e.setAttribute('y',(3.66-v*.58).toFixed(2))}})}
 
 /* ---------------- HUD ---------------- */
 function buildChips(){
@@ -1028,7 +1180,8 @@ function fxLoop(ts){
  g2.setTransform(DPR,0,0,DPR,0,0);g2.clearRect(0,0,PW,PH);
  motes.forEach(m=>{m.y-=m.s*30;if(m.y<-.02){m.y=1.02;m.x=Math.random()}m.p+=.04;g2.globalAlpha=.25+.35*Math.sin(m.p);g2.fillStyle=m.c;g2.beginPath();g2.arc(m.x*PW+Math.sin(m.p*.5)*6,m.y*PH,m.r,0,6.283);g2.fill()});
  for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.l-=p.d;if(p.l<=0){parts.splice(i,1);continue}
-  g2.globalAlpha=Math.max(0,p.l);g2.fillStyle=p.c;g2.beginPath();g2.arc(p.x,p.y,p.r,0,6.283);g2.fill()}
+  g2.globalAlpha=Math.max(0,p.l);g2.fillStyle=p.c;g2.beginPath();g2.arc(p.x,p.y,p.r,0,6.283);g2.fill();
+  if(!p.g){g2.lineWidth=1;g2.strokeStyle='rgba(255,255,255,.65)';g2.stroke()}}   /* ذرات سکه‌ی بی‌جاذبه حاشیه‌ی روشن دارن */
  g2.globalAlpha=1}
 
 /* ---------------- Sheets ---------------- */
@@ -1046,7 +1199,7 @@ function openSheet(tab,i){
  sheet.f=(tab==='slot')?.4:.75;
  clearTimeout(closeTO);
  const el=$('#sheet');el.classList.add('open');el.setAttribute('aria-hidden','false');
- $('#app').classList.add('sopen');$('#bubble').classList.add('hide');
+ $('#app').classList.add('sopen');$('#bubble').classList.add('hide');hidePop();
  renderSheet();
  applyT(tOf(sheet.f));
  document.querySelectorAll('nav button').forEach(b=>{const on=b.dataset.tab===tab;b.classList.toggle('on',on);b.setAttribute('aria-current',on?'page':'false')})}
@@ -1657,14 +1810,16 @@ function act(t,e){
  else if(a==='buyshelf'){const k=+t.dataset.k;if(k!==S.shelves||S.usd<SHELF_COST[k])return;S.usd-=SHELF_COST[k];S.shelves++;renderRack();setMood('happy',2200);hapOk();centerBurst('#22e6ff');say('قفسه‌ی جدید نصب شد! جای دو ماینر دیگه باز شد',4500);afterAction()}
  else if(a==='pcup'){const n=S.pc+1;if(S.usd<PCCOST[n])return;S.usd-=PCCOST[n];S.pc=n;setMood('happy',2200);hapOk();say('کامپیوتر جدید! ضربه‌هام قوی‌تر شدن',4500);afterAction()}
  else if(a==='room'){const r=ROOM.find(x=>x.id===id);if(S.usd<r.price)return;S.usd-=r.price;S.room[id]=true;updateRoomItems();setMood('happy',2200);hapOk();say(r.name+' نصب شد! اتاق قشنگ‌تر شد',4500);afterAction()}
- else if(a==='slot'){const i=+t.dataset.i;if(S.slots[i])openSheet('slot',i);else openSheet('miners')}
+ else if(a==='slot'){const i=+t.dataset.i;if(S.slots[i])showPop(i,t);else openSheet('miners')}
+ else if(a==='popmore'){hidePop();openSheet('slot',+t.dataset.i)}
+ else if(a==='popsell'){const i=+t.dataset.i,m=mById(S.slots[i]);if(!m)return;S.usd+=m.price*.6;S.slots[i]=null;renderRack();toast('ماینر فروخته شد · +'+f$(m.price*.6));hidePop();renderHUD();save(true)}
  else if(a==='sellminer'){const m=mById(S.slots[sheet.slot]);if(!m)return;S.usd+=m.price*.6;S.slots[sheet.slot]=null;renderRack();toast('ماینر فروخته شد · +'+f$(m.price*.6));closeSheet();renderHUD();save(true)}
  else if(a==='daily'){if(!dailyReady())return;const nd=dailyIdx();S.usd+=DAILY[nd];S.st=nd+1;S.dl=dayKey();flyBal('+'+fc(DAILY[nd]));bumpBal();toast('هدیه‌ی روز '+(nd+1)+' اضافه شد · +'+fc(DAILY[nd]));setMood('happy');hapOk();afterAction();save(true)}
  else if(a==='miko'){setMood('happy',2200);hap('light');say(LINES_MIKO[Math.floor(Math.random()*LINES_MIKO.length)],4500)}
  else if(a==='claimch')claimChapter()
  else if(a==='invite'){if(!REFLINK)return;const u='https://t.me/share/url?url='+encodeURIComponent(REFLINK)+'&text='+encodeURIComponent('بیا با هم تو اتاق ماینر ماین کنیم');try{tg.openTelegramLink(u)}catch(e){window.open(u,'_blank')}}
  else if(a==='copyref'){if(!REFLINK)return;try{navigator.clipboard.writeText(REFLINK).then(()=>toast('لینک کپی شد ✓'),()=>toast(REFLINK))}catch(e){toast(REFLINK)}}
- else if(a==='boost'){boostUntil=Date.now()+30000;boostShow=0;$('#boost').classList.add('hide');hapOk();centerBurst('#ffd166');toast('بوست فعال شد: ۳۰ ثانیه ماین دو برابر');renderHUD()}
+ else if(a==='boost'){boostUntil=Date.now()+30000;boostShow=0;$('#boost').classList.add('hide');hapOk();centerBurst('#ffd166');setMiko('happy',3000);toast('بوست فعال شد: ۳۰ ثانیه ماین دو برابر');renderHUD()}
  else if(a==='sg-m'){hap('light');try{t.animate([{transform:'scale(1)'},{transform:'scale(1.22)'},{transform:'scale(1)'}],{duration:420,easing:'cubic-bezier(.34,1.45,.4,1)'})}catch(e){}}}
 function afterAction(){checkChapter();renderHUD();if(sheet.tab)renderSheet();save()}
 
@@ -1681,12 +1836,51 @@ document.addEventListener('pointerdown',e=>{if(!e.target.closest||!e.target.clos
 $('#bal').addEventListener('pointerdown',()=>{balHoldT=setTimeout(()=>{balHoldT=null;balExact(true)},420)});
 ['pointerup','pointercancel','pointerleave'].forEach(ev=>$('#bal').addEventListener(ev,()=>{if(balHoldT){clearTimeout(balHoldT);balHoldT=null}}));
 
+/* ---------------- پاپ‌اور ماینر + بیدار کردن میکو + پن دوربین (فاز ۴) ---------------- */
+function showPop(i,el){
+ const m=mById(S.slots[i]);if(!m)return;
+ const st=stats(),nfac=1/(1+NETD*Math.max(0,cnt()-1));
+ const prod=m.y*nfac*st.bonus*RATE;
+ $('#pop .pop-b').innerHTML=`<div class="pt">${coinIcon(m.coin,26)}<b>${m.name}</b></div>
+  <div class="st"><span>تولید <b class="num">${frate(m.coin,prod/coin(m.coin).ref)}</b></span>
+  <span>برق <b class="num">${fpw(m.pw)}/s</b></span>
+  <span>ارزش فروش <b class="num">${f$(m.price*.6)}</b></span></div>
+  <div class="btnrow"><button class="btn ghost" data-act="popmore" data-i="${i}">جزئیات</button><button class="btn sell" data-act="popsell" data-i="${i}">فروش</button></div>`;
+ const pop=$('#pop'),sc=$('#scene').getBoundingClientRect(),r=el.getBoundingClientRect();
+ pop.classList.remove('hide');
+ const h=pop.offsetHeight;
+ let left=r.left-sc.left+r.width/2-106;left=Math.max(8,Math.min(left,sc.width-220));
+ let top=r.top-sc.top-h-12;if(top<8)top=r.bottom-sc.top+12;
+ pop.style.left=left+'px';pop.style.top=top+'px';hap('light')}
+function hidePop(){const p=$('#pop');if(p)p.classList.add('hide')}
+/* بیدار کردن میکو با هر لمس صحنه + بستن پاپ‌اور با لمس بیرون آن */
+$('#scene').addEventListener('pointerdown',e=>{
+ lastTouch=Date.now();
+ if(mkState==='sleep')setMiko('surprised',1300);
+ if(!e.target.closest||!e.target.closest('#pop'))hidePop()},true);
+/* پن افقی سبک دوربین روی صحنه با بازگشت فنری */
+(function(){
+ const room=$('#room');let px=null,panning=false,moved=0;
+ room.addEventListener('pointerdown',e=>{px=e.clientX;panning=true;moved=0});
+ room.addEventListener('pointermove',e=>{if(!panning||px===null)return;
+  const dx=e.clientX-px;moved=Math.abs(dx);
+  const g=document.getElementById('pan');
+  if(g)g.style.transform=`translateX(${Math.max(-22,Math.min(22,dx*.55)).toFixed(1)}px)`});
+ const end=()=>{if(!panning)return;panning=false;px=null;
+  const g=document.getElementById('pan');
+  if(g){g.style.transition='transform .45s cubic-bezier(.2,.8,.2,1)';g.style.transform='translateX(0)';
+   setTimeout(()=>{if(g)g.style.transition=''},500)}};
+ room.addEventListener('pointerup',end);room.addEventListener('pointercancel',end);
+ room.addEventListener('click',e=>{if(moved>6){e.stopPropagation();e.preventDefault();moved=0}},true);
+})();
+
 /* ---------------- Tick ---------------- */
 let boostIn=70+Math.random()*40,boostShow=0;
 function tick(){
  if(!LIVE)simulate();
  const st=stats(),f=st.gross>0?Math.max(0,st.net)/st.gross:0;
  COINS.forEach(c=>{S.wallet[c.id]+=st.rate[c.id]*f});
+ mikoIdle();checkLight();if(Math.random()<.6)coinRain();
  if(boostShow>0){if(--boostShow<=0)$('#boost').classList.add('hide')}
  else if(!boosting()&&--boostIn<=0){boostIn=90+Math.random()*60;boostShow=12;const b=$('#boost');b.style.left=(8+Math.random()*58)+'%';b.style.top=(13+Math.random()*25)+'%';b.classList.remove('hide')}
  checkChapter();renderHUD();drawChart();updateLive()}
