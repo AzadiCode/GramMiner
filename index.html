@@ -399,6 +399,73 @@ nav button.on .ic{color:var(--brand2)}
 #pop .btnrow{display:flex;gap:6px}
 #pop .btnrow .btn{flex:1;padding:8px 6px;font-size:11.5px}
 
+/* Shop cards (فاز ۵) — فروشگاه ماینر با آمار و بازگشت سرمایه */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn .ic{width:14px;height:14px}
+.shop{position:relative;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--card);padding:11px;margin-bottom:10px}
+.shop .top{display:flex;gap:11px;align-items:center}
+.shop .pv{width:64px;height:60px;flex:none;display:grid;place-items:center;background:radial-gradient(85% 95% at 50% 30%,rgba(244,239,230,.09),transparent 70%),rgba(11,10,20,.5);border:1px solid var(--line);border-radius:12px}
+.shop .pv svg{width:50px;height:48px}
+.shop .nm{flex:1;min-width:0}
+.shop .nm b{font-size:14px;display:block}
+.shop .nm small{display:block;color:var(--mut);font-size:10.5px;margin-top:2px;line-height:1.7}
+.shop .buy{width:96px;flex:none;text-align:center}
+.shop .buy button{width:100%}
+.shop .buy small{display:block;color:var(--mut);font-size:9px;margin-top:3px;line-height:1.6}
+.cmp{margin-top:6px;font-size:10.5px;color:var(--c);display:flex;align-items:center;gap:4px}
+.cmp .ic{width:11px;height:11px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.stats>div{background:rgba(11,10,20,.5);border:1px solid var(--line);border-radius:10px;padding:6px 4px;text-align:center;min-width:0}
+.stats small{display:block;font-size:8.5px;color:var(--mut);margin-bottom:2px}
+.stats b{font-size:10.5px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.peff{display:flex;align-items:center;gap:4px;font-size:10.5px;margin-top:7px;line-height:1.7}
+.peff .ic{width:11px;height:11px;flex:none}
+.peff.up{color:var(--up)}.peff.dn{color:var(--down)}
+.dropin{animation:dropin .55s var(--e-spring)}
+@keyframes dropin{from{transform:translateY(-26px) scale(1.3);opacity:0}55%{opacity:1}to{transform:none}}
+
+/* Podium + لیدربورد (فاز ۵) */
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:8px;margin:6px 0 14px}
+.pod{flex:1;max-width:112px;display:grid;gap:5px;justify-items:center;min-width:0}
+.pod .av2{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:15px;border:2px solid var(--line2);background:rgba(11,10,20,.55)}
+.pod b{font-size:11px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pod small{font-size:10px;color:var(--mut)}
+.pod .bar2{width:100%;border-radius:8px 8px 0 0;background:linear-gradient(180deg,var(--c),rgba(0,0,0,0));display:grid;place-items:center;font-weight:900;font-size:14px;color:#1A1408;min-height:22px}
+.pod.p1 .bar2{height:52px}.pod.p2 .bar2{height:38px}.pod.p3 .bar2{height:28px}
+.pod.p1 .av2{border-color:var(--c-star);color:var(--c-star)}
+.pod.p2 .av2{border-color:#C9CCE0;color:#C9CCE0}
+.pod.p3 .av2{border-color:#D99A5B;color:#D99A5B}
+.lb i.rk{font-style:normal;width:22px;height:22px;border-radius:8px;display:grid;place-items:center;font-weight:800;font-size:11px;background:rgba(244,239,230,.09)}
+.lb.r1 i.rk{background:var(--c-star);color:#241304}
+.lb.r2 i.rk{background:#C9CCE0;color:#22242E}
+.lb.r3 i.rk{background:#D99A5B;color:#2E1B06}
+.me-card{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.me-card .btn{flex:none}
+
+/* تقویم روزانه + استریک (فاز ۵) */
+.dcal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin:10px 0 4px}
+.dcal>div{border:1px solid var(--line);border-radius:10px;padding:6px 2px;display:grid;gap:4px;justify-items:center;background:var(--card);min-width:0}
+.dcal small{font-size:8px;color:var(--mut)}
+.dcal b{font-size:9px}
+.dcal .ic{width:13px;height:13px}
+.dcal .got{opacity:.42}
+.dcal .got .ic{color:var(--up)}
+.dcal .today{border-color:rgba(255,194,71,.7);box-shadow:0 0 10px rgba(255,194,71,.22)}
+.dcal .today .ic{color:var(--c-star);animation:pls 1.6s ease-in-out infinite}
+
+/* نشان‌ها (فاز ۵) */
+.bdg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.bdg>div{display:grid;gap:5px;justify-items:center;padding:10px 4px 8px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--card);text-align:center}
+.bdg .ic{width:23px;height:23px;color:var(--mut2)}
+.bdg b{font-size:9.5px;line-height:1.5}
+.bdg small{font-size:8px;color:var(--mut);line-height:1.6}
+.bdg.off{opacity:.45}
+.bdg.on .ic{color:var(--c-star)}
+.bdg.on{border-color:rgba(255,194,71,.35)}
+.pf .av[data-act]{cursor:pointer}
+.ok{display:flex;align-items:center;gap:5px}
+.ok .ic{width:12px;height:12px}
+
 /* Intro */
 #intro{position:absolute;inset:0;z-index:20;display:grid;place-items:center;padding:20px;background:radial-gradient(100% 70% at 50% 30%,#3a1c85 0%,#0b0724 70%)}
 #intro .card{text-align:center;max-width:340px}
@@ -481,6 +548,10 @@ nav button.on .ic{color:var(--brand2)}
  <symbol id="i-info" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 11.2v4.6"/><circle cx="12" cy="8.2" r=".5" fill="currentColor" stroke="none"/></g></symbol>
  <symbol id="i-cash" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="13" y="8.6" width="8.5" height="7.8" rx="2.2"/><path d="M2.6 12.5h8.8"/><path d="M8 9.2l3.3 3.3L8 15.8"/></g></symbol>
  <symbol id="i-chevL" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.8 5l-7 7 7 7"/></g></symbol>
+ <symbol id="i-snow" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 3v18M5.2 6.8l13.6 10.4M18.8 6.8L5.2 17.2"/><path d="M12 6.6l1.9-1.9M12 6.6l-1.9-1.9M12 17.4l1.9 1.9M12 17.4l-1.9 1.9"/></g></symbol>
+ <symbol id="i-strip" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="9.5" width="18" height="4" rx="2"/><path d="M7.5 17.5h9M9.5 20.5h5" stroke-opacity=".6"/></g></symbol>
+ <symbol id="i-tube" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9.5" y="3.5" width="5" height="14.5" rx="2.5"/><path d="M8 21h8" stroke-opacity=".6"/></g></symbol>
+ <symbol id="i-hexp" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2.8l7.8 4.6v9.2L12 21.2l-7.8-4.6V7.4z"/><path d="M12 7.4l3.5 2.1v4.1L12 15.7l-3.5-2.1V9.5z" stroke-opacity=".55"/></g></symbol>
 </svg>
 <div id="app">
   <header id="hud">
@@ -568,10 +639,10 @@ const MINERS=[
  {id:'d3',coin:'USD',tier:3,name:'دلار کینگ',price:6.5,y:1.433e-5,pw:4.30e-6,col:'#3ED598'}];
 const PC=[1,1.6,2.5,4,6,9],PCCOST=[0,.15,.35,.80,2,5];
 const ROOM=[
- {id:'ac',name:'کولر گازی',desc:'هزینه برق ۲۵٪ کمتر',price:.15,ico:'❄️'},
- {id:'strip',name:'نئون سبز دیواری',desc:'+۵٪ سود ماین',price:.30,ico:'🟢'},
- {id:'tube',name:'تیوپ نئون',desc:'+۵٪ سود ماین',price:.40,ico:'💗'},
- {id:'hex',name:'پنل‌های هگزاگونی',desc:'+۵٪ سود ماین',price:.50,ico:'⬡'}];
+ {id:'ac',name:'کولر گازی',desc:'هزینه برق ۲۵٪ کمتر',price:.15,ico:'snow'},
+ {id:'strip',name:'نئون سبز دیواری',desc:'+۵٪ سود ماین',price:.30,ico:'strip'},
+ {id:'tube',name:'تیوپ نئون',desc:'+۵٪ سود ماین',price:.40,ico:'tube'},
+ {id:'hex',name:'پنل‌های هگزاگونی',desc:'+۵٪ سود ماین',price:.50,ico:'hexp'}];
 const DAILY=[.01,.012,.015,.02,.025,.03,.05];
 const SHELVES=6,SLOTS=SHELVES*2,SHELF_COST=[0,.20,.70,1.8,4.5,11];
 const OFFLINE_MAX=4*3600;
@@ -816,6 +887,7 @@ function lockedShelf(k,a0,zb){
  }
  return o+`</g>`}
 
+let lastBought=-1;   /* برای انیمیشن قرارگیری ماینر جدید روی قفسه */
 function renderRack(){
  let o='';
  const order=[...Array(SHELVES).keys()].sort((x,y)=>(shelfPos(x).bay-shelfPos(y).bay)||(shelfPos(y).lv-shelfPos(x).lv));
@@ -830,12 +902,13 @@ function renderRack(){
    if(m){
     /* کابل از پشت ماینر تا لبه‌ی تخته (فاز ۴) */
     o+=onB(.15,`<path d="M${(a+.75).toFixed(2)} ${(zb+.35).toFixed(2)} C ${(a+.75).toFixed(2)} ${(zb+.1).toFixed(2)}, ${(a+1.1).toFixed(2)} ${(zb+.02).toFixed(2)}, ${(a0+3.12).toFixed(2)} ${(zb+.08).toFixed(2)}" fill="none" stroke="#141018" stroke-width=".055" stroke-linecap="round"/>`);
-    o+=`<g class="tap" data-act="slot" data-i="${i}">${minerSvg(m,a,zb)}</g>`;
+    o+=`<g class="tap ${i===lastBought?'dropin':''}" data-act="slot" data-i="${i}">${minerSvg(m,a,zb)}</g>`;
    }else{const cx=a+.75,cy=zb+.7;
     o+=`<g class="tap" data-act="slot" data-i="${i}">`+onB(1.1,`<rect x="${a}" y="${zb+.05}" width="1.5" height="1.3" rx=".1" fill="rgba(167,159,196,.07)" stroke="rgba(167,159,196,.6)" stroke-width=".04" stroke-dasharray=".15 .1"/><g class="plus" fill="#c4b8dd"><rect x="${cx-.22}" y="${cy-.03}" width=".44" height=".06"/><rect x="${cx-.03}" y="${cy-.22}" width=".06" height=".44"/></g>`)+`</g>`}
   })
  });
  $('#rackItems').innerHTML=o;
+ lastBought=-1;
  /* هاله‌ی گرما: هرچی ماینر بیشتر، اتاق گرم‌تر (فاز ۴) */
  const n0=S.slots.slice(0,6).filter(Boolean).length,n1=S.slots.slice(6).filter(Boolean).length;
  [['heat0',n0],['heat1',n1]].forEach(([id,n])=>{const e=document.getElementById(id);if(e)e.setAttribute('opacity',Math.min(.5,n*.09).toFixed(2))})}
@@ -1252,7 +1325,7 @@ if(window.ResizeObserver){new ResizeObserver(layoutVars).observe($('#hud'));new 
 window.addEventListener('resize',layoutVars);
 if(window.visualViewport)visualViewport.addEventListener('resize',()=>{
  $('#app').style.setProperty('--kb',Math.max(0,innerHeight-visualViewport.height-2)+'px');layoutVars()});
-const TITLES={market:'بازار زنده',miners:'فروشگاه ماینر',racks:'قفسه‌ها',up:'ارتقا و دکوراسیون',hub:'برترین‌ها',wallet:'کیف پول',admin:'پنل مدیریت',tasks:'ماموریت‌ها',slot:'ماینر روی قفسه',style:'راهنمای استایل'};
+const TITLES={market:'بازار زنده',miners:'فروشگاه ماینر',racks:'قفسه‌ها',up:'ارتقا و دکوراسیون',hub:'برترین‌ها',wallet:'کیف پول',admin:'پنل مدیریت',tasks:'ماموریت‌ها',slot:'ماینر روی قفسه',style:'راهنمای استایل',me:'پروفایل'};
 
 const frate=(id,n)=>id==='STAR'?n.toFixed(7)+' ★/s':id==='TON'?n.toFixed(9)+' TON/s':'$'+n.toFixed(9)+'/s';
 function spark(h){
@@ -1260,22 +1333,45 @@ function spark(h){
  const pts=h.map((v,i)=>`${(i*100/n).toFixed(1)},${(rg<1e-9?15:28-(v-mn)/rg*26).toFixed(1)}`).join(' ');
  return {line:pts,area:`0,30 ${pts} 100,30`}}
 
+/* بازار (فاز ۵): اسپارک + اثر قیمت روی سود تو */
 function sheetMarket(){
+ const has=cid=>MINERS.some(m=>m.coin===cid&&S.slots.includes(m.id));
  return `<p class="hint">${LIVE?'قیمت‌ها زنده از سرور میان.':'سرور در دسترس نیست؛ قیمت‌ها آزمایشی‌ان.'} روی هر کارت بزن تا ضربه‌هات اون ارز رو ماین کنه.</p>`
- +COINS.map(c=>`<div class="ccard ${S.sel===c.id?'sel':''}" style="--c:${c.col};--cg:${c.col}33" data-act="sel" data-id="${c.id}">
+ +COINS.map(c=>{
+  const eff=(price(c.id)/c.ref-1)*100;
+  const effTxt=Math.abs(eff)<.5?'':`<div class="peff ${eff>=0?'up':'dn'}">${icon(eff>=0?'pup':'pdn')} با قیمت فعلی، ماینرهای ${c.name} ${has(c.id)?'تو ':''}<b class="num">${Math.abs(eff).toFixed(1)}٪</b> ${eff>=0?'بیشتر می‌ارزند':'کمتر می‌ارزند'}</div>`;
+  return `<div class="ccard ${S.sel===c.id?'sel':''}" style="--c:${c.col};--cg:${c.col}33" data-act="sel" data-id="${c.id}">
   <div class="cl">${coinIcon(c.id,36)}<div><b>${c.name}</b><small class="num">${c.short}</small></div><div class="cp"><b class="num" id="pr-${c.id}"></b><small class="num" id="tr-${c.id}"></small></div></div>
   <svg class="spark" viewBox="0 0 100 30" preserveAspectRatio="none"><polygon id="sa-${c.id}" fill="${c.col}" opacity=".16"/><polyline id="sp-${c.id}" fill="none" stroke="${c.col}" stroke-width="1.8" vector-effect="non-scaling-stroke"/></svg>
   <div class="cr"><span>کیف پول: <span class="num" id="wl-${c.id}"></span></span><button class="btn sm sell" data-act="sell" data-id="${c.id}">فروش</button></div>
-  ${S.sel===c.id?'<div class="badge">ضربه‌ماین فعال</div>':''}</div>`).join('')
+  ${effTxt}${S.sel===c.id?'<div class="badge">ضربه‌ماین فعال</div>':''}</div>`}).join('')
  +`<button class="btn wide" data-act="sellall" id="sellall"></button>`}
 
+/* فروشگاه ماینر (فاز ۵): کارت با آمار، بازگشت سرمایه و مقایسه با ماینر فعلی */
+function shopCard(m,full){
+ const c=coin(m.coin);
+ const same=MINERS.filter(x=>x.coin===m.coin&&S.slots.includes(x.id));
+ const best=same.length?same.reduce((a,b)=>b.y>a.y?b:a):null;
+ const net=Math.max(1e-9,m.y-m.pw),pb=m.price/net;
+ const pbTxt=pb>=86400?(pb/86400).toFixed(1)+' روز':pb>=3600?(pb/3600).toFixed(1)+' ساعت':Math.round(pb/60)+' دقیقه';
+ const cmp=best?`<div class="cmp">${m.y>=best.y?icon('pup','s'):icon('pdn','s')}<span class="num">${m.y>best.y?'+':''}${((m.y/best.y-1)*100).toFixed(0)}٪</span> تولید نسبت به «${best.name}» فعلی تو</div>`:'';
+ const afford=S.usd>=m.price,can=!full&&afford;
+ return `<div class="shop">
+  <div class="top"><div class="pv">${minerPreview(m)}</div>
+   <div class="nm"><b>${m.name}</b><small>تیر ${m.tier} از ۳ · ${c.name}</small>${cmp}</div>
+   <div class="buy"><button class="btn sm" data-act="buy" data-id="${m.id}" data-cost="${m.price}" ${can?'':'disabled'}>${fm(m.price)}</button><small>${full?'جای خالی نیست':afford?'آماده‌ی نصب':'کسری '+fm(m.price-S.usd)}</small></div></div>
+  <div class="stats">
+   <div><small>تولید</small><b class="num">${fmtNum(m.y/c.ref)}/s</b></div>
+   <div><small>برق</small><b class="num">$${fmtNum(m.pw)}</b></div>
+   <div><small>بازده انرژی</small><b class="num">×${(m.y/m.pw).toFixed(0)}</b></div>
+   <div><small>بازگشت سرمایه</small><b>${pbTxt}</b></div></div>
+ </div>`}
 function sheetMiners(){
  const full=cnt()>=cap();
  let o=`<p class="hint">جایگاه خالی: <span class="num">${cap()-cnt()}</span> از <span class="num">${cap()}</span>${full?' · <a data-act="tab" data-tab="racks">قفسه‌ی جدید بخر</a>':''}<br>سختی شبکه: بازده هر ماینر الان <span class="num">×${(1/(1+NETD*Math.max(0,cnt()-1))).toFixed(2)}</span> و با هر ماینر بیشتر کمتر می‌شه.</p>`;
  COINS.forEach(c=>{
   o+=`<div class="grp" style="--c:${c.col}">${coinIcon(c.id,24)}<b>ماینر ${c.name}</b></div>`;
-  MINERS.filter(m=>m.coin===c.id).forEach(m=>{
-   o+=`<div class="row"><div class="ico mp">${minerPreview(m)}</div><div class="rb"><b>${m.name}</b><small>تولید <span class="num">${frate(c.id,m.y/c.ref)}</span> · برق <span class="num">${fpw(m.pw)}/s</span></small></div><button class="btn sm" data-act="buy" data-id="${m.id}" data-cost="${m.price}" ${full||S.usd<m.price?'disabled':''}>${fm(m.price)}</button></div>`})});
+  MINERS.filter(m=>m.coin===c.id).forEach(m=>{o+=shopCard(m,full)})});
  return o}
 
 function shelfIcon(own){
@@ -1290,18 +1386,31 @@ function sheetRacks(){
 
 function sheetUp(){
  const n=S.pc+1;
- let o=n<PC.length?`<div class="row"><div class="ico">🖥️</div><div class="rb"><b>کامپیوتر: سطح ${S.pc+1} ← ${n+1}</b><small>ضریب <span class="num">×${PC[S.pc]} → ×${PC[n]}</span> برای ضربه و تولید کامپیوتر</small></div><button class="btn sm" data-act="pcup" data-cost="${PCCOST[n]}" ${S.usd<PCCOST[n]?'disabled':''}>${fm(PCCOST[n])}</button></div>`:`<div class="row done">کامپیوتر در بالاترین سطحه ✓</div>`;
- o+=ROOM.map(r=>S.room[r.id]?`<div class="row done">${r.ico} ${r.name} ✓</div>`:`<div class="row"><div class="ico">${r.ico}</div><div class="rb"><b>${r.name}</b><small>${r.desc}</small></div><button class="btn sm" data-act="room" data-id="${r.id}" data-cost="${r.price}" ${S.usd<r.price?'disabled':''}>${fm(r.price)}</button></div>`).join('');
+ let o=n<PC.length?`<div class="row"><div class="ico">${icon('up','l')}</div><div class="rb"><b>کامپیوتر: سطح ${S.pc+1} از ${PC.length}</b><small>ضریب ضربه و تولید کامپیوتر: <span class="num">×${PC[S.pc]} ← ×${PC[n]}</span></small></div><button class="btn sm" data-act="pcup" data-cost="${PCCOST[n]}" ${S.usd<PCCOST[n]?'disabled':''}>${fm(PCCOST[n])}</button></div>`:`<div class="row done">${icon('check','s')} کامپیوتر در بالاترین سطحه</div>`;
+ o+=`<div class="grp">${icon('hexp','s')}<b>اتاق و دکور</b><small>هر کدوم +۵٪ سود ماین (کولر: برق کمتر)</small></div>`;
+ o+=ROOM.map(r=>S.room[r.id]?`<div class="row done">${icon(r.ico,'s')} ${r.name} فعال است</div>`:`<div class="row"><div class="ico">${icon(r.ico)}</div><div class="rb"><b>${r.name}</b><small>${r.desc}</small></div><button class="btn sm" data-act="room" data-id="${r.id}" data-cost="${r.price}" ${S.usd<r.price?'disabled':''}>${fm(r.price)}</button></div>`).join('');
  return o}
 
+/* ماموریت‌ها (فاز ۵): فصل داستانی + تقویم روزانه با استریک */
+function dailyCal(){
+ const idx=dailyIdx(),ready=dailyReady();
+ return `<div class="sh"><b>هدیه‌ی روزانه</b><small>استریک <span class="num">${Math.min(S.st,7)}/۷</span> روز</small></div>
+ <div class="dcal">`+DAILY.map((v,i)=>{
+  const claimed=ready?i<idx:i<S.st;
+  const today=ready&&i===idx;
+  return `<div class="${claimed?'got':''} ${today?'today':''}">
+   <small>روز ${i+1}</small><b class="num">${fc(v).replace('$','$')}</b>
+   ${claimed?icon('check','s'):icon(today?'gift':'cal','s')}</div>`}).join('')+`</div>
+ <p class="hint">هر روز پیاپی که بیای جایزه‌ی بزرگ‌تر می‌شه؛ یه روز نیای استریک از اول شروع می‌شه.</p>`}
 function sheetTasks(){
  const c=CH[S.ch];let o='';
  if(c){const [a,b]=c.prog();
-  o+=`<div class="chcard"><div class="pt">${chibiSvg(60,72)}</div><div style="flex:1"><b>ماموریت ${S.ch+1}: ${c.t}</b><p>${c.say}</p><div class="goal">هدف: ${c.goal}</div><div class="bar"><i id="chbar" style="width:${S.rd?100:Math.min(100,a/b*100)}%"></i></div><small><span class="num" id="chtxt">${cf(c,Math.min(a,b))}/${cf(c,b)}</span> · جایزه <span class="num">${fc(c.reward)}</span></small>${S.rd?`<button class="btn wide claim" data-act="claimch">دریافت جایزه · <span class="num">${fc(c.reward)}</span></button>`:''}</div></div>`}
- else o+=`<div class="chcard"><div class="pt">${chibiSvg(60,72)}</div><div><b>پایان داستان 🎉</b><p>میکو حالا صاحب یه امپراتوری ماینینگه. ارزها رو بفروش، دستگاه‌ها رو عوض کن و ثروتت رو بالا ببر.</p></div></div>`;
- o+=dailyReady()?`<div class="row"><div class="ico">🎁</div><div class="rb"><b>هدیه‌ی روزانه · روز ${dailyIdx()+1}</b><small>هر روز بیای بیشتر می‌گیری؛ یه روز نیای از اول شروع می‌شه.</small></div><button class="btn sm claim" data-act="daily">${fc(DAILY[dailyIdx()])}</button></div>`:`<div class="row done">🎁 هدیه‌ی امروز گرفته شد · فردا برگرد</div>`;
- o+=`<h3 class="sec">دعوت دوستان</h3><div id="ref"><small class="mut">در حال بارگذاری…</small></div>`;
- if(S.ch>0)o+=`<h3 class="sec">انجام‌شده</h3>`+CH.slice(0,S.ch).map((x,i)=>`<div class="ok">✓ ماموریت ${i+1}: ${x.t}</div>`).join('');
+  o+=`<div class="chcard"><div class="pt">${chibiSvg(60,72)}</div><div style="flex:1"><b>ماموریت ${S.ch+1}: ${c.t}</b><p>${c.say}</p><div class="goal">هدف: ${c.goal}</div><div class="bar"><i id="chbar" style="width:${S.rd?100:Math.min(100,a/b*100)}%"></i></div><small><span class="num" id="chtxt">${cf(c,Math.min(a,b))}/${cf(c,b)}</span> · جایزه <span class="num">${fc(c.reward)}</span></small>${S.rd?`<button class="btn wide claim" data-act="claimch">${icon('gift','s')}دریافت جایزه · <span class="num">${fc(c.reward)}</span></button>`:''}</div></div>`}
+ else o+=`<div class="chcard"><div class="pt">${chibiSvg(60,72)}</div><div><b>پایان داستان!</b><p>میکو حالا صاحب یه امپراتوری ماینینگه. ارزها رو بفروش، دستگاه‌ها رو عوض کن و ثروتت رو بالا ببر.</p></div></div>`;
+ o+=dailyCal();
+ o+=dailyReady()?`<button class="btn wide claim" data-act="daily">${icon('gift','s')}دریافت هدیه‌ی روز ${dailyIdx()+1} · <span class="num">${fc(DAILY[dailyIdx()])}</span></button>`:`<div class="row done">${icon('check','s')} هدیه‌ی امروز گرفته شد · فردا برگرد</div>`;
+ o+=`<div class="sh"><b>دعوت دوستان</b><small>جایزه‌ی دوطرفه</small></div><div id="ref"><small class="mut">در حال بارگذاری…</small></div>`;
+ if(S.ch>0)o+=`<h3 class="sec">انجام‌شده</h3>`+CH.slice(0,S.ch).map((x,i)=>`<div class="ok">${icon('check','s')} ماموریت ${i+1}: ${x.t}</div>`).join('');
  return o}
 
 function sheetHub(){
@@ -1315,18 +1424,63 @@ async function loadRef(){
   if(!REFLINK){e2.innerHTML='<small class="mut">لینک دعوت هنوز آماده نیست.</small>';return}
   e2.innerHTML=`<p class="hint">هر دوستی که با لینک تو وارد بشه و به ماموریت ۳ برسه، <span class="num">${fc(r.bonus)}</span> برای تو و <span class="num">${fc(r.welcome)}</span> برای خودش. ${r.next?`با <span class="num">${r.next.at}</span> زیرمجموعه‌ی فعال، <span class="num">${fc(r.next.bonus)}</span> جایزه‌ی اضافه می‌گیری.`:''}</p>
   <div class="row"><div class="rb"><b>زیرمجموعه‌ی فعال: <span class="num">${r.active}/${r.max}</span></b><small>دعوت‌شده: <span class="num">${r.invited}</span> · درآمد دعوت: <span class="num">${fc(r.earned)}</span></small></div></div>
-  <div style="display:flex;gap:8px"><button class="btn wide" style="margin:0" data-act="invite">📨 دعوت دوستان</button><button class="btn ghost" data-act="copyref">کپی لینک</button></div>`}
+  <div style="display:flex;gap:8px"><button class="btn wide" style="margin:0" data-act="invite">${icon('user','s')}دعوت دوستان</button><button class="btn ghost" data-act="copyref">${icon('copy','s')}کپی لینک</button></div>`}
  catch(e){const e2=$('#ref');if(e2)e2.innerHTML='<small class="mut">در دسترس نیست.</small>'}}
+/* برترین‌ها (فاز ۵): سکوی ۳ نفر + لیگ + دکمه‌ی پروفایل */
 async function loadTop(){
  const el=$('#top');if(!el)return;
  if(!INIT){el.innerHTML='<small class="mut">رده‌بندی فقط داخل تلگرام فعاله.</small>';return}
  try{const r=await api('/api/top'),e2=$('#top');if(!e2)return;
   const clean=t=>String(t||'ناشناس').replace(/[<>&]/g,'');
-  let o=r.rank?`<div class="me-card"><span>رتبه‌ی تو</span><b class="num">#${r.rank}${r.total?' / '+r.total:''}</b></div>`:'';
-  if(!r.top||!r.top.length){e2.innerHTML=o+'<small class="mut">هنوز کسی تو رده‌بندی نیست.</small>';return}
-  o+=r.top.map((u,i)=>`<div class="lb ${u.me?'me':''} ${i<3?'top3':''}"><i>${i<3?['🥇','🥈','🥉'][i]:i+1}</i><span>${clean(u.name)}<em>${u.miners||0} ماینر · ${u.shelves||1} قفسه</em></span><b class="num">${f$(u.worth)}</b></div>`).join('');
+  const ti=RANKS.filter(x=>worth()>=x[0]).pop(),nx=RANKS.find(x=>worth()<x[0]);
+  let o=`<div class="me-card"><div><small>لِیگ: <b>${ti[1]}</b>${r.rank?` · رتبه‌ی تو <b class="num">#${r.rank}</b>${r.total?' / '+r.total:''}`:''}</small>${nx?`<em style="font-style:normal;font-size:10.5px;color:var(--mut)">تا لیگ «${nx[1]}» <span class="num">${fc(Math.max(0,nx[0]-worth()))}</span> دیگر</em>`:''}</div><button class="btn sm ghost" data-act="tab" data-tab="me">${icon('user','s')}پروفایل</button></div>`;
+  const top3=(r.top||[]).slice(0,3);
+  if(top3.length){
+   o+=`<div class="podium">`+[1,0,2].filter(i=>top3[i]).map(i=>{
+    const u=top3[i],col=i===0?'var(--c-star)':i===1?'#C9CCE0':'#D99A5B';
+    return `<div class="pod p${i+1}" style="--c:${col}"><div class="av2">${esc(clean(u.name).slice(0,1))}</div><b>${clean(u.name)}</b><small class="num">${f$(u.worth)}</small><div class="bar2">${i+1}</div></div>`}).join('')+`</div>`}
+  else o+='<small class="mut">هنوز کسی تو رده‌بندی نیست.</small>';
+  const rest=(r.top||[]).slice(3);
+  o+=rest.map((u,i)=>`<div class="lb ${u.me?'me':''}"><i class="rk">${i+4}</i><span>${clean(u.name)}<em>${u.miners||0} ماینر · ${u.shelves||1} قفسه</em></span><b class="num">${f$(u.worth)}</b></div>`).join('');
   e2.innerHTML=o}
  catch(e){const e2=$('#top');if(e2)e2.innerHTML='<small class="mut">رده‌بندی در دسترس نیست.</small>'}}
+
+/* ---------------- پروفایل (فاز ۵): نشان‌ها، آمار کل، رفرال ---------------- */
+const BADGES=[
+ {ic:'energy',t:'اولین ضربه',d:'روی کامپیوتر بزن',ok:()=>S.taps>=1},
+ {ic:'up',t:'صد ضربه',d:'۱۰۰ بار بزن',ok:()=>S.taps>=100},
+ {ic:'flame',t:'هزار ضربه',d:'۱۰۰۰ بار بزن',ok:()=>S.taps>=1000},
+ {ic:'miners',t:'اولین ماینر',d:'یک ماینر بخر',ok:()=>cnt()>=1},
+ {ic:'racks',t:'اتاق پر',d:'۶ ماینر هم‌زمان',ok:()=>cnt()>=6},
+ {ic:'market',t:'سبد کامل',d:'از هر ۳ ارز یک ماینر',ok:()=>new Set(S.slots.filter(Boolean).map(id=>mById(id)&&mById(id).coin)).size>=3},
+ {ic:'hub',t:'تجهیزات ویژه',d:'یک ماینر تیر ۳',ok:()=>hasT3()},
+ {ic:'cash',t:'اولین فروش',d:'ارز ماین‌شده بفروش',ok:()=>S.sold>0},
+ {ic:'shield',t:'امپراتور قفسه',d:'هر ۶ قفسه رو باز کن',ok:()=>S.shelves>=SHELVES},
+ {ic:'wallet',t:'ثروتمند',d:'ثروت کل ۱۰ دلار',ok:()=>worth()>=10},
+ {ic:'cal',t:'سه‌روزه',d:'۳ روز پیاپی بیا',ok:()=>S.st>=3},
+ {ic:'dep',t:'درآمد واقعی',d:'اولین انتقال به کیف پول',ok:()=>(S.cashed||0)>0}];
+function sheetMe(){
+ const nm=((TU.first_name||'')+' '+(TU.last_name||'')).trim()||'بازیکن',un=TU.username?'@'+TU.username:'';
+ const ti=RANKS.filter(r=>worth()>=r[0]).pop(),nx=RANKS.find(r=>worth()<r[0]);
+ const av=TU.photo_url?`<img src="${esc(TU.photo_url)}" alt="" referrerpolicy="no-referrer">`:`<span>${esc(nm.slice(0,2).toUpperCase())}</span>`;
+ const earned=BADGES.filter(b=>b.ok()).length;
+ return `<div class="pf"><div class="av" data-act="tab" data-tab="me">${av}</div><div class="pi"><b>${esc(nm)}</b><small>${un?`<span class="num">${esc(un)}</span> · `:''}لِیگ ${ti[1]}</small>
+  <div class="bd"><span>${icon('shield','s')} <b class="num">${earned}/${BADGES.length}</b> نشان</span>${nx?`<span>تا «${nx[1]}»: <span class="num">${fc(Math.max(0,nx[0]-worth()))}</span></span>`:''}</div></div></div>
+ <div class="sh"><b>نشان‌ها</b><small>${earned} از ${BADGES.length}</small></div>
+ <div class="bdg">${BADGES.map(b=>`<div class="${b.ok()?'on':'off'}">${icon(b.ic)}<b>${b.t}</b><small>${b.d}</small></div>`).join('')}</div>
+ <div class="sh"><b>آمار کل</b></div>
+ <div class="stats">
+  <div><small>ضربه‌ها</small><b class="num">${S.taps.toLocaleString('en-US')}</b></div>
+  <div><small>ماینر فعال</small><b class="num">${cnt()}</b></div>
+  <div><small>مجموع فروش</small><b class="num">${fmtUsd(S.sold)}</b></div>
+  <div><small>ثروت کل</small><b class="num">${fmtUsd(worth())}</b></div>
+  <div><small>قفسه‌ها</small><b class="num">${S.shelves}/${SHELVES}</b></div>
+  <div><small>انتقال به کیف پول</small><b class="num">${fmtUsd(S.cashed||0)}</b></div>
+  <div><small>دکور اتاق</small><b class="num">${['ac','strip','tube','hex'].filter(k=>S.room[k]).length}/4</b></div>
+  <div><small>استریک روزانه</small><b class="num">${Math.min(S.st,7)}/۷</b></div>
+ </div>
+ <div class="sh"><b>دعوت دوستان</b><small>جایزه‌ی دوطرفه</small></div>
+ <div id="ref"><small class="mut">در حال بارگذاری…</small></div>`}
 
 function sheetSlot(){
  const id=S.slots[sheet.slot],m=id&&mById(id);
@@ -1352,10 +1506,10 @@ function sheetStyle(){
 
 function renderSheet(){
  const body=$('#sheetBody'),st=body.scrollTop;
- body.innerHTML={market:sheetMarket,miners:sheetMiners,racks:sheetRacks,up:sheetUp,hub:sheetHub,wallet:sheetWallet,admin:sheetAdmin,tasks:sheetTasks,slot:sheetSlot,style:sheetStyle}[sheet.tab]();
+ body.innerHTML={market:sheetMarket,miners:sheetMiners,racks:sheetRacks,up:sheetUp,hub:sheetHub,wallet:sheetWallet,admin:sheetAdmin,tasks:sheetTasks,slot:sheetSlot,style:sheetStyle,me:sheetMe}[sheet.tab]();
  $('#sheetTitle').textContent=TITLES[sheet.tab];body.scrollTop=st;updateLive();
  if(sheet.tab==='wallet')wVerUpd();
- if(sheet.tab==='hub')loadTop();if(sheet.tab==='tasks')loadRef();if(sheet.tab==='wallet'&&Date.now()-W.lt>8000)wLoad();
+ if(sheet.tab==='hub')loadTop();if(sheet.tab==='tasks'||sheet.tab==='me')loadRef();if(sheet.tab==='wallet'&&Date.now()-W.lt>8000)wLoad();
  if(sheet.tab==='admin'&&Date.now()-(A.lt||0)>8000){A.lt=Date.now();aLoad()}}
 
 function updateLive(){
@@ -1537,7 +1691,7 @@ function sheetWallet(){
  const nm=((TU.first_name||'')+' '+(TU.last_name||'')).trim()||'بازیکن',un=TU.username?'@'+TU.username:'';
  const ti=RANKS.filter(r=>worth()>=r[0]).pop()[1],d=W.d;
  const av=TU.photo_url?`<img src="${esc(TU.photo_url)}" alt="" referrerpolicy="no-referrer">`:`<span>${esc(nm.slice(0,2).toUpperCase())}</span>`;
- let o=`<div class="pf"><div class="av">${av}</div><div class="pi"><b>${esc(nm)}</b><small>${un?`<span class="num">${esc(un)}</span> · `:''}ID <span class="num">${esc(UID)}</span></small>
+ let o=`<div class="pf"><div class="av" data-act="tab" data-tab="me" role="button" aria-label="پروفایل من">${av}</div><div class="pi"><b>${esc(nm)}</b><small>${un?`<span class="num">${esc(un)}</span> · `:''}ID <span class="num">${esc(UID)}</span></small>
   <div class="bd"><span>${icon('hub','s')} ${d&&d.rank?`<b class="num">#${d.rank}</b>`:'—'}</span><span>${ti}</span><span>${icon('miners','s')} <b class="num">${cnt()}</b> ماینر</span></div></div>${IS_ADMIN?`<button class="admgo" data-act="tab" data-tab="admin">${icon('shield','s')}مدیریت</button>`:''}</div>`;
  if(W.v==='home')return o+wHome();
  const T={dep:'واریز',wd:'برداشت',swap:'تبدیل ارز',gm:'شارژ بالانس بازی',coin:coin(W.coin).name}[W.v]||'';
@@ -1686,7 +1840,7 @@ async function aLoad(){
 function aOv(){
  const o=A.ov;if(!o)return '<p class="hint">در حال بارگذاری…</p>';
  const k=(l,v,s,c)=>`<div class="kpi ${c||''}"><small>${l}</small><b class="num">${v}</b>${s?`<em class="num">${s}</em>`:''}</div>`,mx=Math.max(1,...o.series.map(x=>x.n));
- return (o.persistent?'':`<div class="alert">⚠️ <b>MONGO_URI</b> تنظیم نشده. همه‌ی اطلاعات و موجودی کاربرها با هر ری‌استارت سرور پاک می‌شه. قبل از کار با پول واقعی حتماً دیتابیس دائمی وصل کن.</div>`)
+ return (o.persistent?'':`<div class="alert">${icon('alert','s')} <b>MONGO_URI</b> تنظیم نشده. همه‌ی اطلاعات و موجودی کاربرها با هر ری‌استارت سرور پاک می‌شه. قبل از کار با پول واقعی حتماً دیتابیس دائمی وصل کن.</div>`)
  +`<div class="kpis">`
  +k('کل کاربران',o.users.total.toLocaleString('en-US'),'بازیکن فعال: '+o.users.played)
  +k('فعال ۲۴ ساعت',o.users.active24,'جدید: '+o.users.new24)
@@ -1696,18 +1850,18 @@ function aOv(){
  +k('برداشت پرداخت‌شده',fh(o.wd24_usd),'۲۴ ساعت اخیر')
  +`<div class="kpi wide"><small>موجودی کیف پول کاربران (تعهد شما)</small><b class="num">${fh(o.liab_usd)}</b><em class="num">TON ${wnum('TON',o.liab.TON)} · Stars ${wnum('STAR',o.liab.STAR)} · USDT ${wnum('USDT',o.liab.USDT)}</em></div>`
  +`<div class="kpi wide"><small>کاربران جدید ۷ روز اخیر</small><div class="bars">${o.series.map(x=>`<div><b class="num">${x.n}</b><i style="height:${Math.max(4,x.n/mx*62)}px"></i><small class="num">${x.d}</small></div>`).join('')}</div></div></div>`
- +(o.log&&o.log.length?`<div class="sh"><b>آخرین اقدام‌های مدیریت</b></div>`+o.log.map(x=>`<div class="tx"><div class="ti g">🛡</div><div class="n"><b>${esc(x.a)}</b><small class="num">${x.uid?'کاربر '+x.uid+' · ':''}${tfmt(x.ts)}</small></div>${x.amount?`<b class="num">${esc(x.amount)} ${esc(x.asset||'')}</b>`:''}</div>`).join(''):'')}
+ +(o.log&&o.log.length?`<div class="sh"><b>آخرین اقدام‌های مدیریت</b></div>`+o.log.map(x=>`<div class="tx"><div class="ti g">${icon('shield')}</div><div class="n"><b>${esc(x.a)}</b><small class="num">${x.uid?'کاربر '+x.uid+' · ':''}${tfmt(x.ts)}</small></div>${x.amount?`<b class="num">${esc(x.amount)} ${esc(x.asset||'')}</b>`:''}</div>`).join(''):'')}
 
 function aWd(){
  const n=A.ov?A.ov.pend_n:0;
  let o=`<div class="chs">${['pending','paid','rejected'].map(s=>`<button data-act="a-wf" data-v="${s}" class="${A.wf===s?'on':''}">${ASTAT[s]}${s==='pending'&&n?` (${n})`:''}</button>`).join('')}</div>`;
  if(!A.wds)return o+'<p class="hint">در حال بارگذاری…</p>';
- if(!A.wds.length)return o+'<div class="row done">موردی نیست ✓</div>';
+ if(!A.wds.length)return o+'<div class="row done">موردی نیست</div>';
  return o+A.wds.map(x=>`<div class="aitem"><div class="ah"><b>${esc(x.name)}</b><span class="pill ${x.status}">${ASTAT[x.status]||x.status}</span></div>
-  <div class="am"><b class="num">${wnum(x.asset,x.amount)} ${x.asset==='STAR'?'⭐ Stars':x.asset}</b><em class="num">≈ ${fh(x.usd)}</em></div>
+  <div class="am"><b class="num">${wnum(x.asset,x.amount)} ${x.asset==='STAR'?'Stars':x.asset}</b><em class="num">≈ ${fh(x.usd)}</em></div>
   <small class="num">ID ${x.uid} · ${tfmt(x.ts)}</small>
   ${x.asset!=='STAR'?`<div class="cp2"><code>${esc(x.to)}</code><button data-act="w-copy" data-v="${esc(x.to)}">کپی</button></div>`:'<small>پرداخت Stars داخل تلگرام و دستی انجام می‌شه.</small>'}
-  ${x.status==='pending'?`<div class="btnrow"><button class="btn ok2" data-act="a-wd" data-id="${esc(x.id)}" data-ok="1">✅ پرداخت شد</button><button class="btn no2" data-act="a-wd" data-id="${esc(x.id)}" data-ok="0">❌ رد و برگشت وجه</button></div>`:''}</div>`).join('')}
+  ${x.status==='pending'?`<div class="btnrow"><button class="btn ok2" data-act="a-wd" data-id="${esc(x.id)}" data-ok="1">${icon('check','s')}پرداخت شد</button><button class="btn no2" data-act="a-wd" data-id="${esc(x.id)}" data-ok="0">${icon('close','s')}رد و برگشت وجه</button></div>`:''}</div>`).join('')}
 
 function aUs(){
  if(A.sel)return aUser();
@@ -1729,8 +1883,8 @@ function aUser(){
  <input class="in" data-a="amount" inputmode="decimal" placeholder="${ad.asset==='GAME'?'مقدار دلار هدیه به بازی':'مقدار (مثلاً 5 یا -2)'}" value="${esc(ad.amount)}" autocomplete="off">
  <input class="in fa" data-a="note" placeholder="توضیح (اختیاری)" value="${esc(ad.note)}" autocomplete="off">
  <button class="btn wide" data-act="a-adj" data-id="${u.id}">ثبت</button>
- <div class="btnrow"><button class="btn ${u.banned?'ok2':'no2'}" data-act="a-ban" data-id="${u.id}" data-v="${u.banned?0:1}">${u.banned?'رفع مسدودی':'🚫 مسدود کردن'}</button></div>
- ${tx.length?`<div class="sh"><b>آخرین تراکنش‌ها</b></div>`+tx.map(x=>`<div class="tx"><div class="ti ${x.dir>0?'p':'m'}">${x.dir>0?'⬇':'⬆'}</div><div class="n"><b>${esc(x.type)}</b><small class="num">${esc(x.to||ASTAT[x.status]||'')} · ${tfmt(x.ts)}</small></div>${x.amount?`<b class="num ${x.dir>0?'p':'m'}">${x.dir>0?'+':'−'}${wnum(x.asset,x.amount)} ${esc(x.asset)}</b>`:''}</div>`).join(''):''}`}
+ <div class="btnrow"><button class="btn ${u.banned?'ok2':'no2'}" data-act="a-ban" data-id="${u.id}" data-v="${u.banned?0:1}">${u.banned?'رفع مسدودی':icon('lock','s')+'مسدود کردن'}</button></div>
+ ${tx.length?`<div class="sh"><b>آخرین تراکنش‌ها</b></div>`+tx.map(x=>`<div class="tx"><div class="ti ${x.dir>0?'p':'m'}">${icon(x.dir>0?'dep':'wd')}</div><div class="n"><b>${esc(x.type)}</b><small class="num">${esc(x.to||ASTAT[x.status]||'')} · ${tfmt(x.ts)}</small></div>${x.amount?`<b class="num ${x.dir>0?'p':'m'}">${x.dir>0?'+':'−'}${wnum(x.asset,x.amount)} ${esc(x.asset)}</b>`:''}</div>`).join(''):''}`}
 
 function aCf(){
  if(!A.cf)return '<p class="hint">در حال بارگذاری…</p>';
@@ -1739,13 +1893,13 @@ function aCf(){
  <div class="aitem">${CFIELDS.map(f=>`<div class="fld"><span>${f[1]}<small>${f[2]}</small></span><input class="in" data-a="c:${f[0]}" inputmode="decimal" value="${esc(A.cfIn[f[0]])}"></div>`).join('')}</div>
  <button class="btn wide" data-act="a-save">ذخیره‌ی تنظیمات</button>
  <div class="sh"><b>وضعیت سرور</b></div>
- <div class="fg"><div><small>دیتابیس</small><b>${i.persistent?'دائمی ✓':'موقت ⚠️'}</b></div><div><small>واریز TON</small><b>${i.ton_address?'فعال ✓':'غیرفعال'}</b></div><div><small>ارزش هر Star</small><b class="num">$${i.star_usd}</b></div><div><small>قیمت TON</small><b class="num">${i.ton_price?'$'+i.ton_price.toFixed(3):'—'}</b></div></div>
+ <div class="fg"><div><small>دیتابیس</small><b>${i.persistent?'دائمی':'موقت (هشدار)'}</b></div><div><small>واریز TON</small><b>${i.ton_address?'فعال':'غیرفعال'}</b></div><div><small>ارزش هر Star</small><b class="num">$${i.star_usd}</b></div><div><small>قیمت TON</small><b class="num">${i.ton_price?'$'+i.ton_price.toFixed(3):'—'}</b></div></div>
  <p class="hint">ارزش Star و آدرس واریز از Environment سرور تنظیم می‌شن.</p>`}
 
 function aBc(){
  return `<p class="hint">پیام برای همه‌ی کاربرها (به‌جز مسدودها) با دکمه‌ی ورود به بازی فرستاده می‌شه. اول تست بگیر.</p>
  <textarea class="in fa" data-a="bc" placeholder="متن پیام…" maxlength="3000">${esc(A.bc)}</textarea>
- <div class="btnrow"><button class="btn ghost" data-act="a-bc" data-v="1">ارسال تست برای من</button><button class="btn wide" style="margin:0" data-act="a-bc" data-v="0">📣 ارسال برای همه</button></div>`}
+ <div class="btnrow"><button class="btn ghost" data-act="a-bc" data-v="1">ارسال تست برای من</button><button class="btn wide" style="margin:0" data-act="a-bc" data-v="0">${icon('sound','s')}ارسال برای همه</button></div>`}
 
 function sheetAdmin(){
  if(!IS_ADMIN)return '<div class="row done">دسترسی نداری</div>';
@@ -1767,11 +1921,11 @@ async function aAct(a,t){
   else if(a==='a-wd'){const ok=t.dataset.ok==='1';
    if(!await askOk(ok?'تأیید پرداخت این برداشت؟ (مطمئن شو پول رو فرستادی)':'رد درخواست و برگشت وجه به کاربر؟'))return;
    A.busy=true;try{await aApi('/api/admin/withdrawals/decide','POST',{id,ok})}finally{A.busy=false}
-   hapOk();toast(ok?'پرداخت ثبت شد ✓':'رد شد و وجه برگشت ✓');A.wds=null;A.ov=null;renderSheet();aLoad();aApi('/api/admin/overview').then(o=>{A.ov=o;aDraw()}).catch(()=>{})}
+   hapOk();toast(ok?'پرداخت ثبت شد':'رد شد و وجه برگشت');A.wds=null;A.ov=null;renderSheet();aLoad();aApi('/api/admin/overview').then(o=>{A.ov=o;aDraw()}).catch(()=>{})}
   else if(a==='a-adj'){const amt=parseFloat(A.adj.amount);if(!isFinite(amt)||amt===0)return toast('مقدار رو وارد کن');
    if(!await askOk(`${amt>0?'اضافه کردن':'کسر'} ${Math.abs(amt)} ${A.adj.asset==='GAME'?'دلار به بازی':A.adj.asset} برای این کاربر؟`))return;
    A.busy=true;try{await aApi('/api/admin/adjust','POST',{uid:+id,asset:A.adj.asset,amount:amt,note:A.adj.note})}finally{A.busy=false}
-   hapOk();toast('ثبت شد ✓');A.adj.amount='';A.adj.note='';A.sel=await aApi('/api/admin/user?uid='+id);renderSheet()}
+   hapOk();toast('ثبت شد');A.adj.amount='';A.adj.note='';A.sel=await aApi('/api/admin/user?uid='+id);renderSheet()}
   else if(a==='a-ban'){const b=v==='1';if(!await askOk(b?'این کاربر مسدود بشه؟':'مسدودی برداشته بشه؟'))return;
    A.busy=true;try{await aApi('/api/admin/ban','POST',{uid:+id,banned:b})}finally{A.busy=false}
    toast(b?'مسدود شد':'مسدودی برداشته شد');A.sel=await aApi('/api/admin/user?uid='+id);renderSheet()}
@@ -1779,11 +1933,11 @@ async function aAct(a,t){
    for(const f of CFIELDS){const x=parseFloat(A.cfIn[f[0]]);if(!isFinite(x)||x<0)return toast('مقدار «'+f[1]+'» نامعتبره');c[f[0]]=f[3]?x/100:x}
    c.wd_on=!!A.cf.wd_on;c.cashout_on=!!A.cf.cashout_on;
    A.busy=true;try{await aApi('/api/admin/settings','POST',{cfg:c})}finally{A.busy=false}
-   hapOk();toast('تنظیمات ذخیره شد ✓');W.lt=0;aLoad()}
+   hapOk();toast('تنظیمات ذخیره شد');W.lt=0;aLoad()}
   else if(a==='a-bc'){const test=v==='1';if(!A.bc.trim())return toast('متن پیام خالیه');
    if(!test&&!await askOk('این پیام برای همه‌ی کاربرها فرستاده بشه؟'))return;
    A.busy=true;let r;try{r=await aApi('/api/admin/broadcast','POST',{text:A.bc,test})}finally{A.busy=false}
-   hapOk();toast(test?'تست فرستاده شد ✓':'ارسال برای '+r.n+' نفر شروع شد ✓');if(!test){A.bc='';renderSheet()}}
+   hapOk();toast(test?'تست فرستاده شد':'ارسال برای '+r.n+' نفر شروع شد');if(!test){A.bc='';renderSheet()}}
  }catch(e){A.busy=false;aErr(e)}}
 
 document.addEventListener('input',e=>{
@@ -1802,10 +1956,10 @@ function act(t,e){
  else if(a==='close')closeSheet();
  else if(a.startsWith('w-'))wAct(a,t);
  else if(a.startsWith('a-'))aAct(a,t);
- else if(a==='sel'){S.sel=id;if(sheet.tab==='market')renderSheet();renderHUD();drawChart();hap('light')}
+ else if(a==='sel'){if(Date.now()-chipSup<700)return;S.sel=id;if(sheet.tab==='market')renderSheet();renderHUD();drawChart();hap('light')}
  else if(a==='sell'){const v=S.wallet[id]*price(id);if(v<=0)return toast('چیزی برای فروش نیست');S.usd+=v;S.sold+=v;S.wallet[id]=0;flashChip(id);toast('فروش '+coin(id).short+' · +'+f$(v));setMood('happy');hap('medium');afterAction()}
  else if(a==='sellall'){let v=0;COINS.forEach(c=>{v+=S.wallet[c.id]*price(c.id);S.wallet[c.id]=0;flashChip(c.id)});if(v<=0)return toast('چیزی برای فروش نیست');S.usd+=v;S.sold+=v;toast('فروش همه · +'+f$(v));setMood('happy');hap('medium');afterAction()}
- else if(a==='buy'){const m=mById(id),i=S.slots.findIndex((x,k)=>x===null&&k<cap());if(i<0)return toast('جایگاه خالی نداری! قفسه بخر');if(S.usd<m.price)return toast('پولت کافی نیست');S.usd-=m.price;S.slots[i]=id;renderRack();setMood('happy',2200);hapOk();centerBurst(m.col);say(LINES_BUY[Math.floor(Math.random()*LINES_BUY.length)],4500);afterAction()}
+ else if(a==='buy'){const m=mById(id),i=S.slots.findIndex((x,k)=>x===null&&k<cap());if(i<0)return toast('جایگاه خالی نداری! قفسه بخر');if(S.usd<m.price)return toast('پولت کافی نیست');S.usd-=m.price;S.slots[i]=id;lastBought=i;renderRack();setMood('happy',2200);hapOk();centerBurst(m.col);say(LINES_BUY[Math.floor(Math.random()*LINES_BUY.length)],4500);afterAction()}
  else if(a==='shelf'){const k=+t.dataset.k;if(k<S.shelves)openSheet('miners');else openSheet('racks')}
  else if(a==='buyshelf'){const k=+t.dataset.k;if(k!==S.shelves||S.usd<SHELF_COST[k])return;S.usd-=SHELF_COST[k];S.shelves++;renderRack();setMood('happy',2200);hapOk();centerBurst('#22e6ff');say('قفسه‌ی جدید نصب شد! جای دو ماینر دیگه باز شد',4500);afterAction()}
  else if(a==='pcup'){const n=S.pc+1;if(S.usd<PCCOST[n])return;S.usd-=PCCOST[n];S.pc=n;setMood('happy',2200);hapOk();say('کامپیوتر جدید! ضربه‌هام قوی‌تر شدن',4500);afterAction()}
@@ -1818,7 +1972,7 @@ function act(t,e){
  else if(a==='miko'){setMood('happy',2200);hap('light');say(LINES_MIKO[Math.floor(Math.random()*LINES_MIKO.length)],4500)}
  else if(a==='claimch')claimChapter()
  else if(a==='invite'){if(!REFLINK)return;const u='https://t.me/share/url?url='+encodeURIComponent(REFLINK)+'&text='+encodeURIComponent('بیا با هم تو اتاق ماینر ماین کنیم');try{tg.openTelegramLink(u)}catch(e){window.open(u,'_blank')}}
- else if(a==='copyref'){if(!REFLINK)return;try{navigator.clipboard.writeText(REFLINK).then(()=>toast('لینک کپی شد ✓'),()=>toast(REFLINK))}catch(e){toast(REFLINK)}}
+ else if(a==='copyref'){if(!REFLINK)return;try{navigator.clipboard.writeText(REFLINK).then(()=>toast('لینک کپی شد'),()=>toast(REFLINK))}catch(e){toast(REFLINK)}}
  else if(a==='boost'){boostUntil=Date.now()+30000;boostShow=0;$('#boost').classList.add('hide');hapOk();centerBurst('#ffd166');setMiko('happy',3000);toast('بوست فعال شد: ۳۰ ثانیه ماین دو برابر');renderHUD()}
  else if(a==='sg-m'){hap('light');try{t.animate([{transform:'scale(1)'},{transform:'scale(1.22)'},{transform:'scale(1)'}],{duration:420,easing:'cubic-bezier(.34,1.45,.4,1)'})}catch(e){}}}
 function afterAction(){checkChapter();renderHUD();if(sheet.tab)renderSheet();save()}
@@ -1835,6 +1989,14 @@ document.addEventListener('pointerdown',e=>{if(!e.target.closest||!e.target.clos
 /* نگه‌داشتن روی بالانس ← نمایش عدد دقیق (فاز ۲) */
 $('#bal').addEventListener('pointerdown',()=>{balHoldT=setTimeout(()=>{balHoldT=null;balExact(true)},420)});
 ['pointerup','pointercancel','pointerleave'].forEach(ev=>$('#bal').addEventListener(ev,()=>{if(balHoldT){clearTimeout(balHoldT);balHoldT=null}}));
+
+/* نگه‌داشتن روی چیپ ارز ← شیت جزئیات همان ارز (فاز ۵) */
+let chipHoldT=null,chipSup=0;
+$('#chips').addEventListener('pointerdown',e=>{
+ const t=e.target.closest&&e.target.closest('.chip');if(!t)return;
+ const cid=t.dataset.id;
+ chipHoldT=setTimeout(()=>{chipHoldT=null;chipSup=Date.now();W.v='coin';W.coin=cid;openSheet('wallet');hap('light')},430)});
+['pointerup','pointercancel','pointerleave'].forEach(ev=>$('#chips').addEventListener(ev,()=>{if(chipHoldT){clearTimeout(chipHoldT);chipHoldT=null}}));
 
 /* ---------------- پاپ‌اور ماینر + بیدار کردن میکو + پن دوربین (فاز ۴) ---------------- */
 function showPop(i,el){
