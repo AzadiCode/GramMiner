@@ -399,6 +399,20 @@ nav button.on .ic{color:var(--brand2)}
 #pop .btnrow{display:flex;gap:6px}
 #pop .btnrow .btn{flex:1;padding:8px 6px;font-size:11.5px}
 
+#sndBtn{position:absolute;top:62px;left:10px;z-index:var(--z-nav);width:40px;height:40px;border-radius:13px;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:grid;place-items:center;padding:0;cursor:pointer;color:var(--mut)}
+#sndBtn .ic{width:17px;height:17px}
+#sndBtn:active{transform:scale(.92)}
+#sndBtn.off{color:var(--mut2)}
+#sheet{will-change:transform}
+#sheetBody.animin>*{animation:fadeup .24s var(--e-out) both}
+@keyframes fadeup{from{opacity:0;transform:translateY(10px)}}
+@media (max-width:359px){#hud b{font-size:17px}#hud .chip b{font-size:10.5px}nav button{font-size:9.5px}nav button .ic{width:21px;height:21px}.mcard .mtotal{font-size:15px}}
+
+/* قطعی برق (فاز ۷+): ماینرها و مانیتورها تاریک می‌شن */
+#room.blk #rackItems [data-act="slot"],#room.blk [data-act="mine"]{filter:brightness(.28) saturate(.25)}
+#room.blk #rackItems [data-act="shelf"]{filter:brightness(.7)}
+#room #rackItems [data-act="slot"],#room [data-act="mine"]{transition:filter .4s}
+
 /* گفتگوی داستان (فاز ۶) */
 #dlg{position:absolute;left:10px;right:10px;bottom:14px;z-index:6;display:flex;gap:10px;align-items:center;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line2);border-radius:var(--r-lg);padding:10px 12px;cursor:pointer;animation:popin .25s var(--e-spring);box-shadow:0 12px 30px rgba(0,0,0,.5)}
 #dlg.hide{display:none}
@@ -583,6 +597,7 @@ nav button.on .ic{color:var(--brand2)}
     <canvas id="fx"></canvas>
     <div id="fl"></div>
     <button id="taskBtn" data-act="tab" data-tab="tasks" aria-label="ماموریت‌ها"><svg class="ic" aria-hidden="true"><use href="#i-tasks"/></svg><i class="dot hide" id="taskDot"></i></button>
+    <button id="sndBtn" aria-label="صدا" aria-pressed="true"><svg class="ic" aria-hidden="true"><use href="#i-sound"/></svg></button>
     <div id="energy" aria-hidden="true"><svg class="ic" aria-hidden="true"><use href="#i-energy"/></svg><i><b id="enbar"></b></i><span class="num" id="entxt">100</span></div>
     <div id="toast" role="status"></div>
     <button id="boost" class="hide" data-act="boost"><svg class="ic" aria-hidden="true"><use href="#i-up"/></svg>بوست ×۲</button>
@@ -628,6 +643,23 @@ const tg=window.Telegram&&window.Telegram.WebApp;
 if(tg){try{tg.ready();tg.expand();tg.setHeaderColor&&tg.setHeaderColor('#0B0A14');tg.setBackgroundColor&&tg.setBackgroundColor('#0B0A14');tg.disableVerticalSwipes&&tg.disableVerticalSwipes()}catch(e){}}
 const hap=t=>{try{tg&&tg.HapticFeedback&&tg.HapticFeedback.impactOccurred(t||'light')}catch(e){}};
 const hapOk=()=>{try{tg&&tg.HapticFeedback&&tg.HapticFeedback.notificationOccurred('success')}catch(e){}};
+const hapErr=()=>{try{tg&&tg.HapticFeedback&&tg.HapticFeedback.notificationOccurred('error')}catch(e){}};
+const hapWarn=()=>{try{tg&&tg.HapticFeedback&&tg.HapticFeedback.notificationOccurred('warning')}catch(e){}};
+/* صدا (فاز ۷): سینت کوچک WebAudio — بدون فایل، خاموش‌شدنی، پیش‌فرض روشن */
+let AC=null,SND=localStorage.getItem('mr3:snd')!=='0';
+function actx(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
+function tone(f,d,type,v,delay){const a=actx();if(!a)return;const o=a.createOscillator(),g=a.createGain(),t0=a.currentTime+(delay||0);
+ o.type=type||'sine';o.frequency.value=f;
+ g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(v||.1,t0+.012);g.gain.exponentialRampToValueAtTime(.0001,t0+d);
+ o.connect(g);g.connect(a.destination);o.start(t0);o.stop(t0+d+.05)}
+function sfx(k){if(!SND||REDUCE)return;try{
+ if(k==='tap')tone(520+Math.random()*180,.07,'triangle',.06);
+ else if(k==='ok'){tone(660,.12,'sine',.09);tone(990,.16,'sine',.07,.07)}
+ else if(k==='coin'){tone(1320,.09,'square',.045);tone(1760,.12,'square',.035,.06)}
+ else if(k==='err')tone(170,.2,'sawtooth',.05);
+ else if(k==='ping'){tone(880,.1,'sine',.08);tone(1320,.14,'sine',.05,.09)}
+}catch(e){}}
+document.addEventListener('pointerdown',()=>{if(SND)actx()},{once:true,capture:true});
 const $=s=>document.querySelector(s);
 const INIT=(tg&&tg.initData)||'';
 const UID=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.id)||'guest';
@@ -664,7 +696,7 @@ const DAILY=[.01,.012,.015,.02,.025,.03,.05];
 const SHELVES=6,SLOTS=SHELVES*2,SHELF_COST=[0,.20,.70,1.8,4.5,11];
 const OFFLINE_MAX=4*3600;
 
-const S={v:4,usd:.15,wallet:{STAR:0,TON:0,USD:0},sel:'STAR',pc:0,shelves:1,slots:Array(SLOTS).fill(null),room:{},taps:0,sold:0,ch:0,rd:0,en:EMAX,et:Date.now(),dl:'',st:0,cs:0,cashed:0};
+const S={v:4,usd:.15,wallet:{STAR:0,TON:0,USD:0},sel:'STAR',pc:0,shelves:1,slots:Array(SLOTS).fill(null),room:{},taps:0,sold:0,ch:0,rd:0,en:EMAX,et:Date.now(),dl:'',st:0,cs:0,cashed:0,cos:1,co:0,mb:0,wk:'',wp:{},wc:0};
 const energy=()=>Math.min(EMAX,S.en+(Date.now()-S.et)/1000/EREGEN);
 const coin=id=>COINS.find(c=>c.id===id);
 const mById=id=>MINERS.find(m=>m.id===id);
@@ -698,7 +730,7 @@ function simulate(){ /* فقط وقتی سرور در دسترس نیست */
 /* ---------------- Story (فاز ۶): دنیای میکو — همه‌ی متن‌ها اینجا، قابل ویرایش ---------------- */
 /* پرتره‌های نیم‌تنه شخصیت‌ها (SVG دستی، ۶۰×۷۲) */
 const CHARS={
- miko:{n:'میکو',col:'#5EE6F5',port:()=>chibiSvg(52,62)},
+ miko:{n:'میکو',col:'#5EE6F5',port:()=>chibiSvg(52,62,OUTFITS[S.co]||OUTFITS[0])},
  korush:{n:'عمو کوروش',col:'#E8913A',port:()=>`<svg viewBox="0 0 60 72" width="52" height="62">
   <ellipse cx="30" cy="69" rx="15" ry="4" fill="rgba(0,0,0,.35)"/>
   <path d="M13 72 C13 52 19 44 30 44 C41 44 47 52 47 72 Z" fill="#8A5A3A" stroke="#241304" stroke-width="2"/>
@@ -801,7 +833,7 @@ const fm=fc;
 const fp=(id,p)=>'$'+(id==='STAR'?p.toFixed(4):id==='USD'?p.toFixed(2):p.toFixed(3));
 const fa=(id,n)=>id==='USD'?f$(n):id==='STAR'?nf(n,6):nf(n,8);
 const fs=(id,n)=>id==='USD'?'+$'+n.toFixed(8):id==='STAR'?'+'+n.toFixed(6)+'★':'+'+n.toFixed(8)+' TON';
-const fpw=n=>'$'+n.toFixed(9);
+const fpw=n=>'$'+fmtNum(n);
 const starPts=(cx,cy,R,r,yUp)=>{const p=[];for(let i=0;i<10;i++){const a=Math.PI/2+i*Math.PI/5,rr=i%2?r:R;p.push((cx+Math.cos(a)*rr).toFixed(3)+','+(yUp?cy+Math.sin(a)*rr:cy-Math.sin(a)*rr).toFixed(3))}return p.join(' ')};
 
 /* آیکون از اسپرایت (فاز ۱) — icon('wallet') یا icon('close','s') */
@@ -849,6 +881,12 @@ function merge(o){
  if(typeof o.dl==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(o.dl))S.dl=o.dl;
  if(num(o.st))S.st=Math.min(7,o.st|0);
  if(num(o.cs))S.cs=Math.min(CH.length,o.cs|0);   /* صحنه‌های دیده‌شده‌ی داستان (v4) */
+ if(num(o.cos))S.cos=Math.min(15,o.cos|0);       /* لباس‌های میکو (فاز ۷+) */
+ if(num(o.co))S.co=Math.min(3,o.co|0);
+ if(num(o.mb))S.mb=o.mb|0;
+ if(typeof o.wk==='string'&&/^\d{4}-W\d{1,2}$/.test(o.wk))S.wk=o.wk;
+ if(o.wp&&typeof o.wp==='object')['t0','s0','b0'].forEach(k=>{const v=o.wp[k];if(typeof v==='number'&&isFinite(v)&&v>=0)S.wp[k]=v});
+ if(num(o.wc))S.wc=Math.min(7,o.wc|0);
  if(Array.isArray(o.slots))for(let i=0;i<SLOTS;i++){const id=o.slots[i];S.slots[i]=(id&&mById(id)&&i<S.shelves*2)?id:null}
  if(o.room&&typeof o.room==='object')['ac','strip','tube','hex'].forEach(k=>{if(o.room[k])S.room[k]=true})}
 function localLoad(){
@@ -879,20 +917,27 @@ function grantOffline(sec){
  COINS.forEach(c=>{const g=st.rate[c.id]*f*sec*.5;if(g>0){S.wallet[c.id]+=g;tot+=g*price(c.id)}});
  if(tot>=.01)setTimeout(()=>{toast('ماینرها وقتی نبودی '+f$(tot)+' ماین کردن');setMiko('tired',3600);say('خوش برگشتی! وقتی نبودی ماینرها نصف توانشون کار کردن؛ خودمم خسته‌ام.',6000)},1500)}
 
-/* ---------------- Chibi (Miko) ---------------- */
-function chibiInner(){return `<g class="bob">
-<ellipse cx="13" cy="80" rx="7" ry="11" transform="rotate(18 13 80)" fill="#5ee6f5" stroke="#2a1c6b" stroke-width="3"/>
-<ellipse cx="87" cy="80" rx="7" ry="11" transform="rotate(-18 87 80)" fill="#5ee6f5" stroke="#2a1c6b" stroke-width="3"/>
-<ellipse cx="36" cy="109" rx="10" ry="5.5" fill="#2fc6d8" stroke="#2a1c6b" stroke-width="3"/><ellipse cx="64" cy="109" rx="10" ry="5.5" fill="#2fc6d8" stroke="#2a1c6b" stroke-width="3"/>
-<path d="M50 22V9" stroke="#5ee6f5" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="7" r="5.5" fill="#ffd166" stroke="#2a1c6b" stroke-width="3"/>
-<path d="M12 96C6 50 26 20 50 20S94 50 88 96C88 108 12 108 12 96Z" fill="#5ee6f5" stroke="#2a1c6b" stroke-width="3" stroke-linejoin="round"/>
-<ellipse cx="50" cy="88" rx="21" ry="13" fill="#bff7ff" opacity=".6"/>
+/* ---------------- Chibi (Miko) — پارامتری برای لباس‌ها (فاز ۷+) ---------------- */
+const TEALP={col:'#5ee6f5',acc:'#2fc6d8',c1:'#bff7ff',c2:'#5ee6f5',c3:'#2597ad'};
+/* لباس‌های قابل‌خرید میکو: پالت + کلاه (0 هیچ · 1 کلاه · 2 شنل · 3 کلاه‌خود) */
+const OUTFITS=[
+ {id:0,n:'پیش‌فرض',d:'استایل همیشگی میکو',col:'#5EE6F5',acc:'#2fc6d8',c1:'#d4fbff',c2:'#5ee6f5',c3:'#2597ad',hat:0,price:0},
+ {id:1,n:'کاپشن مسی',d:'گرم و محشر برای شب‌های ماین',col:'#E8913A',acc:'#B06A24',c1:'#ffd9a8',c2:'#e8913a',c3:'#9a5a1a',hat:1,price:.35},
+ {id:2,n:'شنل شب',d:'برای ماین‌های نیمه‌شب',col:'#8F7BD8',acc:'#5E4A9A',c1:'#c9bdf5',c2:'#8f7bd8',c3:'#4c3a86',hat:2,price:.8},
+ {id:3,n:'فضانورد',d:'اولین ماینر روی ماه',col:'#ECECEC',acc:'#9AA2B5',c1:'#ffffff',c2:'#ececec',c3:'#8d94a8',hat:3,price:2}];
+function chibiInner(p){p=p||TEALP;return `<g class="bob">
+<ellipse cx="13" cy="80" rx="7" ry="11" transform="rotate(18 13 80)" fill="${p.col}" stroke="#2a1c6b" stroke-width="3"/>
+<ellipse cx="87" cy="80" rx="7" ry="11" transform="rotate(-18 87 80)" fill="${p.col}" stroke="#2a1c6b" stroke-width="3"/>
+<ellipse cx="36" cy="109" rx="10" ry="5.5" fill="${p.acc}" stroke="#2a1c6b" stroke-width="3"/><ellipse cx="64" cy="109" rx="10" ry="5.5" fill="${p.acc}" stroke="#2a1c6b" stroke-width="3"/>
+<path d="M50 22V9" stroke="${p.col}" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="7" r="5.5" fill="#ffd166" stroke="#2a1c6b" stroke-width="3"/>
+<path d="M12 96C6 50 26 20 50 20S94 50 88 96C88 108 12 108 12 96Z" fill="${p.c2}" stroke="#2a1c6b" stroke-width="3" stroke-linejoin="round"/>
+<ellipse cx="50" cy="88" rx="21" ry="13" fill="${p.c1}" opacity=".6"/>
 <path d="M25 50Q29 36 40 30" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity=".6"/>
 <g class="eye"><ellipse cx="38" cy="56" rx="5.5" ry="7.5" fill="#1b1040"/><circle cx="36" cy="53" r="2" fill="#fff"/></g>
 <g class="eye"><ellipse cx="62" cy="56" rx="5.5" ry="7.5" fill="#1b1040"/><circle cx="60" cy="53" r="2" fill="#fff"/></g>
 <ellipse cx="27" cy="69" rx="5" ry="3" fill="#ff4fa3" opacity=".5"/><ellipse cx="73" cy="69" rx="5" ry="3" fill="#ff4fa3" opacity=".5"/>
 <path class="mouth" d="M44 69 Q50 73 56 69" fill="none" stroke="#1b1040" stroke-width="2.2" stroke-linecap="round"/></g>`}
-const chibiSvg=(w,h)=>`<svg class="chibi" viewBox="0 0 100 120" ${w?`width="${w}" height="${h||w*1.2}"`:''}>${chibiInner()}</svg>`;
+const chibiSvg=(w,h,p)=>`<svg class="chibi" viewBox="0 0 100 120" ${w?`width="${w}" height="${h||w*1.2}"`:''}>${chibiInner(p)}</svg>`;
 const MOUTH={happy:['M41 65 Q50 80 59 65Z','#d81b60'],calm:['M44 69 Q50 73 56 69','none']};
 let moodT;
 /* فاز ۴: حالت‌های میکوی صحنه با setMiko؛ دهان چیبی جلویی (اینترو/کارت ماموریت) همین‌جا می‌مونه */
@@ -1031,27 +1076,29 @@ const MK_STATES={
  scared:{aL:-120,aR:-100,zzz:0,mug:0,sw:1}};
 let mkState='work',mkT=null,mkShoulders={L:[0,0],R:[0,0]},lastTouch=Date.now(),coffeeAt=Date.now()+9e4,lastScare=0;
 function mikoBlob(){
+ const OFW=OUTFITS[S.co]||OUTFITS[0];   /* لباس فعلی میکو (فاز ۷+) */
  const [x,y]=P(3.0,6.15,1.9),f=n=>n.toFixed(1);
  const shL=P(2.85,5.7,3.0),hdL=P(1.55,5.8,2.72),shR=P(2.85,6.6,3.0),hdR=P(1.55,6.5,2.72);
  mkShoulders={L:[shL[0],shL[1]],R:[shR[0],shR[1]]};
  const arm=(id,sh,hd,dl)=>{const [a,b]=sh,[c,d]=hd;
-  return `<g id="${id}"><line x1="${f(a)}" y1="${f(b)}" x2="${f(c)}" y2="${f(d)}" stroke="#2a1c6b" stroke-width="8" stroke-linecap="round"/><line x1="${f(a)}" y1="${f(b)}" x2="${f(c)}" y2="${f(d)}" stroke="#5ee6f5" stroke-width="5.5" stroke-linecap="round"/><circle cx="${f(c)}" cy="${f(d)}" r="3.4" fill="#bff7ff" stroke="#2a1c6b" stroke-width="1.2"><animateTransform attributeName="transform" type="translate" values="0 0;0 -2.2;0 0" dur=".5s" begin="${dl}s" repeatCount="indefinite"/></circle></g>`};
+  return `<g id="${id}"><line x1="${f(a)}" y1="${f(b)}" x2="${f(c)}" y2="${f(d)}" stroke="#2a1c6b" stroke-width="8" stroke-linecap="round"/><line x1="${f(a)}" y1="${f(b)}" x2="${f(c)}" y2="${f(d)}" stroke="${OFW.col}" stroke-width="5.5" stroke-linecap="round"/><circle cx="${f(c)}" cy="${f(d)}" r="3.4" fill="#bff7ff" stroke="#2a1c6b" stroke-width="1.2"><animateTransform attributeName="transform" type="translate" values="0 0;0 -2.2;0 0" dur=".5s" begin="${dl}s" repeatCount="indefinite"/></circle></g>`};
  const keys=[0,1,2].map(i=>{const q=P(1.2+i*.15,5.5+i*.55,2.75);return `<circle cx="${f(q[0])}" cy="${f(q[1])}" r="1.2" fill="${['#22e6ff','#ff4fa3','#ffd166'][i]}" opacity="0"><animate attributeName="opacity" values="0;1;0" dur=".5s" begin="${i*.17}s" repeatCount="indefinite"/></circle>`}).join('');
  const [mgx,mgy]=P(2.02,4.13,3.05);
  return `<ellipse cx="${f(x)}" cy="${f(y+1)}" rx="19" ry="7" fill="url(#gShadow)"/>`
   +arm('mk-al',shL,hdL,0)+arm('mk-ar',shR,hdR,.25)
   +`<g class="mkhop"><g transform="translate(${f(x)} ${f(y)})">
-<defs><radialGradient id="mkB" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#d4fbff"/><stop offset=".5" stop-color="#5ee6f5"/><stop offset="1" stop-color="#2597ad"/></radialGradient></defs>
+<defs><radialGradient id="mkB" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="${OFW.c1}"/><stop offset=".5" stop-color="${OFW.c2}"/><stop offset="1" stop-color="${OFW.c3}"/></radialGradient></defs>
 <g><animateTransform attributeName="transform" type="rotate" values="-6 0 -44;6 0 -44;-6 0 -44" dur="2.6s" repeatCount="indefinite"/><path d="M0 -42V-52" stroke="#5ee6f5" stroke-width="3" stroke-linecap="round"/><circle cy="-54" r="4" fill="#ffd166" stroke="#2a1c6b" stroke-width="1.2"/></g>
-<circle cx="-13" cy="-38" r="6" fill="#5ee6f5" stroke="#2a1c6b" stroke-width="1.6"/><circle cx="13" cy="-38" r="6" fill="#5ee6f5" stroke="#2a1c6b" stroke-width="1.6"/>
+<circle cx="-13" cy="-38" r="6" fill="${OFW.col}" stroke="#2a1c6b" stroke-width="1.6"/><circle cx="13" cy="-38" r="6" fill="${OFW.col}" stroke="#2a1c6b" stroke-width="1.6"/>
 <path d="M-19 0C-22 -26 -12 -44 0 -44S22 -26 19 0C19 4 -19 4 -19 0Z" fill="url(#mkB)" stroke="#2a1c6b" stroke-width="1.6" stroke-linejoin="round"/>
 <path d="M0 -44L0 -2" stroke="#2a1c6b" stroke-width="1.1" opacity=".45"/>
 <path d="M-8 -40 Q0 -33 8 -40" fill="none" stroke="#2a1c6b" stroke-width="1.4"/>
-<ellipse cx="-9" cy="2" rx="7" ry="3.5" fill="#2fc6d8" stroke="#2a1c6b" stroke-width="1.4"/><ellipse cx="9" cy="2" rx="7" ry="3.5" fill="#2fc6d8" stroke="#2a1c6b" stroke-width="1.4"/>
+<ellipse cx="-9" cy="2" rx="7" ry="3.5" fill="${OFW.acc}" stroke="#2a1c6b" stroke-width="1.4"/><ellipse cx="9" cy="2" rx="7" ry="3.5" fill="${OFW.acc}" stroke="#2a1c6b" stroke-width="1.4"/>
 <path d="M-15 -46 Q0 -58 15 -46" fill="none" stroke="#E8913A" stroke-width="3.4" stroke-linecap="round"/>
 <rect x="-20" y="-43" width="8" height="10" rx="3.4" fill="#E8913A" stroke="#2a1c6b" stroke-width="1.2"/>
 <rect x="12" y="-43" width="8" height="10" rx="3.4" fill="#E8913A" stroke="#2a1c6b" stroke-width="1.2"/>
 <path d="M-12 -30Q-10 -38 -4 -40" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".6"/>
+${OFW.hat===1?`<path d="M-17 -49 Q0 -60 17 -49 L14.5 -45 Q0 -53.5 -14.5 -45 Z" fill="${OFW.acc}" stroke="#2a1c6b" stroke-width="1.4" stroke-linejoin="round"/><circle cy="-51" r="1.8" fill="#ffd166" stroke="#2a1c6b" stroke-width=".9"/>`:''}${OFW.hat===2?`<path d="M-23 -40 Q-24 -62 0 -62 Q24 -62 23 -40 L19 -40 Q19 -57 0 -57 Q-19 -57 -19 -40 Z" fill="${OFW.acc}" stroke="#2a1c6b" stroke-width="1.4" stroke-linejoin="round"/><polygon points="0,-52 1.4,-49 4.4,-49 2.1,-47 3,-44 0,-45.6 -3,-44 -2.1,-47 -4.4,-49 -1.4,-49" fill="#FFC247"/>`:''}${OFW.hat===3?`<circle cy="-44" r="23.5" fill="rgba(255,255,255,.14)" stroke="${OFW.acc}" stroke-width="1.8"/><rect x="-8" y="-50" width="16" height="7" rx="3.4" fill="#3AA8F0" opacity=".85"/><path d="M-20 -30 a20 4 0 0 0 40 0" fill="none" stroke="${OFW.acc}" stroke-width="1.6" opacity=".7"/>`:''}
 <g id="mk-zzz" style="display:none"><g><animateTransform attributeName="transform" type="translate" values="0 0;0 -5;0 0" dur="2.2s" repeatCount="indefinite"/>
 <text x="13" y="-50" font-size="8" font-weight="800" fill="#cfd6ff" opacity=".95">z</text>
 <text x="19" y="-57" font-size="10" font-weight="800" fill="#cfd6ff" opacity=".7">z</text>
@@ -1240,6 +1287,8 @@ function buildRoom(){
   <rect x="-34" y="-9.5" width="68" height="1" fill="#22e6ff" opacity=".55"/><rect x="-34" y="36.5" width="68" height="1" fill="#22e6ff" opacity=".25"/>`
   +COINS.map((c,i)=>`<g transform="translate(0 ${6+i*14})"><circle cx="-29" cy="0" r="3" fill="${c.col}" filter="url(#gl2)"/><text direction="ltr" x="-22" y="3.1" font-size="8.5" font-weight="700" fill="#e9fbff" id="bbp-${c.id}"></text><text direction="ltr" x="32" y="3.1" font-size="8" text-anchor="end" font-weight="800" id="bbt-${c.id}"></text></g>`).join('')+`</g>`;
 
+ /* در اتاق دوم (زیرساخت فاز بعد) */
+ o+=`<g id="door2" class="tap" data-act="door2">${onB(0,`<rect x="8.1" y="0" width="1.05" height="3.2" rx=".04" fill="#241C33" stroke="#5E4A33" stroke-width=".07"/><line x1="8.62" x2="8.62" y1="0" y2="3.2" stroke="#5E4A33" stroke-width=".05"/><circle cx="8.52" cy="1.7" r=".055" fill="#FFC247"/><rect x="8.16" y="2.3" width=".92" height=".5" rx=".05" fill="#191430" stroke="#8FB6D9" stroke-width=".022"/><text x="8.62" y="2.55" text-anchor="middle" font-size=".15" font-weight="700" fill="#8FB6D9" direction="ltr">ROOM 2</text>`)}${onTop(.02,`<ellipse cx="8.62" cy="1.5" rx="1.05" ry=".55" fill="rgba(0,0,0,.35)"/>`)}</g>`;
  /* جایزه‌های بصری دائمی فصل‌ها (فاز ۶) — با اتمام هر فصل یکی باز می‌شه */
  const [fx1,fy1]=P(2.72,7.72,2.9);
  o+=`<g id="it-ch1" class="item gone">${box(2.55,7.62,2.58,.36,.07,.3,['#B98A4A','#8A5A28','#6E441C'])}${onB(7.69,`<rect x="2.6" y="2.64" width=".26" height=".2" fill="#FFE9C9"/><circle cx="2.67" cy="2.72" r=".022" fill="#241304"/><circle cx="2.72" cy="2.72" r=".022" fill="#241304"/><path d="M2.66 2.78 q.05.04.1 0" stroke="#241304" stroke-width=".008" fill="none"/>`)}</g>`;
@@ -1319,11 +1368,11 @@ function renderHUD(){
 
 function mine(e){
  const en=energy();
- if(en<1){toast('انرژی تموم شد؛ هر ۶ ثانیه یکی شارژ می‌شه');hap('light');return}
+ if(en<1){toast('انرژی تموم شد؛ هر ۶ ثانیه یکی شارژ می‌شه');hapErr();sfx('err');return}
  S.en=en-1;S.et=Date.now();
  const st=stats(),c=coin(S.sel),val=TAPV*PC[S.pc]*st.bonus*RATE,amt=val/c.ref;
  S.wallet[S.sel]+=amt;S.taps++;
- floatAt(e,fs(S.sel,amt),c.col);burst(e.clientX,e.clientY,c.col,7,3);hap('light');setMood('happy',900);flashChip(S.sel);
+ floatAt(e,fs(S.sel,amt),c.col);burst(e.clientX,e.clientY,c.col,7,3);hap('light');sfx('tap');setMood('happy',900);flashChip(S.sel);
  const r=$('#room');r.classList.remove('shake');void r.offsetWidth;r.classList.add('shake');
  if(S.taps===5)updateRoomItems();
  renderHUD();checkChapter();updateLive()}
@@ -1338,7 +1387,16 @@ let sayT;function say(t,ms){$('#bt').textContent=t;$('#bubble').classList.remove
 const dayKey=()=>new Date().toISOString().slice(0,10);
 const dailyReady=()=>S.dl!==dayKey();
 const dailyIdx=()=>{const td=dayKey();return (S.dl&&(Date.parse(td)-Date.parse(S.dl))/864e5===1)?Math.min(S.st,6):0};
-const claimable=()=>!!S.rd||dailyReady();
+const claimable=()=>!!S.rd||dailyReady()||weekReady();
+/* ماموریت هفتگی (فاز ۷+): سه مأموریت، ریست هر هفته، جایزه‌ی کوچک زیر سقف bucket */
+const wkKey=()=>{const d=new Date(),o=new Date(d.getFullYear(),0,1);return d.getFullYear()+'-W'+Math.ceil((((d-o)/864e5)+o.getDay()+1)/7)};
+const WEEKM=[
+ {t:'سیصد ضربه',d:'این هفته ۳۰۰ بار بزن',k:'t0',cur:()=>S.taps,goal:300,goalTxt:v=>Math.round(v),rw:.05},
+ {t:'فروشنده‌ی هفته',d:'این هفته ۰٫۵۰ دلار بفروش',k:'s0',cur:()=>S.sold,goal:.5,goalTxt:v=>fc(v),rw:.10},
+ {t:'نصب‌چی',d:'این هفته ۵ ماینر نصب کن',k:'b0',cur:()=>S.mb||0,goal:5,goalTxt:v=>Math.round(v),rw:.20}];
+function weeklyCheck(){const k=wkKey();if(S.wk===k)return;S.wk=k;WEEKM.forEach(m=>S.wp[m.k]=m.cur());S.wc=0;save(true)}
+const weekDone=i=>{const m=WEEKM[i];return (m.cur()-(S.wp[m.k]||0))>=m.goal};
+const weekReady=()=>WEEKM.some((m,i)=>weekDone(i)&&!((S.wc>>i)&1));
 function flyBal(txt){const r=$('#bal').getBoundingClientRect(),d=document.createElement('div');d.className='flb';d.textContent=txt;d.style.left=(r.left+4)+'px';d.style.top=(r.bottom+2)+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),1400)}
 function bumpBal(){const e=$('#bal');e.classList.remove('bump');void e.offsetWidth;e.classList.add('bump')}
 function checkChapter(){
@@ -1381,7 +1439,7 @@ const sheet={tab:null,slot:0,f:.75,t:0};
 const sheetH=()=>($('#sheet').offsetHeight||1);
 const tOf=f=>sheetH()*(1-f);
 function applyT(t){sheet.t=t;$('#sheet').style.transform='translateY('+t.toFixed(1)+'px)'}
-function setSnap(f){sheet.f=f;applyT(tOf(f))}
+function setSnap(f){sheet.f=f;applyT(tOf(f));try{f===1?$('#room').pauseAnimations():$('#room').unpauseAnimations()}catch(e){}}
 let closeTO=null;
 function openSheet(tab,i){
  if(sheet.tab===tab&&tab!=='slot'&&i===undefined){closeSheet();return}
@@ -1392,6 +1450,7 @@ function openSheet(tab,i){
  const el=$('#sheet');el.classList.add('open');el.setAttribute('aria-hidden','false');
  $('#app').classList.add('sopen');$('#bubble').classList.add('hide');hidePop();
  renderSheet();
+ const sb2=$('#sheetBody');sb2.classList.remove('animin');void sb2.offsetWidth;sb2.classList.add('animin');
  applyT(tOf(sheet.f));
  document.querySelectorAll('nav button').forEach(b=>{const on=b.dataset.tab===tab;b.classList.toggle('on',on);b.setAttribute('aria-current',on?'page':'false')})}
 function closeSheet(){
@@ -1445,7 +1504,7 @@ if(window.visualViewport)visualViewport.addEventListener('resize',()=>{
  $('#app').style.setProperty('--kb',Math.max(0,innerHeight-visualViewport.height-2)+'px');layoutVars()});
 const TITLES={market:'بازار زنده',miners:'فروشگاه ماینر',racks:'قفسه‌ها',up:'ارتقا و دکوراسیون',hub:'برترین‌ها',wallet:'کیف پول',admin:'پنل مدیریت',tasks:'ماموریت‌ها',slot:'ماینر روی قفسه',style:'راهنمای استایل',me:'پروفایل'};
 
-const frate=(id,n)=>id==='STAR'?n.toFixed(7)+' ★/s':id==='TON'?n.toFixed(9)+' TON/s':'$'+n.toFixed(9)+'/s';
+const frate=(id,n)=>id==='USD'?'$'+fmtNum(n)+'/s':fmtNum(n)+(id==='STAR'?' ★':' TON')+'/s';
 function spark(h){
  const mn=Math.min(...h),mx=Math.max(...h),rg=(mx-mn),n=h.length-1||1;
  const pts=h.map((v,i)=>`${(i*100/n).toFixed(1)},${(rg<1e-9?15:28-(v-mn)/rg*26).toFixed(1)}`).join(' ');
@@ -1506,7 +1565,9 @@ function sheetUp(){
  const n=S.pc+1;
  let o=n<PC.length?`<div class="row"><div class="ico">${icon('up','l')}</div><div class="rb"><b>کامپیوتر: سطح ${S.pc+1} از ${PC.length}</b><small>ضریب ضربه و تولید کامپیوتر: <span class="num">×${PC[S.pc]} ← ×${PC[n]}</span></small></div><button class="btn sm" data-act="pcup" data-cost="${PCCOST[n]}" ${S.usd<PCCOST[n]?'disabled':''}>${fm(PCCOST[n])}</button></div>`:`<div class="row done">${icon('check','s')} کامپیوتر در بالاترین سطحه</div>`;
  o+=`<div class="grp">${icon('hexp','s')}<b>اتاق و دکور</b><small>هر کدوم +۵٪ سود ماین (کولر: برق کمتر)</small></div>`;
- o+=ROOM.map(r=>S.room[r.id]?`<div class="row done">${icon(r.ico,'s')} ${r.name} فعال است</div>`:`<div class="row"><div class="ico">${icon(r.ico)}</div><div class="rb"><b>${r.name}</b><small>${r.desc}</small></div><button class="btn sm" data-act="room" data-id="${r.id}" data-cost="${r.price}" ${S.usd<r.price?'disabled':''}>${fm(r.price)}</button></div>`).join('');
+ o+=`<div class="grp">${icon('user','s')}<b>لباس میکو</b><small>با ارز بازی</small></div>`
+  +OUTFITS.map(u=>{const owned=S.cos>>u.id&1,equipped=S.co===u.id;
+   return `<div class="row ${owned?'':'lockedrow'}"><div class="ico mp">${chibiSvg(40,48,u)}</div><div class="rb"><b>${u.n}</b><small>${u.d}</small></div>${equipped?`<span class="tg">پوشیده</span>`:owned?`<button class="btn sm" data-act="wear" data-i="${u.id}">بپوش</button>`:`<button class="btn sm" data-act="outfit" data-i="${u.id}" data-cost="${u.price}" ${S.usd<u.price?'disabled':''}>${fm(u.price)}</button>`}</div>`}).join('');
  return o}
 
 /* ماموریت‌ها (فاز ۵): فصل داستانی + تقویم روزانه با استریک */
@@ -1520,11 +1581,17 @@ function dailyCal(){
    <small>روز ${i+1}</small><b class="num">${fc(v).replace('$','$')}</b>
    ${claimed?icon('check','s'):icon(today?'gift':'cal','s')}</div>`}).join('')+`</div>
  <p class="hint">هر روز پیاپی که بیای جایزه‌ی بزرگ‌تر می‌شه؛ یه روز نیای استریک از اول شروع می‌شه.</p>`}
+function weeklySec(){
+ weeklyCheck();
+ return `<div class="sh"><b>ماموریت هفتگی</b><small>هفته‌ی ${S.wk}</small></div>`
+  +WEEKM.map((m,i)=>{const cur=m.cur()-(S.wp[m.k]||0),done=cur>=m.goal,cl=(S.wc>>i)&1;
+   return `<div class="row ${cl?'done':''}"><div class="ico">${icon(cl?'check':'cal')}</div><div class="rb"><b>${m.t}</b><small>${m.d} · جایزه ${fc(m.rw)}</small><div class="bar"><i style="width:${Math.min(100,cur/m.goal*100)}%"></i></div></div>${cl?`<span class="tg">گرفته شد</span>`:done?`<button class="btn sm claim" data-act="wclaim" data-i="${i}">دریافت</button>`:`<b class="num mut">${m.goalTxt(Math.min(cur,m.goal))}/${m.goalTxt(m.goal)}</b>`}</div>`}).join('')}
 function sheetTasks(){
  const c=CH[S.ch];let o='';
  if(c){const [a,b]=c.prog();
   o+=`<div class="chcard"><div class="pt">${chibiSvg(60,72)}</div><div style="flex:1"><b>ماموریت ${S.ch+1}: ${c.t}</b><p>${c.say}</p><div class="goal">هدف: ${c.goal}</div><div class="bar"><i id="chbar" style="width:${S.rd?100:Math.min(100,a/b*100)}%"></i></div><small><span class="num" id="chtxt">${cf(c,Math.min(a,b))}/${cf(c,b)}</span> · جایزه <span class="num">${fc(c.reward)}</span></small>{${c.scene?`<button class="btn ghost w2" data-act="replay">${icon('sound','s')}بازپخش صحنه‌ی گفتگو</button>`:''}${S.rd?`<button class="btn wide claim" data-act="claimch">${icon('gift','s')}دریافت جایزه · <span class="num">${fc(c.reward)}</span></button>`:''}</div></div>`}
  else o+=`<div class="chcard"><div class="pt">${chibiSvg(60,72)}</div><div><b>پایان داستان!</b><p>میکو حالا صاحب یه امپراتوری ماینینگه. ارزها رو بفروش، دستگاه‌ها رو عوض کن و ثروتت رو بالا ببر.</p></div></div>`;
+ o+=weeklySec();
  o+=dailyCal();
  o+=dailyReady()?`<button class="btn wide claim" data-act="daily">${icon('gift','s')}دریافت هدیه‌ی روز ${dailyIdx()+1} · <span class="num">${fc(DAILY[dailyIdx()])}</span></button>`:`<div class="row done">${icon('check','s')} هدیه‌ی امروز گرفته شد · فردا برگرد</div>`;
  o+=`<div class="sh"><b>دعوت دوستان</b><small>جایزه‌ی دوطرفه</small></div><div id="ref"><small class="mut">در حال بارگذاری…</small></div>`;
@@ -1540,10 +1607,10 @@ async function loadRef(){
  if(!INIT){el.innerHTML='<small class="mut">دعوت دوستان فقط داخل تلگرام فعاله.</small>';return}
  try{const r=await api('/api/ref'),e2=$('#ref');if(!e2)return;REFLINK=r.link||'';
   if(!REFLINK){e2.innerHTML='<small class="mut">لینک دعوت هنوز آماده نیست.</small>';return}
-  e2.innerHTML=`<p class="hint">هر دوستی که با لینک تو وارد بشه و به ماموریت ۳ برسه، <span class="num">${fc(r.bonus)}</span> برای تو و <span class="num">${fc(r.welcome)}</span> برای خودش. ${r.next?`با <span class="num">${r.next.at}</span> زیرمجموعه‌ی فعال، <span class="num">${fc(r.next.bonus)}</span> جایزه‌ی اضافه می‌گیری.`:''}</p>
+  e2.innerHTML=`<p class="hint">هر دوستی که با لینک تو وارد بشه و به ماموریت ۳ برسه، <span class="num">${fc(r.bonus)}</span> برای تو و <span class="num">${fc(r.welcome)}</span> برای خودش؛ دعوت‌کننده‌ی تو هم جایزه‌ی سطح دوم می‌گیره. ${r.next?`با <span class="num">${r.next.at}</span> زیرمجموعه‌ی فعال، <span class="num">${fc(r.next.bonus)}</span> جایزه‌ی اضافه می‌گیری.`:''}</p>
   <div class="row"><div class="rb"><b>زیرمجموعه‌ی فعال: <span class="num">${r.active}/${r.max}</span></b><small>دعوت‌شده: <span class="num">${r.invited}</span> · درآمد دعوت: <span class="num">${fc(r.earned)}</span></small></div></div>
   <div style="display:flex;gap:8px"><button class="btn wide" style="margin:0" data-act="invite">${icon('user','s')}دعوت دوستان</button><button class="btn ghost" data-act="copyref">${icon('copy','s')}کپی لینک</button></div>`}
- catch(e){const e2=$('#ref');if(e2)e2.innerHTML='<small class="mut">در دسترس نیست.</small>'}}
+ catch(e){const e2=$('#ref');if(e2)e2.innerHTML='<div class="werr">'+icon('alert')+'<b>در دسترس نیست</b><button class="btn sm" data-act="ref-retry">تلاش مجدد</button></div>'}}
 /* برترین‌ها (فاز ۵): سکوی ۳ نفر + لیگ + دکمه‌ی پروفایل */
 async function loadTop(){
  const el=$('#top');if(!el)return;
@@ -1559,9 +1626,14 @@ async function loadTop(){
     return `<div class="pod p${i+1}" style="--c:${col}"><div class="av2">${esc(clean(u.name).slice(0,1))}</div><b>${clean(u.name)}</b><small class="num">${f$(u.worth)}</small><div class="bar2">${i+1}</div></div>`}).join('')+`</div>`}
   else o+='<small class="mut">هنوز کسی تو رده‌بندی نیست.</small>';
   const rest=(r.top||[]).slice(3);
+  if(r.week&&r.week.top&&r.week.top.length){
+   o+=`<div class="sh"><b>لیگ هفتگی</b><small>بیشترین رشد این هفته</small></div>`
+    +r.week.top.map((u,i)=>`<div class="lb ${u.me?'me':''} r${Math.min(i+1,3)}"><i class="rk">${i+1}</i><span>${clean(u.name)}<em>رشد <span class="num">${f$(u.gain)}</span></em></span></div>`).join('');
+   if(r.week.me!=null)o+=`<div class="me-card"><span>رشد هفته‌ی تو</span><b class="num">${f$(r.week.me)}</b></div>`}
+  o+=`<div class="wempty" style="padding:14px">${icon('gift')}<b>جایزه‌ی فصلی</b><small>پایان هر ماه، برترین‌های لیگ هفتگی جایزه‌ی Stars می‌گیرن (توزیع توسط مدیریت).</small></div>`;
   o+=rest.map((u,i)=>`<div class="lb ${u.me?'me':''}"><i class="rk">${i+4}</i><span>${clean(u.name)}<em>${u.miners||0} ماینر · ${u.shelves||1} قفسه</em></span><b class="num">${f$(u.worth)}</b></div>`).join('');
   e2.innerHTML=o}
- catch(e){const e2=$('#top');if(e2)e2.innerHTML='<small class="mut">رده‌بندی در دسترس نیست.</small>'}}
+ catch(e){const e2=$('#top');if(e2)e2.innerHTML='<div class="werr">'+icon('alert')+'<b>رده‌بندی در دسترس نیست</b><button class="btn sm" data-act="top-retry">تلاش مجدد</button></div>'}}
 
 /* ---------------- پروفایل (فاز ۵): نشان‌ها، آمار کل، رفرال ---------------- */
 const BADGES=[
@@ -1845,7 +1917,7 @@ async function wpost(path,body){
  try{const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-Init-Data':INIT},body:JSON.stringify(body)});
   const j=await r.json().catch(()=>({}));return r.ok?j:Object.assign({error:j.error||'net'},j)}
  catch(e){return {error:'net'}}finally{W.busy=false}}
-const wfail=r=>{
+const wfail=r=>{hapErr();sfx('err');
  if(r.error==='min'){
   const a=r.asset||W.wd, need=+(r.min||0), label=a==='STAR'?'استارز':a==='TON'?'TON':'USDT';
   return toast(`حداقل ارزش برداشت ۱۰ دلار است؛ با قیمت فعلی باید حداقل ${wnum(a,need)} ${label} برداشت کنید. مبلغ واردشده کمتر از این حد است.`);
@@ -1873,7 +1945,7 @@ async function wCash(cid,quiet){
  try{
   try{await api('/api/state',{method:'PUT',keepalive:true,body:JSON.stringify({state:pack(),worth:worth()})})}catch(e){}   /* سرور باید آخرین ماین‌های تو رو داشته باشه */
   r=await wpost('/api/wallet/cashout',{coin:cid});
-  if(r&&r.ok){S.wallet[cid]=Math.max(0,S.wallet[cid]-r.taken);S.cashed=(S.cashed||0)+r.usd;renderHUD();
+  if(r&&r.ok){S.wallet[cid]=Math.max(0,S.wallet[cid]-r.taken);S.cashed=(S.cashed||0)+r.usd;renderHUD();sfx('coin');
    if(!quiet){hapOk();centerBurst(k.col);setMood('happy',2000);toast('انتقال انجام شد · '+wnum(r.asset,r.got)+' '+(r.asset==='STAR'?'Stars':r.asset)+' به کیف پول رفت')}}
  }finally{holdSave=false}
  if(!r)return{error:'net'};
@@ -2075,12 +2147,16 @@ function act(t,e){
  else if(a.startsWith('w-'))wAct(a,t);
  else if(a.startsWith('a-'))aAct(a,t);
  else if(a==='sel'){if(Date.now()-chipSup<700)return;S.sel=id;if(sheet.tab==='market')renderSheet();renderHUD();drawChart();hap('light')}
- else if(a==='sell'){const v=S.wallet[id]*price(id);if(v<=0)return toast('چیزی برای فروش نیست');const g=v*(Date.now()<sellBoostUntil?1.1:1);S.usd+=g;S.sold+=g;S.wallet[id]=0;flashChip(id);toast('فروش '+coin(id).short+' · +'+f$(g)+(g>v?' · طوفان قیمت':''));setMood('happy');hap('medium');afterAction()}
- else if(a==='sellall'){let v=0;COINS.forEach(c=>{v+=S.wallet[c.id]*price(c.id);S.wallet[c.id]=0;flashChip(c.id)});if(v<=0)return toast('چیزی برای فروش نیست');const g=v*(Date.now()<sellBoostUntil?1.1:1);S.usd+=g;S.sold+=g;toast('فروش همه · +'+f$(g)+(g>v?' · طوفان قیمت':''));setMood('happy');hap('medium');afterAction()}
- else if(a==='buy'){const m=mById(id),i=S.slots.findIndex((x,k)=>x===null&&k<cap());if(i<0)return toast('جایگاه خالی نداری! قفسه بخر');if(S.usd<m.price)return toast('پولت کافی نیست');S.usd-=m.price;S.slots[i]=id;lastBought=i;renderRack();setMood('happy',2200);hapOk();centerBurst(m.col);say(LINES_BUY[Math.floor(Math.random()*LINES_BUY.length)],4500);afterAction()}
+ else if(a==='sell'){const v=S.wallet[id]*price(id);if(v<=0)return toast('چیزی برای فروش نیست');const g=v*(Date.now()<sellBoostUntil?1.1:1);S.usd+=g;S.sold+=g;S.wallet[id]=0;flashChip(id);sfx('coin');toast('فروش '+coin(id).short+' · +'+f$(g)+(g>v?' · طوفان قیمت':''));setMood('happy');hap('medium');afterAction()}
+ else if(a==='sellall'){let v=0;COINS.forEach(c=>{v+=S.wallet[c.id]*price(c.id);S.wallet[c.id]=0;flashChip(c.id)});if(v<=0)return toast('چیزی برای فروش نیست');const g=v*(Date.now()<sellBoostUntil?1.1:1);S.usd+=g;S.sold+=g;sfx('coin');toast('فروش همه · +'+f$(g)+(g>v?' · طوفان قیمت':''));setMood('happy');hap('medium');afterAction()}
+ else if(a==='buy'){const m=mById(id),i=S.slots.findIndex((x,k)=>x===null&&k<cap());if(i<0)return toast('جایگاه خالی نداری! قفسه بخر');if(S.usd<m.price)return toast('پولت کافی نیست');S.usd-=m.price;S.slots[i]=id;lastBought=i;S.mb=(S.mb||0)+1;renderRack();setMood('happy',2200);hapOk();centerBurst(m.col);say(LINES_BUY[Math.floor(Math.random()*LINES_BUY.length)],4500);afterAction()}
  else if(a==='shelf'){const k=+t.dataset.k;if(k<S.shelves)openSheet('miners');else openSheet('racks')}
  else if(a==='buyshelf'){const k=+t.dataset.k;if(k!==S.shelves||S.usd<SHELF_COST[k])return;S.usd-=SHELF_COST[k];S.shelves++;renderRack();setMood('happy',2200);hapOk();centerBurst('#22e6ff');say('قفسه‌ی جدید نصب شد! جای دو ماینر دیگه باز شد',4500);afterAction()}
  else if(a==='pcup'){const n=S.pc+1;if(S.usd<PCCOST[n])return;S.usd-=PCCOST[n];S.pc=n;setMood('happy',2200);hapOk();say('کامپیوتر جدید! ضربه‌هام قوی‌تر شدن',4500);afterAction()}
+ else if(a==='outfit'){const u=OUTFITS[+t.dataset.i];if(!u||S.usd<u.price)return;S.usd-=u.price;S.cos|=1<<u.id;S.co=u.id;buildRoom();renderRack();updateRoomItems();drawChart();sfx('ok');hapOk();say('چه استایلی! «'+u.n+'» تنم.',4500);setMiko('happy',2600);afterAction()}
+ else if(a==='wear'){const u=OUTFITS[+t.dataset.i];if(!u||!((S.cos>>u.id)&1))return;S.co=u.id;buildRoom();renderRack();updateRoomItems();drawChart();hap('light');afterAction()}
+ else if(a==='wclaim'){const i=+t.dataset.i,m=WEEKM[i];if(!m||!weekDone(i)||((S.wc>>i)&1))return;S.wc|=1<<i;S.usd+=m.rw;flyBal('+'+fc(m.rw));bumpBal();hapOk();sfx('ok');toast('ماموریت هفتگی «'+m.t+'» تموم شد · +'+fc(m.rw));afterAction();save(true)}
+ else if(a==='door2'){hap('light');toast('این در به‌زودی باز می‌شه؛ اول امپراتوری زیرشیروانی رو کامل کن!')}
  else if(a==='room'){const r=ROOM.find(x=>x.id===id);if(S.usd<r.price)return;S.usd-=r.price;S.room[id]=true;updateRoomItems();setMood('happy',2200);hapOk();say(r.name+' نصب شد! اتاق قشنگ‌تر شد',4500);afterAction()}
  else if(a==='slot'){const i=+t.dataset.i;if(S.slots[i])showPop(i,t);else openSheet('miners')}
  else if(a==='popmore'){hidePop();openSheet('slot',+t.dataset.i)}
@@ -2092,6 +2168,9 @@ function act(t,e){
  else if(a==='invite'){if(!REFLINK)return;const u='https://t.me/share/url?url='+encodeURIComponent(REFLINK)+'&text='+encodeURIComponent('بیا با هم تو اتاق ماینر ماین کنیم');try{tg.openTelegramLink(u)}catch(e){window.open(u,'_blank')}}
  else if(a==='copyref'){if(!REFLINK)return;try{navigator.clipboard.writeText(REFLINK).then(()=>toast('لینک کپی شد'),()=>toast(REFLINK))}catch(e){toast(REFLINK)}}
  else if(a==='boost'){boostUntil=Date.now()+30000;boostShow=0;$('#boost').classList.add('hide');hapOk();centerBurst('#ffd166');setMiko('happy',3000);toast('بوست فعال شد: ۳۰ ثانیه ماین دو برابر');renderHUD()}
+ else if(a==='snd'){SND=!SND;try{localStorage.setItem('mr3:snd',SND?'1':'0')}catch(e){}const sb=$('#sndBtn');sb.classList.toggle('off',!SND);sb.setAttribute('aria-pressed',SND);const u=sb.querySelector('use');if(u)u.setAttribute('href',SND?'#i-sound':'#i-mute');hap('light');if(SND)sfx('ok')}
+ else if(a==='top-retry'){const e2=$('#top');if(e2)e2.innerHTML='<small class="mut">در حال بارگذاری…</small>';loadTop()}
+ else if(a==='ref-retry'){const e2=$('#ref');if(e2)e2.innerHTML='<small class="mut">در حال بارگذاری…</small>';loadRef()}
  else if(a==='evgo'){const ev=EVENTS.find(x=>x.id===id);if(!ev)return;ev.apply();$('#evbtn').classList.add('hide');evShow=0;hapOk();toast(ev.t+' فعال شد');say(ev.say,6000);checkChapter();renderHUD()}
  else if(a==='replay'){closeSheet();setTimeout(()=>playScene(S.ch),260)}
  else if(a==='sg-m'){hap('light');try{t.animate([{transform:'scale(1)'},{transform:'scale(1.22)'},{transform:'scale(1)'}],{duration:420,easing:'cubic-bezier(.34,1.45,.4,1)'})}catch(e){}}}
@@ -2178,18 +2257,20 @@ function evTick(){
  b.dataset.act='evgo';b.dataset.id=ev.id;
  b.style.left=(12+Math.random()*46)+'%';b.style.top=(16+Math.random()*22)+'%';
  b.classList.remove('hide');evShow=14;evIn=200+Math.random()*220;
- hap('light')}
+ hapWarn();sfx('ping')}
 
 
 /* ---------------- Tick ---------------- */
-let boostIn=70+Math.random()*40,boostShow=0;
+let boostIn=70+Math.random()*40,boostShow=0,blackoutOn=false;
 function tick(){
  if(!LIVE)simulate();
  const st=stats(),f=st.gross>0?Math.max(0,st.net)/st.gross:0;
  COINS.forEach(c=>{S.wallet[c.id]+=st.rate[c.id]*f});
+ weeklyCheck();
+ if(blackoutOn!==(Date.now()<blackoutUntil)){blackoutOn=Date.now()<blackoutUntil;try{$('#room').classList.toggle('blk',blackoutOn)}catch(e){}}
  mikoIdle();checkLight();evTick();if(Math.random()<.6)coinRain();
  if(boostShow>0){if(--boostShow<=0)$('#boost').classList.add('hide')}
- else if(!boosting()&&--boostIn<=0){boostIn=90+Math.random()*60;boostShow=12;const b=$('#boost');b.style.left=(8+Math.random()*58)+'%';b.style.top=(13+Math.random()*25)+'%';b.classList.remove('hide')}
+ else if(!boosting()&&--boostIn<=0){boostIn=90+Math.random()*60;boostShow=12;const b=$('#boost');b.style.left=(8+Math.random()*58)+'%';b.style.top=(13+Math.random()*25)+'%';b.classList.remove('hide');sfx('ping')}
  checkChapter();renderHUD();drawChart();updateLive()}
 
 /* ---------------- Boot ---------------- */
@@ -2201,9 +2282,10 @@ async function boot(){
  grantOffline(off);
  renderRack();updateRoomItems();drawChart();renderHUD();
  setInterval(tick,1000);setInterval(pullPrices,15000);setInterval(()=>save(),10000);
- document.addEventListener('visibilitychange',()=>{if(document.hidden)save(true)});window.addEventListener('pagehide',()=>save(true));
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){save(true);try{$('#room').pauseAnimations()}catch(e){}}else{try{$('#room').unpauseAnimations()}catch(e){}}});window.addEventListener('pagehide',()=>save(true));
  const go=$('#go');go.disabled=false;go.textContent='ورود به اتاق';
  go.onclick=()=>{$('#intro').remove();resizeFx();maybeScene()}
+ const sbtn=$('#sndBtn');sbtn.classList.toggle('off',!SND);sbtn.setAttribute('aria-pressed',SND);if(!SND){const u=sbtn.querySelector('use');if(u)u.setAttribute('href','#i-mute')}
  if(/style=1/.test(location.search)){$('#intro').remove();resizeFx();openSheet('style')}}
 boot();
 </script>

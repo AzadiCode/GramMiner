@@ -44,6 +44,7 @@ MAX_WORTH_RATE = float(os.environ.get("MAX_WORTH_RATE", "0.0003"))
 BUCKET_CAP = float(os.environ.get("BUCKET_CAP", "6"))
 BUCKET_START = 1.0
 REF_BONUS = float(os.environ.get("REF_BONUS", "0.06"))      # جایزه‌ی دعوت‌کننده برای هر زیرمجموعه‌ی فعال (دلار بازی)
+REF2_BONUS = float(os.environ.get("REF2_BONUS", "0.01"))    # جایزه‌ی سطح دوم دعوت (دعوت‌کننده‌ی دعوت‌کننده)
 REF_WELCOME = float(os.environ.get("REF_WELCOME", "0.03"))  # جایزه‌ی دعوت‌شده
 REF_MAX = int(os.environ.get("REF_MAX", "50"))              # سقف زیرمجموعه‌ی پاداش‌دار هر نفر
 REF_DAILY_MAX = int(os.environ.get("REF_DAILY_MAX", "10"))  # سقف فعال‌سازی در ۲۴ ساعت
@@ -311,6 +312,22 @@ def clean_state(s):
     out["st"] = int(_num(s.get("st", 0), 7))
     raw_cs = s.get("cs", 0)      # صحنه‌های دیده‌شده‌ی داستان؛ فقط نمایشی — clamp می‌شه نه رد
     out["cs"] = int(raw_cs) if isinstance(raw_cs, (int, float)) and not isinstance(raw_cs, bool) and 0 <= raw_cs <= 8 else 0
+    # ── فاز ۷+ (تکمیل): کازمتیک میکو و ماموریت هفتگی — نمایشی/شمارش ساده، فقط sanitize ──
+    raw_cos = s.get("cos", 1)
+    out["cos"] = int(raw_cos) if isinstance(raw_cos, (int, float)) and not isinstance(raw_cos, bool) and 0 <= raw_cos <= 15 else 1
+    raw_co = s.get("co", 0)
+    out["co"] = min(3, int(raw_co)) if isinstance(raw_co, (int, float)) and not isinstance(raw_co, bool) and 0 <= raw_co <= 3 else 0
+    out["mb"] = int(_num(s.get("mb", 0), 1e9))        # کل ماینرهای خریده‌شده (شمارنده‌ی ماموریت هفتگی)
+    wk = s.get("wk", "")
+    out["wk"] = wk if isinstance(wk, str) and re.fullmatch(r"\d{4}-W\d{1,2}", wk) else ""
+    wp = s.get("wp")
+    if isinstance(wp, dict):
+        out["wp"] = {k: round(float(v), 8) for k, v in wp.items()
+                     if k in ("t0", "s0", "b0") and isinstance(v, (int, float)) and not isinstance(v, bool) and 0 <= v < 1e9}
+    else:
+        out["wp"] = {}
+    raw_wc = s.get("wc", 0)
+    out["wc"] = int(raw_wc) if isinstance(raw_wc, (int, float)) and not isinstance(raw_wc, bool) and 0 <= raw_wc <= 7 else 0
     out["cashed"] = _num(s.get("cashed", 0))      # مجموع دلارِ ارزهای ماین‌شده‌ی منتقل‌شده به کیف پول
     return out
 
@@ -378,6 +395,13 @@ def activate_ref(uid):
     bonus = REF_BONUS + REF_MILESTONES.get(active, 0.0)
     db.players.update_one({"_id": rid}, {"$inc": {"bonus": bonus, "ref_earned": bonus}})
     db.players.update_one({"_id": uid}, {"$inc": {"bonus": REF_WELCOME}})
+    # رفرال دومرحله‌ای (فاز ۷+): دعوت‌کننده‌ی دعوت‌کننده هم جایزه‌ی کوچکی می‌گیره
+    up = db.players.find_one({"_id": rid}, {"ref": 1})
+    if up and up.get("ref"):
+        db.players.update_one({"_id": up["ref"]}, {"$inc": {"bonus": REF2_BONUS, "ref_earned": REF2_BONUS}})
+        tg("sendMessage", chat_id=up["ref"],
+           text=f"زیرمجموعه‌ی زیرمجموعه‌ات فعال شد: +${REF2_BONUS:.2f} (سطح دوم دعوت)",
+           reply_markup=PLAY_KB)
     tg("sendMessage", chat_id=rid, text=f"🎉 پاداش دعوت اضافه شد!\n{p.get('name', 'دوستت')} به ماموریت ۳ رسید.\nجایزه: ${bonus:.2f} · زیرمجموعه‌ی فعال: {active}",
        reply_markup=PLAY_KB)
     tg("sendMessage", chat_id=uid, text=f"🎁 هدیه‌ی خوش‌آمد اضافه شد: ${REF_WELCOME:.2f}\nدفعه‌ی بعد که بازی رو باز کنی تو موجودیت می‌بینی.",
@@ -451,9 +475,13 @@ def api_put_state():
     if not ok:
         log.warning("growth rejected uid=%s worth=%s last=%s", u["id"], worth, p.get("worth"))
         return jsonify(error="growth limit"), 409
+    # لیگ هفتگی: نقطه‌ی شروع هفته (w0) رو نگه می‌داریم؛ با عوض شدن هفته ریست می‌شه
+    iso = t.isocalendar()
+    wk = f"{iso[0]}-W{iso[1]}"
+    w0 = worth if not p or p.get("wk") != wk else float(p.get("w0", worth))
     db.players.update_one({"_id": u["id"]}, {"$set": {
         "state": st, "worth": worth, "bucket": bucket, "bt": t, "saved": t, "touch": t,
-        "name": display_name(u)}}, upsert=True)
+        "wk": wk, "w0": w0, "name": display_name(u)}}, upsert=True)
     if p and p.get("ref") and not p.get("ref_done") and st["ch"] >= REF_MIN_CH and st["taps"] >= REF_MIN_TAPS:
         activate_ref(u["id"])
     return jsonify(ok=True)
@@ -475,7 +503,18 @@ def api_top():
     rank = None
     if me and me.get("state"):
         rank = db.players.count_documents({"state": {"$ne": None}, "worth": {"$gt": me.get("worth", 0)}}) + 1
-    return jsonify(top=top, rank=rank, total=db.players.count_documents(played))
+    # لیگ هفتگی: بیشترین رشد ثروت از ابتدای هفته (فقط خواندنی؛ جایزه‌ها دستی توسط ادمین)
+    iso = t.isocalendar()
+    wk = f"{iso[0]}-W{iso[1]}"
+    gains = []
+    for r in db.players.find({"state": {"$ne": None}, "wk": wk}, {"name": 1, "worth": 1, "w0": 1}).limit(200):
+        g = float(r.get("worth", 0) or 0) - float(r.get("w0", r.get("worth", 0)) or 0)
+        if g > 0:
+            gains.append({"name": r.get("name", "ناشناس"), "gain": round(g, 6), "me": r["_id"] == u["id"]})
+    gains.sort(key=lambda x: -x["gain"])
+    me_gain = next((g["gain"] for g in gains if g["me"]), None)
+    return jsonify(top=top, rank=rank, total=db.players.count_documents(played),
+                   week={"top": gains[:5], "me": me_gain, "key": wk})
 
 
 @app.get("/api/ref")
