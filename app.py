@@ -99,6 +99,16 @@ ROOM_KEYS = ("ac", "strip", "tube", "hex")
 SHELVES, EMAX = 6, 100
 MAX_AMOUNT = 1e9
 
+# اقتصاد مرجع سرور؛ هرگز برای ضدتقلب به worth ارسالی مرورگر اعتماد نکن.
+# این مقادیر باید با MINERS و SHELF_COST در index.html هم‌خوان بمانند.
+MINER_PRICES = {
+    "s1": 0.12, "s2": 0.75, "s3": 4.2,
+    "t1": 0.30, "t2": 1.8, "t3": 9.5,
+    "d1": 0.20, "d2": 1.2, "d3": 6.5,
+}
+SHELF_COSTS = (0, 0.20, 0.70, 1.8, 4.5, 11)
+REFERENCE_TON_USD = 3.0
+
 
 # ───────────────────────── ابزارها ─────────────────────────
 def now():
@@ -120,19 +130,31 @@ def tg(method, **data):
 
 
 def verify_init_data(init_data):
+    """اعتبارسنجی امضای Telegram WebApp initData با پنجره‌ی زمانی محدود."""
     try:
-        pairs = dict(parse_qsl(init_data, keep_blank_values=True))
+        if not isinstance(init_data, str) or not init_data:
+            return None
+        items = parse_qsl(init_data, keep_blank_values=True, strict_parsing=True)
+        # کلید تکراری می‌تواند باعث تفاوت تفسیر بین لایه‌ها شود؛ ردش می‌کنیم.
+        if len({k for k, _ in items}) != len(items):
+            return None
+        pairs = dict(items)
         got = pairs.pop("hash", None)
-        if not got:
+        if not got or not re.fullmatch(r"[0-9a-fA-F]{64}", got):
             return None
         check = "\n".join(f"{k}={v}" for k, v in sorted(pairs.items()))
         key = hmac.new(b"WebAppData", BOT_TOKEN.encode(), hashlib.sha256).digest()
         calc = hmac.new(key, check.encode(), hashlib.sha256).hexdigest()
         if not hmac.compare_digest(calc, got):
             return None
-        if time.time() - int(pairs.get("auth_date", 0)) > 86400:
+        auth_date = int(pairs.get("auth_date", 0))
+        age = time.time() - auth_date
+        if auth_date <= 0 or age < -60 or age > 86400:
             return None
-        return json.loads(pairs["user"])
+        user = json.loads(pairs["user"])
+        return user if isinstance(user, dict) and isinstance(user.get("id"), int) else None
+    except (TypeError, ValueError, KeyError, json.JSONDecodeError):
+        return None
     except Exception:
         return None
 
@@ -332,17 +354,57 @@ def clean_state(s):
     return out
 
 
+def state_worth(state, ton_price=REFERENCE_TON_USD, include_cashed=False):
+    """محاسبه‌ی ارزش از state پاک‌سازی‌شده؛ مقدار ارسالی مرورگر منبع حقیقت نیست."""
+    if not isinstance(state, dict):
+        return 0.0
+    try:
+        total = float(state.get("usd", 0) or 0)
+        if include_cashed:
+            total += float(state.get("cashed", 0) or 0)
+        wallet = state.get("wallet") or {}
+        total += float(wallet.get("STAR", 0) or 0) * STAR_USD
+        total += float(wallet.get("TON", 0) or 0) * max(0.0, float(ton_price or REFERENCE_TON_USD))
+        total += float(wallet.get("USD", 0) or 0)
+        for miner_id in state.get("slots", []):
+            if miner_id in MINER_PRICES:
+                total += MINER_PRICES[miner_id] * 0.6
+        shelves = max(1, min(SHELVES, int(state.get("shelves", 1) or 1)))
+        for shelf_index in range(1, shelves):
+            if shelf_index < len(SHELF_COSTS):
+                total += SHELF_COSTS[shelf_index] * 0.6
+        return max(0.0, total)
+    except (TypeError, ValueError, OverflowError):
+        raise ValueError("worth")
+
+
+def cached_ton_price():
+    """آخرین قیمت معتبر TON؛ endpoint ذخیره‌سازی برای محاسبه‌ی ارزش شبکه را معطل نکن."""
+    try:
+        with _price_lock:
+            p = _price.get("ton")
+        return float(p) if p and math.isfinite(float(p)) and float(p) > 0 else REFERENCE_TON_USD
+    except Exception:
+        return REFERENCE_TON_USD
+
+
 def check_growth(p, new_worth, t):
-    """
-    سقف رشد ثروت: یک «سطل اعتبار» که با گذر زمان پر می‌شه. رشد بیشتر از سطل = رد.
-    (سرعت‌گیر ساده؛ برای برداشت واقعی باید محاسبات سمت سرور انجام بشه.)
-    """
-    last = float(p.get("worth", 0.0)) if p else 0.0
+    """سقف رشد ثروت بازی با baseline سمت سرور و سطل اعتبار زمان‌محور."""
+    if p:
+        if isinstance(p.get("economy_worth"), (int, float)) and not isinstance(p.get("economy_worth"), bool):
+            last = float(p["economy_worth"])
+        elif p.get("state"):
+            # مهاجرت نرم اسناد قدیمی: ارزش قبلی را از state ذخیره‌شده بازسازی کن.
+            last = state_worth(p["state"], REFERENCE_TON_USD, include_cashed=False)
+        else:
+            last = 0.0
+    else:
+        last = 0.0
     bucket = float(p.get("bucket", BUCKET_START)) if p else BUCKET_START
     bt = aware(p.get("bt")) if p else None
     dt = max(0.0, (t - bt).total_seconds()) if bt else 0.0
     bucket = min(BUCKET_CAP, bucket + dt * MAX_WORTH_RATE)
-    growth = new_worth - last
+    growth = float(new_worth) - last
     if p and growth > bucket:
         return False, bucket
     if growth > 0:
@@ -357,8 +419,8 @@ def public_state(p):
 # ───────────────────────── زیرمجموعه‌گیری ─────────────────────────
 def new_player(uid, name, ref=None):
     t = now()
-    doc = {"_id": uid, "name": name, "state": None, "worth": 0.0, "bucket": BUCKET_START,
-           "bt": t, "touch": t, "saved": t, "created": t}
+    doc = {"_id": uid, "name": name, "state": None, "worth": 0.0, "economy_worth": 0.0,
+           "bucket": BUCKET_START, "bt": t, "touch": t, "saved": t, "created": t}
     if ref:
         doc["ref"] = ref
     try:
@@ -445,8 +507,13 @@ def api_get_state():
         # پاداش دعوت: یک‌بار تحویل داده می‌شه و به ثروت هم اضافه می‌شه تا سقف رشد اشتباه رد نکنه
         b = float(p.get("bonus", 0) or 0)
         if b > 0:
-            claimed = db.players.find_one_and_update({"_id": u["id"], "bonus": {"$gt": 0}},
-                                                     {"$set": {"bonus": 0}, "$inc": {"worth": b}})
+            baseline = p.get("economy_worth")
+            if not isinstance(baseline, (int, float)) or isinstance(baseline, bool):
+                baseline = state_worth(p.get("state"), REFERENCE_TON_USD, include_cashed=False)
+            claimed = db.players.find_one_and_update(
+                {"_id": u["id"], "bonus": {"$gt": 0}},
+                {"$set": {"bonus": 0, "economy_worth": float(baseline) + b}, "$inc": {"worth": b}},
+            )
             b = float(claimed.get("bonus", 0)) if claimed else 0.0
     else:
         new_player(u["id"], display_name(u))
@@ -462,26 +529,34 @@ def api_put_state():
     body = request.get_json(silent=True) or {}
     try:
         st = clean_state(body.get("state"))
-        worth = _num(body.get("worth"), 1e9)
     except (ValueError, TypeError):
         return jsonify(error="bad state"), 400
     t = now()
     p = db.players.find_one({"_id": u["id"]})
+    if not p:
+        # PUT مستقیم هم نباید بتواند برای بازیکن جدید محدودیت رشد را دور بزند.
+        new_player(u["id"], display_name(u))
+        p = db.players.find_one({"_id": u["id"]})
+    # مجموع انتقال‌های واقعی به کیف پول، فیلد مالی سمت سرور است؛ از مرورگر قبولش نکن.
+    saved_state = (p or {}).get("state")
+    st["cashed"] = float(saved_state.get("cashed", 0) or 0) if isinstance(saved_state, dict) else 0.0
+    eco_worth = state_worth(st, REFERENCE_TON_USD, include_cashed=False)
+    market_worth = state_worth(st, cached_ton_price(), include_cashed=True)
     if p and p.get("saved") and (t - aware(p["saved"])).total_seconds() < SAVE_MIN_GAP:
         return jsonify(ok=True, skipped=True)
     if p and p.get("cash_at") and (t - aware(p["cash_at"])).total_seconds() < 3:
         return jsonify(ok=True, skipped=True)     # درخواست ذخیره‌ی قدیمیِ در راه بعد از انتقال ماین
-    ok, bucket = check_growth(p, worth, t)
+    ok, bucket = check_growth(p, eco_worth, t)
     if not ok:
-        log.warning("growth rejected uid=%s worth=%s last=%s", u["id"], worth, p.get("worth"))
+        log.warning("growth rejected uid=%s worth=%s last=%s", u["id"], eco_worth, p.get("economy_worth", p.get("worth")))
         return jsonify(error="growth limit"), 409
     # لیگ هفتگی: نقطه‌ی شروع هفته (w0) رو نگه می‌داریم؛ با عوض شدن هفته ریست می‌شه
     iso = t.isocalendar()
     wk = f"{iso[0]}-W{iso[1]}"
-    w0 = worth if not p or p.get("wk") != wk else float(p.get("w0", worth))
+    w0 = market_worth if not p or p.get("wk") != wk else float(p.get("w0", market_worth))
     db.players.update_one({"_id": u["id"]}, {"$set": {
-        "state": st, "worth": worth, "bucket": bucket, "bt": t, "saved": t, "touch": t,
-        "wk": wk, "w0": w0, "name": display_name(u)}}, upsert=True)
+        "state": st, "worth": market_worth, "economy_worth": eco_worth, "bucket": bucket,
+        "bt": t, "saved": t, "touch": t, "wk": wk, "w0": w0, "name": display_name(u)}}, upsert=True)
     if p and p.get("ref") and not p.get("ref_done") and st["ch"] >= REF_MIN_CH and st["taps"] >= REF_MIN_TAPS:
         activate_ref(u["id"])
     return jsonify(ok=True)
@@ -504,6 +579,7 @@ def api_top():
     if me and me.get("state"):
         rank = db.players.count_documents({"state": {"$ne": None}, "worth": {"$gt": me.get("worth", 0)}}) + 1
     # لیگ هفتگی: بیشترین رشد ثروت از ابتدای هفته (فقط خواندنی؛ جایزه‌ها دستی توسط ادمین)
+    t = now()
     iso = t.isocalendar()
     wk = f"{iso[0]}-W{iso[1]}"
     gains = []
@@ -587,13 +663,24 @@ def scan_ton():
                 m = tx.get("in_msg") or {}
                 mm = re.fullmatch(r"MIKO(\d{1,15})", (m.get("message") or "").strip())
                 val = int(m.get("value") or 0)
-                if not m.get("source") or val <= 0 or not mm:
+                tx_hash = (tx.get("transaction_id") or {}).get("hash")
+                if not m.get("source") or val <= 0 or not mm or not tx_hash:
                     continue
                 uid, amt = int(mm.group(1)), val / 1e9
                 if not db.players.find_one({"_id": uid}, {"_id": 1}):
                     continue
-                if log_tx("dep:ton:" + tx["transaction_id"]["hash"], uid=uid, type="deposit", asset="TON", amount=amt, status="done"):
-                    credit(uid, "TON", amt)
+                tid = "dep:ton:" + tx_hash
+                inserted = log_tx(tid, uid=uid, type="deposit", asset="TON", amount=amt, status="processing")
+                existing = None if inserted else db.wtx.find_one({"_id": tid})
+                if not inserted and (not existing or existing.get("status") == "done"):
+                    continue
+                # marker and balance update are atomic together: replaying a pending scan won't double-credit.
+                applied = db.players.update_one(
+                    {"_id": uid, "processed_ton_deposits": {"$ne": tid}},
+                    {"$addToSet": {"processed_ton_deposits": tid}, "$inc": {"bal.TON": amt}},
+                )
+                db.wtx.update_one({"_id": tid}, {"$set": {"status": "done"}})
+                if applied.modified_count:
                     tg("sendMessage", chat_id=uid, text=f"✅ واریز {amt:.4f} TON به کیف پولت اضافه شد.", reply_markup=PLAY_KB)
         except Exception as e:
             log.warning("scan_ton: %s", e)
@@ -686,8 +773,25 @@ def api_wallet_swap():
         return jsonify(error="too small"), 400
     if not debit(u["id"], fa, amt):
         return jsonify(error="balance"), 409
-    credit(u["id"], ta, out)
-    log_tx("swap:" + secrets.token_hex(6), uid=u["id"], type="swap", asset=fa, amount=amt, to=f"{out} {ta}", status="done")
+    credited = False
+    try:
+        credit(u["id"], ta, out)
+        credited = True
+        if not log_tx("swap:" + secrets.token_hex(6), uid=u["id"], type="swap", asset=fa, amount=amt,
+                      to=f"{out} {ta}", status="done"):
+            raise RuntimeError("transaction ledger unavailable")
+    except Exception:
+        log.exception("wallet swap failed uid=%s", u["id"])
+        if credited:
+            try:
+                debit(u["id"], ta, out)
+            except Exception:
+                log.exception("wallet swap rollback destination failed uid=%s", u["id"])
+        try:
+            credit(u["id"], fa, amt)
+        except Exception:
+            log.exception("wallet swap rollback source failed uid=%s", u["id"])
+        return jsonify(error="ledger"), 503
     return jsonify(ok=True, out=out)
 
 
@@ -706,7 +810,14 @@ def api_wallet_togame():
     if not debit(u["id"], a, amt):
         return jsonify(error="balance"), 409
     db.players.update_one({"_id": u["id"]}, {"$inc": {"bonus": usd}})      # با همون مسیر امن پاداش‌ها به بازی می‌رسه
-    log_tx("game:" + secrets.token_hex(6), uid=u["id"], type="togame", asset=a, amount=amt, to=f"${usd}", status="done")
+    if not log_tx("game:" + secrets.token_hex(6), uid=u["id"], type="togame", asset=a,
+                  amount=amt, to=f"${usd}", status="done"):
+        try:
+            db.players.update_one({"_id": u["id"]}, {"$inc": {"bonus": -usd}})
+            credit(u["id"], a, amt)
+        except Exception:
+            log.exception("wallet togame rollback failed uid=%s", u["id"])
+        return jsonify(error="ledger"), 503
     return jsonify(ok=True, usd=usd)
 
 
@@ -730,7 +841,12 @@ def api_wallet_withdraw():
     if not debit(u["id"], a, amt):
         return jsonify(error="balance"), 409
     wid = secrets.token_hex(5)
-    log_tx("wd:" + wid, uid=u["id"], type="withdraw", asset=a, amount=amt, to=addr or "—", status="pending")
+    if not log_tx("wd:" + wid, uid=u["id"], type="withdraw", asset=a, amount=amt, to=addr or "—", status="pending"):
+        try:
+            credit(u["id"], a, amt)
+        except Exception:
+            log.exception("withdraw rollback failed uid=%s", u["id"])
+        return jsonify(error="ledger"), 503
     tg("sendMessage", chat_id=ADMIN_ID, text=f"💸 درخواست برداشت\nکاربر: {display_name(u)} ({u['id']})\nمقدار: {amt} {a}\nمقصد: {addr or 'پرداخت از داخل تلگرام'}",
        reply_markup={"inline_keyboard": [[{"text": "✅ پرداخت شد", "callback_data": f"wd:ok:{wid}"},
                                           {"text": "❌ رد و برگشت وجه", "callback_data": f"wd:no:{wid}"}]]})
@@ -784,8 +900,28 @@ def api_wallet_cashout():
         {"$inc": {f"state.wallet.{coin}": -amt, "state.cashed": usd}, "$set": {"cash_at": now()}})
     if not ok:
         return jsonify(error="balance"), 409
-    credit(uid, a, got)
-    log_tx("cash:" + secrets.token_hex(6), uid=uid, type="cashout", asset=a, amount=got, to=f"{amt} {coin}", usd=usd, status="done")
+    credited = False
+    try:
+        credit(uid, a, got)
+        credited = True
+        if not log_tx("cash:" + secrets.token_hex(6), uid=uid, type="cashout", asset=a, amount=got,
+                      to=f"{amt} {coin}", usd=usd, status="done"):
+            raise RuntimeError("transaction ledger unavailable")
+    except Exception:
+        log.exception("cashout failed uid=%s", uid)
+        if credited:
+            try:
+                debit(uid, a, got)
+            except Exception:
+                log.exception("cashout rollback real wallet failed uid=%s", uid)
+        try:
+            db.players.update_one({"_id": uid}, {
+                "$inc": {f"state.wallet.{coin}": amt, "state.cashed": -usd},
+                "$unset": {"cash_at": ""},
+            })
+        except Exception:
+            log.exception("cashout rollback game wallet failed uid=%s", uid)
+        return jsonify(error="ledger"), 503
     return jsonify(ok=True, taken=amt, got=got, asset=a, usd=usd)
 
 
@@ -1053,7 +1189,11 @@ def wd_decide(cb):
     """دکمه‌های شیشه‌ای تلگرام برای ادمین"""
     if (cb.get("from") or {}).get("id") != ADMIN_ID:
         return
-    _, act, wid = (cb.get("data") or "wd:x:x").split(":")[:3]
+    parts = (cb.get("data") or "").split(":")
+    if len(parts) != 3 or parts[0] != "wd" or parts[1] not in ("ok", "no") or not re.fullmatch(r"[0-9a-f]{10,20}", parts[2]):
+        tg("answerCallbackQuery", callback_query_id=cb.get("id", ""), text="درخواست نامعتبر است")
+        return
+    _, act, wid = parts
     res = decide_wd(wid, act == "ok")
     tg("answerCallbackQuery", callback_query_id=cb["id"], text="ثبت شد" if res else "قبلاً بررسی شده")
     if not res:
@@ -1066,17 +1206,46 @@ def stars_paid(msg):
     sp = msg["successful_payment"]
     if sp.get("currency") != "XTR":
         return
-    uid, n = msg["from"]["id"], int(sp["total_amount"])
-    tid = "dep:star:" + sp["telegram_payment_charge_id"]
-    if (sp.get("invoice_payload") or "").startswith("depg:"):       # شارژ مستقیم بالانس بازی
+    try:
+        uid, n = int(msg["from"]["id"]), int(sp["total_amount"])
+        payload = str(sp.get("invoice_payload") or "")
+        match = re.fullmatch(r"(dep|depg):(\d{1,15})", payload)
+        charge_id = str(sp.get("telegram_payment_charge_id") or "")
+        if n <= 0 or not charge_id or not match or int(match.group(2)) != uid:
+            log.warning("rejected Stars payment payload uid=%s payload=%s", uid, payload[:48])
+            return
+        if not db.players.find_one({"_id": uid}, {"_id": 1}):
+            new_player(uid, "بازیکن")
+        tid = "dep:star:" + charge_id
+        direct_game = match.group(1) == "depg"
         usd = round(n * STAR_USD, 8)
-        if log_tx(tid, uid=uid, type="togame", asset="STAR", amount=n, to=f"${usd}", status="done"):
-            db.players.update_one({"_id": uid}, {"$inc": {"bonus": usd}})
+        tx_type = "togame" if direct_game else "deposit"
+        to = f"${usd}" if direct_game else None
+        inserted = log_tx(tid, uid=uid, type=tx_type, asset="STAR", amount=n, to=to, status="processing")
+        existing = None if inserted else db.wtx.find_one({"_id": tid})
+        # اگر قبلاً نهایی شده، webhook تکراری نباید دوباره شارژ کند.
+        if not inserted and (not existing or existing.get("status") == "done"):
+            return
+        if direct_game:
+            applied = db.players.update_one(
+                {"_id": uid, "processed_star_charges": {"$ne": tid}},
+                {"$addToSet": {"processed_star_charges": tid}, "$inc": {"bonus": usd}},
+            )
+        else:
+            applied = db.players.update_one(
+                {"_id": uid, "processed_star_charges": {"$ne": tid}},
+                {"$addToSet": {"processed_star_charges": tid}, "$inc": {"bal.STAR": n}},
+            )
+        db.wtx.update_one({"_id": tid}, {"$set": {"status": "done"}})
+        # اگر charge marker از قبل وجود داشت، پرداخت قبلاً اعمال شده؛ پیام تکراری نفرست.
+        if not applied.modified_count:
+            return
+        if direct_game:
             tg("sendMessage", chat_id=uid, text=f"✅ {n} ⭐ پرداخت شد و ${usd:.2f} به بالانس بازیت اضافه شد.\nبازی رو باز کن 🎮", reply_markup=PLAY_KB)
-        return
-    if log_tx(tid, uid=uid, type="deposit", asset="STAR", amount=n, status="done"):
-        credit(uid, "STAR", n)
-        tg("sendMessage", chat_id=uid, text=f"✅ {n} ⭐ به کیف پولت اضافه شد.", reply_markup=PLAY_KB)
+        else:
+            tg("sendMessage", chat_id=uid, text=f"✅ {n} ⭐ به کیف پولت اضافه شد.", reply_markup=PLAY_KB)
+    except Exception:
+        log.exception("stars_paid failed")
 
 
 # ───────────────────────── ربات ─────────────────────────
@@ -1125,7 +1294,15 @@ def bot_hook():
             return "ok"
         if upd.get("pre_checkout_query"):
             q = upd["pre_checkout_query"]
-            tg("answerPreCheckoutQuery", pre_checkout_query_id=q["id"], ok=q.get("currency") == "XTR")
+            payload = str(q.get("invoice_payload") or "")
+            match = re.fullmatch(r"(dep|depg):(\d{1,15})", payload)
+            payer_id = (q.get("from") or {}).get("id")
+            owner_ok = bool(match and payer_id is not None and int(match.group(2)) == int(payer_id))
+            ok = q.get("currency") == "XTR" and owner_ok
+            answer = {"pre_checkout_query_id": q["id"], "ok": ok}
+            if not ok:
+                answer["error_message"] = "این فاکتور متعلق به حساب شما نیست یا معتبر نیست."
+            tg("answerPreCheckoutQuery", **answer)
             return "ok"
         msg = upd.get("message")
         if msg and msg.get("successful_payment"):
@@ -1176,7 +1353,7 @@ def setup_bot():
     if not BOT_USERNAME:
         BOT_USERNAME = (tg("getMe").get("result") or {}).get("username", "")
     r = tg("setWebhook", url=f"{BASE_URL}/bot", secret_token=BOT_SECRET,
-           allowed_updates=["message", "callback_query", "pre_checkout_query"], drop_pending_updates=True)
+           allowed_updates=["message", "callback_query", "pre_checkout_query"], drop_pending_updates=False)
     tg("setMyCommands", commands=[
         {"command": "start", "description": "ورود به بازی"},
         {"command": "invite", "description": "دعوت دوستان"},
@@ -1187,8 +1364,12 @@ def setup_bot():
     log.info("webhook: %s", r)
 
 
-setup_bot()
-threading.Thread(target=_scan_loop, daemon=True).start()
+# سرویس‌های جانبی در thread daemon اجرا می‌شن تا import اپلیکیشن توسط Gunicorn
+# منتظر شبکه‌ی تلگرام/TON نمونه. از drop_pending_updates هم استفاده نمی‌کنیم.
+if os.environ.get("DISABLE_TELEGRAM_SETUP", "0").strip().lower() not in ("1", "true", "yes"):
+    threading.Thread(target=setup_bot, name="telegram-setup", daemon=True).start()
+if TON_ADDRESS:
+    threading.Thread(target=_scan_loop, name="ton-deposit-scan", daemon=True).start()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))

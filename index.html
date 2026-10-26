@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0B0A14">
 <title>اتاق ماینر میکو</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
@@ -33,12 +33,13 @@
 /* legacy (فاز ۲ به‌تدریج حذف می‌شن) */
 --bg:var(--bg0);--p1:var(--bg1);--p2:var(--bg2);--neon:#8F7BD8;--cyan:#6FD3F2;--pink:var(--down);--green:var(--up);--gold:var(--c-star);--ton:var(--c-ton)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);font-family:"Vazirmatn","Vazir","Tahoma","Segoe UI",system-ui,sans-serif;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+html,body{margin:0;min-height:100%;height:100%;background:var(--bg);color:var(--txt);font-family:"Vazirmatn","Vazir","Tahoma","Segoe UI",system-ui,sans-serif;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation}
 button{font-family:inherit;color:inherit}
+button:focus-visible,[role="button"]:focus-visible,a:focus-visible{outline:2px solid var(--brand2);outline-offset:3px}
 a{color:var(--cyan)}
 .num{direction:ltr;unicode-bidi:isolate;display:inline-block;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 .mut{color:var(--mut)}
-#app{height:100%;overflow:hidden;display:flex;flex-direction:column;max-width:520px;margin:0 auto;position:relative;background:radial-gradient(120% 60% at 80% 14%,#2A2148 0%,#16122B 48%,#0B0A14 100%)}
+#app{height:100vh;height:100dvh;min-height:100svh;overflow:hidden;display:flex;flex-direction:column;max-width:520px;margin:0 auto;position:relative;background:radial-gradient(120% 60% at 80% 14%,#2A2148 0%,#16122B 48%,#0B0A14 100%)}
 
 /* HUD */
 #hud{padding:max(8px,env(safe-area-inset-top)) 12px 8px;display:grid;gap:7px;position:relative;z-index:var(--z-nav)}
@@ -646,7 +647,9 @@ const hapOk=()=>{try{tg&&tg.HapticFeedback&&tg.HapticFeedback.notificationOccurr
 const hapErr=()=>{try{tg&&tg.HapticFeedback&&tg.HapticFeedback.notificationOccurred('error')}catch(e){}};
 const hapWarn=()=>{try{tg&&tg.HapticFeedback&&tg.HapticFeedback.notificationOccurred('warning')}catch(e){}};
 /* صدا (فاز ۷): سینت کوچک WebAudio — بدون فایل، خاموش‌شدنی، پیش‌فرض روشن */
-let AC=null,SND=localStorage.getItem('mr3:snd')!=='0';
+const storageGet=k=>{try{return window.localStorage.getItem(k)}catch(e){return null}};
+const storageSet=(k,v)=>{try{window.localStorage.setItem(k,v);return true}catch(e){return false}};
+let AC=null,SND=storageGet('mr3:snd')!=='0';
 function actx(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
 function tone(f,d,type,v,delay){const a=actx();if(!a)return;const o=a.createOscillator(),g=a.createGain(),t0=a.currentTime+(delay||0);
  o.type=type||'sine';o.frequency.value=f;
@@ -717,15 +720,17 @@ async function api(path,opt){
 
 async function pullPrices(){
  try{const r=await api('/api/prices');
-  COINS.forEach(c=>{const d=r.coins&&r.coins[c.id];if(d&&d.usd>0){PR[c.id].usd=d.usd;if(d.hist&&d.hist.length>1)PR[c.id].hist=d.hist.slice(-60)}});
-  LIVE=true}catch(e){LIVE=false}
+  COINS.forEach(c=>{const d=r.coins&&r.coins[c.id];if(d&&Number.isFinite(+d.usd)&&+d.usd>0){PR[c.id].usd=+d.usd;if(Array.isArray(d.hist)&&d.hist.length>1)PR[c.id].hist=d.hist.map(Number).filter(v=>Number.isFinite(v)&&v>0).slice(-60)}});
+  /* قیمت Stars و USD ثابت‌اند؛ نشان «زنده» فقط وقتی TON واقعاً از سرور آمده روشن باشد. */
+  LIVE=!!(r.coins&&r.coins.TON&&Number.isFinite(+r.coins.TON.usd)&&+r.coins.TON.usd>0)
+ }catch(e){LIVE=false}
  /* فاز ۴: میکو از سقوط تند تون می‌ترسه */
  const tt=trend('TON');
  if(tt<-2.5&&Date.now()-lastScare>3e5){lastScare=Date.now();setMiko('scared',3200);say('وای، تون ریخت! بفروشیم یا صبر کنیم؟!',5200)}
  renderTag()}
 
-function simulate(){ /* فقط وقتی سرور در دسترس نیست */
- COINS.forEach(c=>{let p=PR[c.id].usd;if(c.id==='TON')p*=1+(Math.random()-.5)*.012+(c.ref-p)/c.ref*.01;PR[c.id].usd=p;const h=PR[c.id].hist;h.push(p);if(h.length>60)h.shift()})}
+function simulate(){ /* فقط وقتی قیمت TON از سرور در دسترس نیست */
+ COINS.forEach(c=>{let p=PR[c.id].usd;if(c.id==='TON')p=Math.max(.0001,p*(1+(Math.random()-.5)*.012+(c.ref-p)/c.ref*.01));PR[c.id].usd=p;const h=PR[c.id].hist;h.push(p);if(h.length>60)h.shift()})}
 
 /* ---------------- Story (فاز ۶): دنیای میکو — همه‌ی متن‌ها اینجا، قابل ویرایش ---------------- */
 /* پرتره‌های نیم‌تنه شخصیت‌ها (SVG دستی، ۶۰×۷۲) */
@@ -1414,7 +1419,7 @@ function claimChapter(){
  checkChapter();renderHUD();if(sheet.tab==='tasks')renderSheet();save(true)}
 
 /* ---------------- Particles (canvas) ---------------- */
-const cv=$('#fx'),g2=cv.getContext('2d');let PW=0,PH=0,DPR=1;
+const cv=$('#fx');let g2=null;try{g2=cv&&cv.getContext('2d')}catch(e){}let PW=0,PH=0,DPR=1;
 const parts=[],motes=Array.from({length:REDUCE?0:26},()=>({x:Math.random(),y:Math.random(),s:.00025+Math.random()*.0006,r:.6+Math.random()*1.4,p:Math.random()*6,c:['#22e6ff','#ff4fa3','#c4b5fd','#ffd166'][Math.floor(Math.random()*4)]}));
 function resizeFx(){const r=$('#scene').getBoundingClientRect();DPR=Math.min(2,window.devicePixelRatio||1);PW=r.width;PH=r.height;cv.width=PW*DPR;cv.height=PH*DPR;cv.style.width=PW+'px';cv.style.height=PH+'px'}
 function burst(cx,cy,col,n,sp){
@@ -1425,7 +1430,7 @@ function celebrate(){const r=$('#scene').getBoundingClientRect();for(let i=0;i<5
 let lastF=0;
 function fxLoop(ts){
  requestAnimationFrame(fxLoop);
- if(document.hidden||sheet.f===1||ts-lastF<30)return;lastF=ts;
+ if(!g2||document.hidden||sheet.f===1||ts-lastF<30)return;lastF=ts;
  g2.setTransform(DPR,0,0,DPR,0,0);g2.clearRect(0,0,PW,PH);
  motes.forEach(m=>{m.y-=m.s*30;if(m.y<-.02){m.y=1.02;m.x=Math.random()}m.p+=.04;g2.globalAlpha=.25+.35*Math.sin(m.p);g2.fillStyle=m.c;g2.beginPath();g2.arc(m.x*PW+Math.sin(m.p*.5)*6,m.y*PH,m.r,0,6.283);g2.fill()});
  for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.l-=p.d;if(p.l<=0){parts.splice(i,1);continue}
@@ -1913,10 +1918,10 @@ async function wLoad(){
  catch(e){W.err=true;toast('کیف پول در دسترس نیست')}
  if(sheet.tab==='wallet'&&!(document.activeElement&&document.activeElement.classList.contains('in')))renderSheet()}
 async function wpost(path,body){
- if(W.busy)return null;W.busy=true;
- try{const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-Init-Data':INIT},body:JSON.stringify(body)});
+ if(W.busy)return null;W.busy=true;const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),12000);
+ try{const r=await fetch(path,{method:'POST',signal:ctrl.signal,headers:{'Content-Type':'application/json','X-Init-Data':INIT},body:JSON.stringify(body)});
   const j=await r.json().catch(()=>({}));return r.ok?j:Object.assign({error:j.error||'net'},j)}
- catch(e){return {error:'net'}}finally{W.busy=false}}
+ catch(e){return {error:'net'}}finally{clearTimeout(timeout);W.busy=false}}
 const wfail=r=>{hapErr();sfx('err');
  if(r.error==='min'){
   const a=r.asset||W.wd, need=+(r.min||0), label=a==='STAR'?'استارز':a==='TON'?'TON':'USDT';
@@ -1943,14 +1948,23 @@ async function wCash(cid,quiet){
  holdSave=true;
  let r=null;
  try{
-  try{await api('/api/state',{method:'PUT',keepalive:true,body:JSON.stringify({state:pack(),worth:worth()})})}catch(e){}   /* سرور باید آخرین ماین‌های تو رو داشته باشه */
-  r=await wpost('/api/wallet/cashout',{coin:cid});
+  /* اگر محدودیت ۲ثانیه‌ای ذخیره فعال باشد، یک بار صبر و دوباره sync کن؛ هرگز با state قدیمی پول منتقل نکن. */
+  let synced=false;
+  for(let attempt=0;attempt<2;attempt++){
+   try{
+    const sync=await api('/api/state',{method:'PUT',keepalive:true,body:JSON.stringify({state:pack(),worth:worth()})});
+    if(sync&&sync.ok&&!sync.skipped){synced=true;break}
+    if(sync&&sync.skipped&&attempt===0){await new Promise(resolve=>setTimeout(resolve,2100));continue}
+   }catch(e){break}
+  }
+  r=synced?await wpost('/api/wallet/cashout',{coin:cid}):{error:'sync'};
   if(r&&r.ok){S.wallet[cid]=Math.max(0,S.wallet[cid]-r.taken);S.cashed=(S.cashed||0)+r.usd;renderHUD();sfx('coin');
    if(!quiet){hapOk();centerBurst(k.col);setMood('happy',2000);toast('انتقال انجام شد · '+wnum(r.asset,r.got)+' '+(r.asset==='STAR'?'Stars':r.asset)+' به کیف پول رفت')}}
  }finally{holdSave=false}
  if(!r)return{error:'net'};
  if(r.error&&!quiet){
-  if(r.error==='min')toast('حداقل انتقال '+fc(r.min));
+  if(r.error==='sync')toast('ذخیره‌ی بازی تأیید نشد؛ اتصال را بررسی کن و دوباره بزن.');
+  else if(r.error==='min')toast('حداقل انتقال '+fc(r.min));
   else if(r.error==='daily')toast('سقف امروز پر شده · باقی‌مونده '+fc(r.left||0));
   else wfail(r)}
  if(!quiet){save(true);wLoad()}
@@ -2010,8 +2024,11 @@ const CFIELDS=[['swap_fee','کارمزد تبدیل ارز','درصد',1],['cash
 const ASTAT={pending:'در انتظار',paid:'پرداخت شد',rejected:'رد شد'};
 function setAdmin(v){IS_ADMIN=!!v;const b=$('#admBtn');if(b)b.classList.toggle('hide',!IS_ADMIN)}
 async function aApi(path,method,body){
- const r=await fetch(path,{method:method||'GET',headers:{'Content-Type':'application/json','X-Init-Data':INIT},body:body?JSON.stringify(body):undefined});
- const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(j.error||'http'),{code:j.error||('http'+r.status)});return j}
+ const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),12000);
+ try{
+  const r=await fetch(path,{method:method||'GET',signal:ctrl.signal,headers:{'Content-Type':'application/json','X-Init-Data':INIT},body:body?JSON.stringify(body):undefined});
+  const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(j.error||'http'),{code:j.error||('http'+r.status)});return j
+ }catch(e){if(!e.code)e.code='net';throw e}finally{clearTimeout(timeout)}}
 const aErr=e=>toast(({forbidden:'دسترسی نداری',balance:'موجودی کاربر کافی نیست',done:'قبلاً تصمیم‌گیری شده',notfound:'کاربر پیدا نشد',amount:'مقدار نامعتبره',value:'مقدار نامعتبره',self:'نمی‌شه خودت رو مسدود کنی'})[e.code]||'خطا: '+(e.code||'اتصال'));
 const aTyping=()=>document.activeElement&&document.activeElement.classList.contains('in');
 const aDraw=()=>{if(sheet.tab==='admin'&&!aTyping())renderSheet()};
@@ -2168,7 +2185,7 @@ function act(t,e){
  else if(a==='invite'){if(!REFLINK)return;const u='https://t.me/share/url?url='+encodeURIComponent(REFLINK)+'&text='+encodeURIComponent('بیا با هم تو اتاق ماینر ماین کنیم');try{tg.openTelegramLink(u)}catch(e){window.open(u,'_blank')}}
  else if(a==='copyref'){if(!REFLINK)return;try{navigator.clipboard.writeText(REFLINK).then(()=>toast('لینک کپی شد'),()=>toast(REFLINK))}catch(e){toast(REFLINK)}}
  else if(a==='boost'){boostUntil=Date.now()+30000;boostShow=0;$('#boost').classList.add('hide');hapOk();centerBurst('#ffd166');setMiko('happy',3000);toast('بوست فعال شد: ۳۰ ثانیه ماین دو برابر');renderHUD()}
- else if(a==='snd'){SND=!SND;try{localStorage.setItem('mr3:snd',SND?'1':'0')}catch(e){}const sb=$('#sndBtn');sb.classList.toggle('off',!SND);sb.setAttribute('aria-pressed',SND);const u=sb.querySelector('use');if(u)u.setAttribute('href',SND?'#i-sound':'#i-mute');hap('light');if(SND)sfx('ok')}
+ else if(a==='snd'){SND=!SND;storageSet('mr3:snd',SND?'1':'0');const sb=$('#sndBtn');sb.classList.toggle('off',!SND);sb.setAttribute('aria-pressed',SND);const u=sb.querySelector('use');if(u)u.setAttribute('href',SND?'#i-sound':'#i-mute');hap('light');if(SND)sfx('ok')}
  else if(a==='top-retry'){const e2=$('#top');if(e2)e2.innerHTML='<small class="mut">در حال بارگذاری…</small>';loadTop()}
  else if(a==='ref-retry'){const e2=$('#ref');if(e2)e2.innerHTML='<small class="mut">در حال بارگذاری…</small>';loadRef()}
  else if(a==='evgo'){const ev=EVENTS.find(x=>x.id===id);if(!ev)return;ev.apply();$('#evbtn').classList.add('hide');evShow=0;hapOk();toast(ev.t+' فعال شد');say(ev.say,6000);checkChapter();renderHUD()}
@@ -2278,7 +2295,9 @@ async function boot(){
  $('#introChibi').innerHTML=chibiSvg();$('#bp').innerHTML=chibiSvg();
  buildChips();buildRoom();renderRack();updateRoomItems();drawChart();renderHUD();renderTag();layoutVars();
  resizeFx();window.addEventListener('resize',resizeFx);requestAnimationFrame(fxLoop);
- const [,off]=await Promise.all([pullPrices(),loadState()]);
+ /* بازی را معطل timeout قیمت زنده نکن؛ قیمت در پس‌زمینه تازه می‌شود. */
+ pullPrices();
+ const off=await loadState();
  grantOffline(off);
  renderRack();updateRoomItems();drawChart();renderHUD();
  setInterval(tick,1000);setInterval(pullPrices,15000);setInterval(()=>save(),10000);
