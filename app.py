@@ -71,7 +71,7 @@ CFG_LIMITS = {"swap_fee": (0, .5), "cashout_fee": (0, .5), "cashout_min_usd": (0
               "min_wd_TON": (0, 1e6), "min_wd_STAR": (0, 1e7), "min_wd_USDT": (0, 1e6)}
 PRICE_TTL = 30          # ثانیه
 OFFLINE_MAX = 4 * 3600  # باید با OFFLINE_MAX کلاینت یکی باشه
-STATE_VERSION = 3
+STATE_VERSION = 4       # v4 = فاز ۶ داستان (فیلد cs)؛ v3 قدیمی هم پذیرفته می‌شه
 SAVE_MIN_GAP = 2.0      # حداقل فاصله‌ی دو ذخیره (ثانیه)
 
 logging.basicConfig(level=logging.INFO)
@@ -271,8 +271,9 @@ def _num(v, hi=MAX_AMOUNT):
 
 
 def clean_state(s):
-    """فقط کلیدهای شناخته‌شده با مقادیر معتبر؛ در غیر این صورت ValueError"""
-    if not isinstance(s, dict) or s.get("v") != STATE_VERSION:
+    """فقط کلیدهای شناخته‌شده با مقادیر معتبر؛ در غیر این صورت ValueError
+    v3 قدیمی پذیرفته می‌شه و به v4 ارتقا پیدا می‌کنه (پیشرفت کاربران حفظ می‌شه)."""
+    if not isinstance(s, dict) or s.get("v") not in (3, STATE_VERSION):
         raise ValueError("version")
     out = {"v": STATE_VERSION, "usd": _num(s.get("usd"))}
     w = s.get("wallet")
@@ -308,6 +309,8 @@ def clean_state(s):
     dl = s.get("dl", "")
     out["dl"] = dl if isinstance(dl, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", dl) else ""
     out["st"] = int(_num(s.get("st", 0), 7))
+    raw_cs = s.get("cs", 0)      # صحنه‌های دیده‌شده‌ی داستان؛ فقط نمایشی — clamp می‌شه نه رد
+    out["cs"] = int(raw_cs) if isinstance(raw_cs, (int, float)) and not isinstance(raw_cs, bool) and 0 <= raw_cs <= 8 else 0
     out["cashed"] = _num(s.get("cashed", 0))      # مجموع دلارِ ارزهای ماین‌شده‌ی منتقل‌شده به کیف پول
     return out
 
