@@ -504,6 +504,82 @@ nav button.on .ic{color:var(--brand2)}
 #intro p{font-size:14px;line-height:2;color:#d9d0ff;margin:0 0 18px}
 #intro .btn{padding:14px 34px;font-size:15px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* UI polish: compact game-like RTL controls */
+.num,.numb,.big,.chip b,.shop .stats b{font-variant-numeric:tabular-nums lining-nums;unicode-bidi:isolate}
+#sheet{max-height:calc(var(--vvh, 100dvh) - env(safe-area-inset-top,0px));padding-bottom:env(safe-area-inset-bottom,0px);overscroll-behavior:contain}
+#sheetHead{touch-action:pan-y}
+#sheetHead .grab{touch-action:none;cursor:grab;min-width:44px;min-height:18px;display:block;background:linear-gradient(90deg,rgba(255,194,71,.45),rgba(34,230,255,.55));box-shadow:0 0 12px rgba(34,230,255,.14)}
+#sheetBody{overscroll-behavior:contain;touch-action:pan-y;min-height:0}
+.info-badge{display:inline-grid;place-items:center;vertical-align:middle;width:17px;height:17px;min-width:17px;border:1px solid rgba(255,194,71,.65);border-radius:50%;color:#ffd166;background:rgba(255,194,71,.08);font:800 11px/1 system-ui;box-shadow:0 0 8px rgba(255,194,71,.13);cursor:pointer;margin-inline-start:5px;padding:0}
+#infoPop{position:fixed;z-index:10000;max-width:min(260px,calc(100vw - 28px));padding:10px 12px;border:1px solid rgba(255,194,71,.35);border-radius:13px;background:rgba(20,17,38,.97);color:var(--txt,#f4efe6);box-shadow:0 12px 34px #0008;font-size:12px;line-height:1.7;direction:rtl;unicode-bidi:plaintext;backdrop-filter:blur(14px);pointer-events:auto}
+#infoPop.hide{display:none}
+.sh,.grp{min-width:0;flex-wrap:wrap}
+.sh .sh-title{display:inline-flex;align-items:center;gap:4px;min-width:0}
+.shop{min-width:0;overflow:hidden}
+.shop .top{min-width:0;flex-wrap:wrap}
+.shop .nm{overflow:hidden}
+.shop .cmp{display:none}
+.shop .nm small{unicode-bidi:isolate}
+.shop .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.shop .stats>div{min-width:0;border-radius:10px;padding:6px 7px;background:rgba(255,255,255,.035)}
+.shop .stats small{display:block;font-size:10px;color:var(--mut);margin-bottom:2px}
+.shop .stats b{font-size:11px;overflow-wrap:anywhere}
+.chcard p,.chcard .goal{display:none}
+.chcard .goal+.bar{margin-top:6px}
+.chcard .btn.ghost.w2{width:36px;height:36px;min-width:36px;padding:0;border-radius:50%}
+.row .rb{overflow:hidden}
+.row .rb b,.row .rb small{overflow-wrap:anywhere}
+.pf .pi{min-width:0;overflow:hidden}
+.pf .pi>small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;unicode-bidi:plaintext}
+.bd{display:flex;flex-wrap:wrap;gap:5px}
+.bd>span{min-width:0;max-width:100%;white-space:nowrap}
+#wcall{min-height:44px}
+.mh .mhint{font-size:10px}
+@media(max-width:380px){
+ #sheetHead{padding-inline:11px}
+ #sheetBody{padding-inline:10px}
+ .shop{padding:9px}
+ .shop .top{gap:7px}
+ .shop .pv{width:48px;height:48px}
+ .shop .pv svg{width:40px;height:40px}
+ .shop .buy{width:84px}
+ .shop .nm b{font-size:12px}
+ .shop .stats{gap:4px}
+ .chcard{gap:7px;padding:9px}
+ .chcard .pt{width:48px}
+ .pf{gap:7px}
+}
+@media(prefers-reduced-motion:reduce){#boost,#evbtn,.orb{animation:none!important;transition:none!important}}
+
+
+/* Premium HUD + collectible event orbs */
+#hud .top{align-items:stretch;gap:7px}
+#hud .top>.box{padding:8px 10px;border:1px solid rgba(196,181,253,.18);border-radius:15px;background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.018));box-shadow:inset 0 1px rgba(255,255,255,.045),0 6px 18px rgba(0,0,0,.12);min-height:54px;display:flex;flex-direction:column;justify-content:center}
+#hud .top>.box.g{flex:1.2}
+#hud .top>.box:not(.g){flex:0 1 105px}
+#hud .top>.box b{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:clip;font-size:clamp(14px,4.4vw,20px)}
+#bal{letter-spacing:-.25px}
+#inc{font-size:clamp(10px,3.1vw,13px)!important;white-space:nowrap}
+#hud .chip{border-radius:13px;border:1px solid rgba(196,181,253,.15);background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.015));box-shadow:inset 0 1px rgba(255,255,255,.025)}
+#boost{width:64px;height:64px;min-width:64px;padding:7px;border-radius:50%;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;white-space:nowrap;font-size:10px;line-height:1.1;border:1px solid rgba(255,224,138,.75);background:radial-gradient(circle at 35% 25%,#fff0b5,#ffb34e 62%,#d97826);box-shadow:0 0 0 4px rgba(255,170,60,.09),0 0 22px rgba(255,170,60,.42)}
+#boost .ic{width:19px;height:19px}
+#evbtn{width:76px;height:76px;min-width:76px;padding:7px;border-radius:50%;justify-content:center;gap:2px;text-align:center;border-color:rgba(167,139,250,.48);background:radial-gradient(circle at 32% 25%,rgba(255,255,255,.16),rgba(29,22,54,.95) 68%);box-shadow:0 0 0 4px rgba(167,139,250,.08),0 8px 22px rgba(0,0,0,.35)}
+#evbtn .ic{width:22px;height:22px}
+#evbtn span{font-size:9px;line-height:1.15;max-width:64px}
+#evbtn small{display:none}
+#room .tap[data-act="slot"]{touch-action:manipulation}
+@media(max-width:380px){
+ #hud{padding-inline:8px}
+ #hud .top{gap:5px}
+ #hud .top>.box{padding:7px 7px;min-height:50px}
+ #hud .top>.box:not(.g){flex-basis:90px}
+ #hud .top>.box b{font-size:14px}
+ #inc{font-size:10px!important}
+ #boost{width:56px;height:56px;min-width:56px}
+ #evbtn{width:66px;height:66px;min-width:66px}
+}
+
 </style>
 </head>
 <body>
@@ -598,7 +674,7 @@ nav button.on .ic{color:var(--brand2)}
     <canvas id="fx"></canvas>
     <div id="fl"></div>
     <button id="taskBtn" data-act="tab" data-tab="tasks" aria-label="ماموریت‌ها"><svg class="ic" aria-hidden="true"><use href="#i-tasks"/></svg><i class="dot hide" id="taskDot"></i></button>
-    <button id="sndBtn" aria-label="صدا" aria-pressed="true"><svg class="ic" aria-hidden="true"><use href="#i-sound"/></svg></button>
+    <button id="sndBtn" data-act="snd" aria-label="صدا" aria-pressed="true"><svg class="ic" aria-hidden="true"><use href="#i-sound"/></svg></button>
     <div id="energy" aria-hidden="true"><svg class="ic" aria-hidden="true"><use href="#i-energy"/></svg><i><b id="enbar"></b></i><span class="num" id="entxt">100</span></div>
     <div id="toast" role="status"></div>
     <button id="boost" class="hide" data-act="boost"><svg class="ic" aria-hidden="true"><use href="#i-up"/></svg>بوست ×۲</button>
@@ -614,6 +690,7 @@ nav button.on .ic{color:var(--brand2)}
     <div id="sheetBody"></div>
   </section>
 
+  <div id="infoPop" class="hide" role="tooltip"></div>
   <nav>
     <button data-act="tab" data-tab="market" aria-label="بازار"><svg class="ic" aria-hidden="true"><use href="#i-market"/></svg><span>بازار</span></button>
     <button data-act="tab" data-tab="miners" aria-label="ماینر"><svg class="ic" aria-hidden="true"><use href="#i-miners"/></svg><span>ماینر</span><i class="nbadge hide" id="nb-miners" aria-hidden="true"></i></button>
@@ -651,10 +728,11 @@ const storageGet=k=>{try{return window.localStorage.getItem(k)}catch(e){return n
 const storageSet=(k,v)=>{try{window.localStorage.setItem(k,v);return true}catch(e){return false}};
 let AC=null,SND=storageGet('mr3:snd')!=='0';
 function actx(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
-function tone(f,d,type,v,delay){const a=actx();if(!a)return;const o=a.createOscillator(),g=a.createGain(),t0=a.currentTime+(delay||0);
+let masterGain=null;
+function tone(f,d,type,v,delay){if(!SND)return;const a=actx();if(!a)return;const o=a.createOscillator(),g=a.createGain(),t0=a.currentTime+(delay||0);
  o.type=type||'sine';o.frequency.value=f;
  g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(v||.1,t0+.012);g.gain.exponentialRampToValueAtTime(.0001,t0+d);
- o.connect(g);g.connect(a.destination);o.start(t0);o.stop(t0+d+.05)}
+ o.connect(g);if(!masterGain){masterGain=a.createGain();masterGain.gain.value=SND?1:0;masterGain.connect(a.destination)}g.connect(masterGain);o.start(t0);o.stop(t0+d+.05)}
 function sfx(k){if(!SND||REDUCE)return;try{
  if(k==='tap')tone(520+Math.random()*180,.07,'triangle',.06);
  else if(k==='ok'){tone(660,.12,'sine',.09);tone(990,.16,'sine',.07,.07)}
@@ -664,6 +742,14 @@ function sfx(k){if(!SND||REDUCE)return;try{
 }catch(e){}}
 document.addEventListener('pointerdown',()=>{if(SND)actx()},{once:true,capture:true});
 const $=s=>document.querySelector(s);
+function syncSound(){
+ const sb=$('#sndBtn');if(!sb)return;
+ sb.classList.toggle('off',!SND);sb.setAttribute('aria-pressed',String(!!SND));
+ const u=sb.querySelector('use');if(u)u.setAttribute('href',SND?'#i-sound':'#i-mute');
+ if(masterGain)masterGain.gain.value=SND?1:0
+}
+syncSound();
+
 const INIT=(tg&&tg.initData)||'';
 const UID=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.id)||'guest';
 const LSK='mr3:'+UID;   /* ذخیره‌ی محلی جدا برای هر اکانت */
@@ -1047,7 +1133,7 @@ function lockedShelf(k,a0,zb){
 let lastBought=-1;   /* برای انیمیشن قرارگیری ماینر جدید روی قفسه */
 function renderRack(){
  let o='';
- const order=[...Array(SHELVES).keys()].sort((x,y)=>(shelfPos(x).bay-shelfPos(y).bay)||(shelfPos(y).lv-shelfPos(x).lv));
+ const order=[...Array(SHELVES).keys()].sort((x,y)=>(shelfPos(x).bay-shelfPos(y).bay)||(shelfPos(x).lv-shelfPos(y).lv));
  order.forEach(k=>{
   const {a0,zb}=shelfPos(k);
   if(k>=S.shelves){o+=lockedShelf(k,a0,zb);return}
@@ -1133,15 +1219,16 @@ function svgToScreen(x,y){
  const r=$('#room').getBoundingClientRect();
  const k=Math.min(r.width/380,r.height/390),ox=(r.width-380*k)/2,oy=(r.height-390*k)/2;
  return [ox+(x-35)*k,oy+(y-6)*k]}
-/* ذره‌ی سکه به رنگ ارز از بالای ماینرها (فاز ۴) */
+/* سکه‌های سبک با نماد اختصاصی ارز */
 function coinRain(){
- const act=[];S.slots.forEach((id,i)=>{if(id)act.push(i)});
- if(!act.length||parts.length>130)return;
- const i=act[Math.floor(Math.random()*act.length)],m=mById(S.slots[i]);
+ if(REDUCE||parts.length>=30)return;
+ const active=[];S.slots.forEach((id,i)=>{if(id)active.push(i)});
+ if(!active.length)return;
+ const i=active[Math.floor(Math.random()*active.length)],m=mById(S.slots[i]);if(!m)return;
  const {a0,zb}=shelfPos(Math.floor(i/2)),a=a0+.15+(i%2)*1.7;
  const p=P(a+.75,.55,zb+MH*1.1),[sx,sy]=svgToScreen(p[0],p[1]);
- parts.push({x:sx,y:sy,vx:(Math.random()-.5)*.3,vy:-.5-.35*Math.random(),g:0,l:1,d:.011,r:2.6,c:m.col})}
-
+ const type=m.coin==='STAR'?'star':m.coin==='TON'?'gem':'usd';
+ parts.push({x:sx,y:sy,vx:(Math.random()-.5)*.25,vy:-.35-.25*Math.random(),g:0,l:1,d:.018,r:5,c:m.col,type,rot:Math.random()*6.28,vr:(Math.random()-.5)*.04})}
 /* ---------------- Room v2 (فاز ۴): متریال گرم، دکور شخصی، مانیتور زنده، دو حالت نور، لایه‌ی پن ---------------- */
 const LIGHT=()=>{const h=new Date().getHours();return(h>=16&&h<20)?'dusk':'night'};
 const ROOM_PAL={
@@ -1222,7 +1309,7 @@ function buildRoom(){
  const hex=(cx,cy,r,c)=>`<path d="M${cx+r} ${cy} L${cx+r/2} ${cy+r*.866} L${cx-r/2} ${cy+r*.866} L${cx-r} ${cy} L${cx-r/2} ${cy-r*.866} L${cx+r/2} ${cy-r*.866}Z" fill="${c}" stroke="#fff" stroke-width=".04" stroke-opacity=".7"/>`;
  o+=`<g id="it-hex" class="item gone">${glow(onB(0,hex(8.3,3.0,.28,'#ffe28a')+hex(8.3,3.49,.28,'#c4b5fd')+hex(8.72,3.25,.28,'#7be7ff')+hex(8.3,4.0,.28,'#7be7ff')+hex(8.72,3.75,.28,'#ffe28a')))}</g>`;
  o+=`<g id="it-ac" class="item gone">${box(.5,0,6.25,3.3,.75,.95,['#f5f2ff','#ddd7f7','#c6bfea'])}${onB(.75,`<rect x=".65" y="6.42" width="3" height=".12" rx=".05" fill="#b3abdc"/><rect x=".65" y="6.62" width="3" height=".06" fill="#c6bfea"/><circle cx="3.45" cy="6.93" r=".06" fill="#4ade80"/>`)}${[0,1,2,3].map(i=>onB(.75,`<line x1="${1+i*.8}" x2="${1.05+i*.8}" y1="6.1" y2="5.55" stroke="rgba(200,240,255,.7)" stroke-width=".05" stroke-linecap="round"><animate attributeName="opacity" values="0;.9;0" dur="2.2s" begin="${i*.5}s" repeatCount="indefinite"/></line>`)).join('')}</g>`;
- o+=glow(onB(0,`<g transform="translate(4.35 6.3) scale(1 -1)"><text x="0" y="0" font-size=".8" font-weight="900" textLength="3.9" lengthAdjust="spacingAndGlyphs" fill="#F5B356" class="flick">MINER ROOM</text></g><rect x="4.3" y="6.15" width="4" height=".04" fill="#E8913A" opacity=".8"/>`));
+ o+=glow(onB(0,`<g transform="translate(5.05 6.3) scale(1 -1)"><text x="0" y="0" font-size=".8" font-weight="900" textLength="3.9" lengthAdjust="spacingAndGlyphs" fill="#F5B356" class="flick">MINER ROOM</text></g><rect x="5.0" y="6.15" width="3.9" height=".04" fill="#E8913A" opacity=".8"/>`));
 
  /* ---- رک‌ها: پنل پشت، هاله‌ی گرما، قفسه‌ها، اقلام داینامیک، ستون‌ها ---- */
  [0,1].forEach(bay=>{const a0=BAY_A[bay];
@@ -1332,12 +1419,11 @@ function renderTag(){
 /* ---------------- Formatting HUD (فاز ۲): فشرده، خوانا، بدون ۸ رقم اعشار ---------------- */
 /* دقت تطبیقی: هرچه عدد کوچک‌تر، رقم اعشار بیشتر (حداکثر ۶) · بزرگ‌ها K/M/B */
 const kfmt=n=>n>=1e9?(n/1e9).toFixed(2)+'B':n>=1e6?(n/1e6).toFixed(2)+'M':n>=1e4?(n/1e3).toFixed(1)+'K':null;
-function fmtNum(n){const a=Math.abs(n),d=a>=1?2:a>=.01?3:a>=.001?4:a>=.00001?5:6;
- return n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:d})}
+function fmtNum(n){if(!Number.isFinite(+n))return '0';const a=Math.abs(+n);const d=a===0?2:a>=1000?2:a>=1?4:a>=.01?6:8;return (+n).toLocaleString('en-US',{minimumFractionDigits:a>0&&a<1?Math.min(6,d):0,maximumFractionDigits:d,useGrouping:a>=1000})}
 function fmtUsd(n){const s=n<0?'−':'',a=Math.abs(n),k=kfmt(a);
- if(k)return s+'$'+k;if(a===0)return '$0';
+ if(k&&a>=1000)return s+'$'+k;if(a===0)return '$0.00';
  return s+'$'+fmtNum(a)}
-const fmtChip=(id,n)=>{const k=kfmt(n);return k||fmtNum(n)};
+const fmtChip=(id,n)=>{const a=Math.abs(+n||0);return a>=1000?(kfmt(n)||fmtNum(n)):fmtNum(n)};
 /* شمارنده‌ی انیمیشنی بالانس (فقط روی تغییر گسسته، نه تیک ثانیه‌ای) */
 let lastBal=null,balTgt=null,balTW=0;
 function setBal(v){
@@ -1420,56 +1506,82 @@ function claimChapter(){
 
 /* ---------------- Particles (canvas) ---------------- */
 const cv=$('#fx');let g2=null;try{g2=cv&&cv.getContext('2d')}catch(e){}let PW=0,PH=0,DPR=1;
-const parts=[],motes=Array.from({length:REDUCE?0:26},()=>({x:Math.random(),y:Math.random(),s:.00025+Math.random()*.0006,r:.6+Math.random()*1.4,p:Math.random()*6,c:['#22e6ff','#ff4fa3','#c4b5fd','#ffd166'][Math.floor(Math.random()*4)]}));
+const parts=[];
 function resizeFx(){const r=$('#scene').getBoundingClientRect();DPR=Math.min(2,window.devicePixelRatio||1);PW=r.width;PH=r.height;cv.width=PW*DPR;cv.height=PH*DPR;cv.style.width=PW+'px';cv.style.height=PH+'px'}
 function burst(cx,cy,col,n,sp){
  const r=$('#scene').getBoundingClientRect();const x=cx-r.left,y=cy-r.top;
- if(parts.length>160)return;
+ if(parts.length>90)return;
  for(let i=0;i<(REDUCE?2:n);i++)parts.push({x,y,vx:(Math.random()-.5)*sp*2,vy:-Math.random()*sp-1,g:.14,l:1,d:.018+Math.random()*.02,r:1.6+Math.random()*2.6,c:col})}
 function celebrate(){const r=$('#scene').getBoundingClientRect();for(let i=0;i<5;i++)setTimeout(()=>burst(r.left+r.width*(.2+Math.random()*.6),r.top+r.height*.5,['#ffc247','#2aa9ff','#3ddc84','#ff4fa3'][i%4],10,4),i*90)}
-let lastF=0;
+let lastF=0,fxRaf=0;
 function fxLoop(ts){
- requestAnimationFrame(fxLoop);
- if(!g2||document.hidden||sheet.f===1||ts-lastF<30)return;lastF=ts;
+ fxRaf=0;
+ if(!g2||document.hidden||(sheet.tab&&sheet.f>=.999)||ts-lastF<30){if(!document.hidden&&!(sheet.tab&&sheet.f>=.999))fxRaf=requestAnimationFrame(fxLoop);return}lastF=ts;
+ try{
  g2.setTransform(DPR,0,0,DPR,0,0);g2.clearRect(0,0,PW,PH);
- motes.forEach(m=>{m.y-=m.s*30;if(m.y<-.02){m.y=1.02;m.x=Math.random()}m.p+=.04;g2.globalAlpha=.25+.35*Math.sin(m.p);g2.fillStyle=m.c;g2.beginPath();g2.arc(m.x*PW+Math.sin(m.p*.5)*6,m.y*PH,m.r,0,6.283);g2.fill()});
  for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.l-=p.d;if(p.l<=0){parts.splice(i,1);continue}
-  g2.globalAlpha=Math.max(0,p.l);g2.fillStyle=p.c;g2.beginPath();g2.arc(p.x,p.y,p.r,0,6.283);g2.fill();
-  if(!p.g){g2.lineWidth=1;g2.strokeStyle='rgba(255,255,255,.65)';g2.stroke()}}   /* ذرات سکه‌ی بی‌جاذبه حاشیه‌ی روشن دارن */
- g2.globalAlpha=1}
+  g2.globalAlpha=Math.max(0,p.l);g2.save();g2.translate(p.x,p.y);p.rot=(p.rot||0)+(p.vr||0);g2.rotate(p.rot||0);g2.fillStyle=p.c;g2.strokeStyle='rgba(255,255,255,.78)';g2.lineWidth=1;
+  if(p.type==='star'){g2.beginPath();for(let q=0;q<10;q++){const a=-Math.PI/2+q*Math.PI/5,r=p.r*(q%2?.48:1);q?g2.lineTo(Math.cos(a)*r,Math.sin(a)*r):g2.moveTo(Math.cos(a)*r,Math.sin(a)*r)}g2.closePath();g2.fill();g2.stroke()}
+  else if(p.type==='gem'){g2.beginPath();g2.moveTo(0,-p.r);g2.lineTo(p.r*.75,-p.r*.25);g2.lineTo(p.r*.55,p.r*.7);g2.lineTo(-p.r*.55,p.r*.7);g2.lineTo(-p.r*.75,-p.r*.25);g2.closePath();g2.fill();g2.stroke()}
+  else{g2.beginPath();g2.arc(0,0,p.r*.82,0,6.283);g2.fill();g2.stroke();g2.fillStyle='#fff';g2.font='bold 7px sans-serif';g2.textAlign='center';g2.textBaseline='middle';g2.fillText('$',0,.5)}
+  g2.restore();}   /* ذرات سکه‌ی بی‌جاذبه حاشیه‌ی روشن دارن */
+ g2.globalAlpha=1}catch(err){console.warn('fx frame',err)}finally{if(!document.hidden&&!(sheet.tab&&sheet.f>=.999))fxRaf=requestAnimationFrame(fxLoop)}}
 
+function info(text){return `<button type="button" class="info-badge" data-info="${esc(String(text||''))}" aria-label="توضیحات">!</button>`}
+let infoTO=null;
+function showInfo(btn){
+ const pop=$('#infoPop');if(!pop||!btn)return;
+ pop.textContent=btn.dataset.info||'';pop.classList.remove('hide');
+ const r=btn.getBoundingClientRect(),w=Math.min(260,window.innerWidth-28);
+ pop.style.width='max-content';pop.style.maxWidth=w+'px';
+ const pw=Math.min(w,pop.scrollWidth||w),left=Math.max(14,Math.min(window.innerWidth-pw-14,r.left+(r.width-pw)/2));
+ pop.style.left=left+'px';pop.style.top=Math.max(12,Math.min(window.innerHeight-pop.offsetHeight-12,r.bottom+7))+'px';
+ clearTimeout(infoTO);infoTO=setTimeout(()=>pop.classList.add('hide'),6000)
+}
 /* ---------------- Sheets ---------------- */
 const SNAP=[.4,.75,1];
-const sheet={tab:null,slot:0,f:.75,t:0};
+const sheet={tab:null,slot:0,f:1,t:0};
 const sheetH=()=>($('#sheet').offsetHeight||1);
 const tOf=f=>sheetH()*(1-f);
 function applyT(t){sheet.t=t;$('#sheet').style.transform='translateY('+t.toFixed(1)+'px)'}
-function setSnap(f){sheet.f=f;applyT(tOf(f));try{f===1?$('#room').pauseAnimations():$('#room').unpauseAnimations()}catch(e){}}
+function syncMotion(){
+ const covered=!!sheet.tab&&sheet.f>=.999;
+ const paused=covered||document.hidden||document.documentElement.classList.contains('tg-inactive');
+ try{if(paused)$('#room').pauseAnimations();else $('#room').unpauseAnimations()}catch(e){}
+ if(paused){if(fxRaf){cancelAnimationFrame(fxRaf);fxRaf=0}}
+ else if(!fxRaf&&typeof fxLoop==='function')fxRaf=requestAnimationFrame(fxLoop);
+}
+function setSnap(f){sheet.f=f;applyT(tOf(f));syncMotion()}
 let closeTO=null;
 function openSheet(tab,i){
  if(sheet.tab===tab&&tab!=='slot'&&i===undefined){closeSheet();return}
  if(tab==='wallet'&&sheet.tab!=='wallet'){W.v='home';W.amt=''}
  sheet.tab=tab;if(i!==undefined)sheet.slot=i;
- sheet.f=(tab==='slot')?.4:.75;
+ sheet.f=(tab==='slot')?.75:1;
  clearTimeout(closeTO);
  const el=$('#sheet');el.classList.add('open');el.setAttribute('aria-hidden','false');
  $('#app').classList.add('sopen');$('#bubble').classList.add('hide');hidePop();
  renderSheet();
  const sb2=$('#sheetBody');sb2.classList.remove('animin');void sb2.offsetWidth;sb2.classList.add('animin');
- applyT(tOf(sheet.f));
- document.querySelectorAll('nav button').forEach(b=>{const on=b.dataset.tab===tab;b.classList.toggle('on',on);b.setAttribute('aria-current',on?'page':'false')})}
+ requestAnimationFrame(()=>{if(sheet.tab)applyT(tOf(sheet.f));syncMotion()});
+ document.documentElement.style.setProperty('--vvh',(window.visualViewport?window.visualViewport.height:window.innerHeight)+'px');
+ if(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.expand)try{Telegram.WebApp.expand()}catch(e){}
+ document.querySelectorAll('nav button').forEach(b=>{const on=b.dataset.tab===tab;b.classList.toggle('on',on);b.setAttribute('aria-current',on?'page':'false')});
+ syncMotion()
+}
 function closeSheet(){
  if(!sheet.tab)return;
- sheet.tab=null;
+ sheet.tab=null;sheet.f=0;
  $('#app').classList.remove('sopen');
- applyT(sheetH()+40);
+ applyT(sheetH()+40);syncMotion();
  document.querySelectorAll('nav button').forEach(b=>{b.classList.remove('on');b.setAttribute('aria-current','false')});
- clearTimeout(closeTO);closeTO=setTimeout(()=>{if(!sheet.tab){const el=$('#sheet');el.classList.remove('open');el.setAttribute('aria-hidden','true')}},360)}
+ clearTimeout(closeTO);closeTO=setTimeout(()=>{if(!sheet.tab){const el=$('#sheet');el.classList.remove('open');el.setAttribute('aria-hidden','true');syncMotion()}},360)
+}
 /* درگ هندل: انتخاب نزدیک‌ترین snap، پرتاب با سرعت، بستن با کشیدن یا ضربه به scrim */
 (function(){
- const head=$('#sheetHead');let d=null;
+ const head=$('#sheetHead .grab');let d=null;
  head.addEventListener('pointerdown',e=>{
-  if(e.target.closest('button'))return;
+  if(sheet.tab===null)return;
   d={y0:e.clientY,t0:sheet.t,y:e.clientY,ts:performance.now(),v:0,moved:false};
   $('#sheet').classList.add('drag');
   try{head.setPointerCapture(e.pointerId)}catch(_){}});
@@ -1481,7 +1593,7 @@ function closeSheet(){
   applyT(Math.min(d.t0+(dy>0?dy:dy*.18),sheetH()+60))});
  const end=()=>{
   if(!d)return;const g=d;d=null;$('#sheet').classList.remove('drag');
-  if(!g.moved){setSnap(SNAP[(SNAP.indexOf(sheet.f)+1)%SNAP.length]);return}
+  if(!g.moved)return;
   const h=sheetH(),cand=[tOf(1),tOf(.75),tOf(.4),h+40];
   let best=cand[0],bd=1e9;
   cand.forEach(c=>{const dd=Math.abs(sheet.t-c);if(dd<bd){bd=dd;best=c}});
@@ -1536,21 +1648,21 @@ function shopCard(m,full){
  const best=same.length?same.reduce((a,b)=>b.y>a.y?b:a):null;
  const net=Math.max(1e-9,m.y-m.pw),pb=m.price/net;
  const pbTxt=pb>=86400?(pb/86400).toFixed(1)+' روز':pb>=3600?(pb/3600).toFixed(1)+' ساعت':Math.round(pb/60)+' دقیقه';
- const cmp=best?`<div class="cmp">${m.y>=best.y?icon('pup','s'):icon('pdn','s')}<span class="num">${m.y>best.y?'+':''}${((m.y/best.y-1)*100).toFixed(0)}٪</span> تولید نسبت به «${best.name}» فعلی تو</div>`:'';
+ const cmp=best?`<span class="tier" title="${esc(best.name)}">${m.tier>=best.tier?'●':'○'} ${m.tier}/۳</span>`:`<span class="tier">${'●'.repeat(m.tier)}${'○'.repeat(3-m.tier)}</span>`;
  const afford=S.usd>=m.price,can=!full&&afford;
  return `<div class="shop">
   <div class="top"><div class="pv">${minerPreview(m)}</div>
-   <div class="nm"><b>${m.name}</b><small>تیر ${m.tier} از ۳ · ${c.name}</small>${cmp}</div>
+   <div class="nm"><b>${m.name}</b><small>${c.name} · ${cmp}</small></div>
    <div class="buy"><button class="btn sm" data-act="buy" data-id="${m.id}" data-cost="${m.price}" ${can?'':'disabled'}>${fm(m.price)}</button><small>${full?'جای خالی نیست':afford?'آماده‌ی نصب':'کسری '+fm(m.price-S.usd)}</small></div></div>
   <div class="stats">
-   <div><small>تولید</small><b class="num">${fmtNum(m.y/c.ref)}/s</b></div>
-   <div><small>برق</small><b class="num">$${fmtNum(m.pw)}</b></div>
-   <div><small>بازده انرژی</small><b class="num">×${(m.y/m.pw).toFixed(0)}</b></div>
-   <div><small>بازگشت سرمایه</small><b>${pbTxt}</b></div></div>
+   <div><small>⚡ تولید</small><b class="num">${fmtNum(m.y/c.ref)}/s</b></div>
+   <div><small>🔋 برق</small><b class="num">$${fmtNum(m.pw)}</b></div>
+   <div><small>♻ بازده</small><b class="num">×${(m.y/m.pw).toFixed(0)}</b></div>
+   <div><small>⏱ بازگشت</small><b>${pbTxt}</b></div></div>
  </div>`}
 function sheetMiners(){
  const full=cnt()>=cap();
- let o=`<p class="hint">جایگاه خالی: <span class="num">${cap()-cnt()}</span> از <span class="num">${cap()}</span>${full?' · <a data-act="tab" data-tab="racks">قفسه‌ی جدید بخر</a>':''}<br>سختی شبکه: بازده هر ماینر الان <span class="num">×${(1/(1+NETD*Math.max(0,cnt()-1))).toFixed(2)}</span> و با هر ماینر بیشتر کمتر می‌شه.</p>`;
+ let o=`<div class="sh"><span class="sh-title"><b>ماینرها</b>${info('سختی شبکه با تعداد ماینرها بیشتر می‌شود و سهم تولید هر دستگاه را کم می‌کند.')}</span><span class="tg">جایگاه ${cnt()}/${cap()}</span>${full?'<a data-act="tab" data-tab="racks">قفسه +</a>':''}</div>`;
  COINS.forEach(c=>{
   o+=`<div class="grp" style="--c:${c.col}">${coinIcon(c.id,24)}<b>ماینر ${c.name}</b></div>`;
   MINERS.filter(m=>m.coin===c.id).forEach(m=>{o+=shopCard(m,full)})});
@@ -1560,7 +1672,7 @@ function shelfIcon(own){
  const c=own?'#22e6ff':'#6b5fb5';
  return `<svg viewBox="0 0 56 44"><rect x="3" y="30" width="50" height="4" rx="2" fill="${c}"/>${own?`<rect x="8" y="14" width="17" height="16" rx="3" fill="#1f1b45" stroke="${c}"/><rect x="31" y="14" width="17" height="16" rx="3" fill="#1f1b45" stroke="${c}"/><circle cx="16.5" cy="22" r="4" fill="none" stroke="${c}"/><circle cx="39.5" cy="22" r="4" fill="none" stroke="${c}"/>`:`<rect x="8" y="14" width="40" height="16" rx="3" fill="none" stroke="${c}" stroke-dasharray="4 3"/><path d="M28 17v10M23 22h10" stroke="${c}" stroke-width="2" stroke-linecap="round"/>`}</svg>`}
 function sheetRacks(){
- let o=`<p class="hint">جایگاه‌ها: <span class="num">${cnt()}/${cap()}</span> · هر قفسه دو ماینر نگه می‌داره. قفسه‌ها به ترتیب باز میشن.</p>`;
+ let o=`<div class="sh"><span class="sh-title"><b>قفسه‌ها</b>${info("هر قفسه دو جایگاه دارد؛ قفسه‌ها را به ترتیب باز کن.")}</span><span class="tg num">${cnt()}/${cap()}</span></div>`;
  for(let k=0;k<SHELVES;k++){
   const own=k<S.shelves,nx=k===S.shelves,used=[S.slots[2*k],S.slots[2*k+1]].filter(Boolean).length;
   o+=`<div class="row ${own?'':'lockedrow'}"><div class="ico">${shelfIcon(own)}</div><div class="rb"><b>قفسه ${k+1}</b><small>${own?`فعال · ${used} از ۲ جایگاه پره`:nx?'آماده‌ی خرید':'اول قفسه‌ی قبلی رو بخر'}</small></div>${own?'<span class="tg">فعال</span>':`<button class="btn sm" data-act="buyshelf" data-k="${k}" data-cost="${SHELF_COST[k]}" ${nx&&S.usd>=SHELF_COST[k]?'':'disabled'}>${fm(SHELF_COST[k])}</button>`}</div>`}
@@ -1569,8 +1681,9 @@ function sheetRacks(){
 function sheetUp(){
  const n=S.pc+1;
  let o=n<PC.length?`<div class="row"><div class="ico">${icon('up','l')}</div><div class="rb"><b>کامپیوتر: سطح ${S.pc+1} از ${PC.length}</b><small>ضریب ضربه و تولید کامپیوتر: <span class="num">×${PC[S.pc]} ← ×${PC[n]}</span></small></div><button class="btn sm" data-act="pcup" data-cost="${PCCOST[n]}" ${S.usd<PCCOST[n]?'disabled':''}>${fm(PCCOST[n])}</button></div>`:`<div class="row done">${icon('check','s')} کامپیوتر در بالاترین سطحه</div>`;
- o+=`<div class="grp">${icon('hexp','s')}<b>اتاق و دکور</b><small>هر کدوم +۵٪ سود ماین (کولر: برق کمتر)</small></div>`;
- o+=`<div class="grp">${icon('user','s')}<b>لباس میکو</b><small>با ارز بازی</small></div>`
+ o+=`<div class="grp"><b>اتاق و دکور</b>${info('دکورها مزیت دائمی می‌دهند و ظاهر اتاق را تغییر می‌دهند.')}</div>`;
+ o+=ROOM.map(r=>{const owned=!!S.room[r.id];return `<div class="row ${owned?'done':''}"><div class="ico">${icon(r.ico,'l')}</div><div class="rb"><b>${r.name}</b><small>${owned?'نصب شده':r.price.toFixed(2)+' $'}</small></div>${owned?'<span class="tg">فعال</span>':`<button class="btn sm" data-act="room" data-id="${r.id}" data-cost="${r.price}" ${S.usd<r.price?'disabled':''}>${fm(r.price)}</button>`}</div>`}).join('');
+ o+=`<div class="grp"><b>لباس میکو</b>${info('لباس‌ها فقط ظاهر میکو را تغییر می‌دهند.')}</div>`
   +OUTFITS.map(u=>{const owned=S.cos>>u.id&1,equipped=S.co===u.id;
    return `<div class="row ${owned?'':'lockedrow'}"><div class="ico mp">${chibiSvg(40,48,u)}</div><div class="rb"><b>${u.n}</b><small>${u.d}</small></div>${equipped?`<span class="tg">پوشیده</span>`:owned?`<button class="btn sm" data-act="wear" data-i="${u.id}">بپوش</button>`:`<button class="btn sm" data-act="outfit" data-i="${u.id}" data-cost="${u.price}" ${S.usd<u.price?'disabled':''}>${fm(u.price)}</button>`}</div>`}).join('');
  return o}
@@ -1578,29 +1691,29 @@ function sheetUp(){
 /* ماموریت‌ها (فاز ۵): فصل داستانی + تقویم روزانه با استریک */
 function dailyCal(){
  const idx=dailyIdx(),ready=dailyReady();
- return `<div class="sh"><b>هدیه‌ی روزانه</b><small>استریک <span class="num">${Math.min(S.st,7)}/۷</span> روز</small></div>
+ return `<div class="sh"><span class="sh-title"><b>هدیه‌ی روزانه</b>${info("هر روز یک جایزه بگیر؛ مقدار آن با استریک افزایش می‌یابد.")}</span><small>استریک <span class="num">${Math.min(S.st,7)}/۷</span> روز</small></div>
  <div class="dcal">`+DAILY.map((v,i)=>{
   const claimed=ready?i<idx:i<S.st;
   const today=ready&&i===idx;
   return `<div class="${claimed?'got':''} ${today?'today':''}">
    <small>روز ${i+1}</small><b class="num">${fc(v).replace('$','$')}</b>
    ${claimed?icon('check','s'):icon(today?'gift':'cal','s')}</div>`}).join('')+`</div>
- <p class="hint">هر روز پیاپی که بیای جایزه‌ی بزرگ‌تر می‌شه؛ یه روز نیای استریک از اول شروع می‌شه.</p>`}
+ ${info("هر روز پیاپی که برگردی، جایزه بزرگ‌تر می‌شود؛ جا انداختن روز، استریک را از اول شروع می‌کند.")}`}
 function weeklySec(){
  weeklyCheck();
- return `<div class="sh"><b>ماموریت هفتگی</b><small>هفته‌ی ${S.wk}</small></div>`
+ return `<div class="sh"><span class="sh-title"><b>ماموریت هفتگی</b>${info("ماموریت‌های هفتگی با انجام بازی تکمیل می‌شوند.")}</span><small>هفته‌ی ${S.wk}</small></div>`
   +WEEKM.map((m,i)=>{const cur=m.cur()-(S.wp[m.k]||0),done=cur>=m.goal,cl=(S.wc>>i)&1;
-   return `<div class="row ${cl?'done':''}"><div class="ico">${icon(cl?'check':'cal')}</div><div class="rb"><b>${m.t}</b><small>${m.d} · جایزه ${fc(m.rw)}</small><div class="bar"><i style="width:${Math.min(100,cur/m.goal*100)}%"></i></div></div>${cl?`<span class="tg">گرفته شد</span>`:done?`<button class="btn sm claim" data-act="wclaim" data-i="${i}">دریافت</button>`:`<b class="num mut">${m.goalTxt(Math.min(cur,m.goal))}/${m.goalTxt(m.goal)}</b>`}</div>`}).join('')}
+   return `<div class="row ${cl?'done':''}"><div class="ico">${icon(cl?'check':'cal')}</div><div class="rb"><b>${m.t}</b><small>${info(m.d)} · جایزه ${fc(m.rw)}</small><div class="bar"><i style="width:${Math.min(100,cur/m.goal*100)}%"></i></div></div>${cl?`<span class="tg">گرفته شد</span>`:done?`<button class="btn sm claim" data-act="wclaim" data-i="${i}">دریافت</button>`:`<b class="num mut">${m.goalTxt(Math.min(cur,m.goal))}/${m.goalTxt(m.goal)}</b>`}</div>`}).join('')}
 function sheetTasks(){
  const c=CH[S.ch];let o='';
  if(c){const [a,b]=c.prog();
-  o+=`<div class="chcard"><div class="pt">${chibiSvg(60,72)}</div><div style="flex:1"><b>ماموریت ${S.ch+1}: ${c.t}</b><p>${c.say}</p><div class="goal">هدف: ${c.goal}</div><div class="bar"><i id="chbar" style="width:${S.rd?100:Math.min(100,a/b*100)}%"></i></div><small><span class="num" id="chtxt">${cf(c,Math.min(a,b))}/${cf(c,b)}</span> · جایزه <span class="num">${fc(c.reward)}</span></small>{${c.scene?`<button class="btn ghost w2" data-act="replay">${icon('sound','s')}بازپخش صحنه‌ی گفتگو</button>`:''}${S.rd?`<button class="btn wide claim" data-act="claimch">${icon('gift','s')}دریافت جایزه · <span class="num">${fc(c.reward)}</span></button>`:''}</div></div>`}
- else o+=`<div class="chcard"><div class="pt">${chibiSvg(60,72)}</div><div><b>پایان داستان!</b><p>میکو حالا صاحب یه امپراتوری ماینینگه. ارزها رو بفروش، دستگاه‌ها رو عوض کن و ثروتت رو بالا ببر.</p></div></div>`;
+  o+=`<div class="chcard"><div class="pt">${chibiSvg(60,72)}</div><div style="flex:1"><b>ماموریت ${S.ch+1}: ${c.t}</b><button class="info-badge" type="button" data-info="${esc(c.say)}" aria-label="توضیح ماموریت">!</button><div class="goal">هدف: ${esc(c.goal)}</div><div class="bar"><i id="chbar" style="width:${S.rd?100:Math.min(100,a/b*100)}%"></i></div><div class="mission-meta"><span class="tg"><span class="num" id="chtxt">${cf(c,Math.min(a,b))}/${cf(c,b)}</span></span><span class="tg">🎁 <span class="num">${fc(c.reward)}</span></span></div>${c.scene?`<button class="btn ghost w2" data-act="replay" aria-label="بازپخش">${icon('sound','s')}</button>`:''}${S.rd?`<button class="btn wide claim" data-act="claimch">${icon('gift','s')}دریافت جایزه · <span class="num">${fc(c.reward)}</span></button>`:''}</div></div>`}
+ else o+=`<div class="chcard"><div class="pt">${chibiSvg(60,72)}</div><div><b>پایان داستان!</b><button class="info-badge" data-info="ارزها را بفروش، دستگاه‌ها را ارتقا بده و ثروتت را بیشتر کن." aria-label="توضیح">!</button></div></div>`;
  o+=weeklySec();
  o+=dailyCal();
- o+=dailyReady()?`<button class="btn wide claim" data-act="daily">${icon('gift','s')}دریافت هدیه‌ی روز ${dailyIdx()+1} · <span class="num">${fc(DAILY[dailyIdx()])}</span></button>`:`<div class="row done">${icon('check','s')} هدیه‌ی امروز گرفته شد · فردا برگرد</div>`;
- o+=`<div class="sh"><b>دعوت دوستان</b><small>جایزه‌ی دوطرفه</small></div><div id="ref"><small class="mut">در حال بارگذاری…</small></div>`;
- if(S.ch>0)o+=`<h3 class="sec">انجام‌شده</h3>`+CH.slice(0,S.ch).map((x,i)=>`<div class="ok">${icon('check','s')} ماموریت ${i+1}: ${x.t}</div>`).join('');
+ o+=dailyReady()?`<button class="btn wide claim" data-act="daily">${icon('gift','s')}دریافت هدیه‌ی روز ${dailyIdx()+1} · <span class="num">${fc(DAILY[dailyIdx()])}</span></button>`:`<div class="row done">${icon('check','s')} <span>پاداش امروز دریافت شد</span><span class="tg num" id="dailyTimer">--:--:--</span></div>`;
+ o+=`<div class="sh"><span class="sh-title"><b>دعوت دوستان</b>${info("دوستان را با لینک اختصاصی دعوت کن تا پاداش‌ها فعال شوند.")}</span><small>جایزه‌ی دوطرفه</small></div><div id="ref"><small class="mut">در حال بارگذاری…</small></div>`;
+ if(S.ch>0)o+=`<h3 class="sec">انجام‌شده</h3>`+CH.slice(0,S.ch).map((x,i)=>`<button class="ok done-chip" data-info="${esc(x.t)}"><span class="tg">${i+1}</span>${icon('check','s')}</button>`).join('');
  return o}
 
 function sheetHub(){
@@ -1612,8 +1725,8 @@ async function loadRef(){
  if(!INIT){el.innerHTML='<small class="mut">دعوت دوستان فقط داخل تلگرام فعاله.</small>';return}
  try{const r=await api('/api/ref'),e2=$('#ref');if(!e2)return;REFLINK=r.link||'';
   if(!REFLINK){e2.innerHTML='<small class="mut">لینک دعوت هنوز آماده نیست.</small>';return}
-  e2.innerHTML=`<p class="hint">هر دوستی که با لینک تو وارد بشه و به ماموریت ۳ برسه، <span class="num">${fc(r.bonus)}</span> برای تو و <span class="num">${fc(r.welcome)}</span> برای خودش؛ دعوت‌کننده‌ی تو هم جایزه‌ی سطح دوم می‌گیره. ${r.next?`با <span class="num">${r.next.at}</span> زیرمجموعه‌ی فعال، <span class="num">${fc(r.next.bonus)}</span> جایزه‌ی اضافه می‌گیری.`:''}</p>
-  <div class="row"><div class="rb"><b>زیرمجموعه‌ی فعال: <span class="num">${r.active}/${r.max}</span></b><small>دعوت‌شده: <span class="num">${r.invited}</span> · درآمد دعوت: <span class="num">${fc(r.earned)}</span></small></div></div>
+  e2.innerHTML=`<div class="chiprow"><span class="tg">تو: ${fc(r.bonus)}</span><span class="tg">دوست: ${fc(r.welcome)}</span><span class="tg">${r.next?'سطح ۲: '+fc(r.next.bonus):'دعوت سطح ۲'}</span></div>
+  <div class="row"><div class="rb"><b>زیرمجموعه‌ی فعال: <span class="num">${r.active}/${r.max}</span></b><small>دعوت‌شده: <span class="num">${r.invited}</span> · درآمد: <span class="num">${fc(r.earned)}</span></small></div></div>
   <div style="display:flex;gap:8px"><button class="btn wide" style="margin:0" data-act="invite">${icon('user','s')}دعوت دوستان</button><button class="btn ghost" data-act="copyref">${icon('copy','s')}کپی لینک</button></div>`}
  catch(e){const e2=$('#ref');if(e2)e2.innerHTML='<div class="werr">'+icon('alert')+'<b>در دسترس نیست</b><button class="btn sm" data-act="ref-retry">تلاش مجدد</button></div>'}}
 /* برترین‌ها (فاز ۵): سکوی ۳ نفر + لیگ + دکمه‌ی پروفایل */
@@ -1674,7 +1787,7 @@ function sheetMe(){
   <div><small>دکور اتاق</small><b class="num">${['ac','strip','tube','hex'].filter(k=>S.room[k]).length}/4</b></div>
   <div><small>استریک روزانه</small><b class="num">${Math.min(S.st,7)}/۷</b></div>
  </div>
- <div class="sh"><b>دعوت دوستان</b><small>جایزه‌ی دوطرفه</small></div>
+ <div class="sh"><span class="sh-title"><b>دعوت دوستان</b>${info("دوستان را با لینک اختصاصی دعوت کن تا پاداش‌ها فعال شوند.")}</span><small>جایزه‌ی دوطرفه</small></div>
  <div id="ref"><small class="mut">در حال بارگذاری…</small></div>`}
 
 function sheetSlot(){
@@ -1776,7 +1889,7 @@ function wCInfo(){
  if(!INIT)return 'انتقال به کیف پول فقط داخل تلگرام فعاله.';
  if(!c)return 'در حال بارگذاری…';
  if(!c.on)return 'انتقال ارز ماین‌شده فعلاً غیرفعاله.';
- return `${c.fee>0?`کارمزد انتقال <span class="num">${(c.fee*100).toFixed(1).replace(/\.0$/,'')}٪</span>`:'انتقال بدون کارمزد'} · حداقل <span class="num">${fc(c.min_usd)}</span> · باقی‌مانده‌ی سقف امروز <span class="num">${fc(c.left_usd)}</span><br>Stars فقط عدد صحیح منتقل می‌شه؛ اعشارش می‌مونه و با ماین بعدی کامل می‌شه.`}
+ return `${c.fee>0?`کارمزد ${((c.fee*100).toFixed(1)).replace(/\.0$/,'')}٪`:'بدون کارمزد'} · حداقل <span class="num">${fc(c.min_usd)}</span> · سقف امروز <span class="num">${fc(c.left_usd)}</span>`}
 
 /* ---------- خانه‌ی کیف پول (فاز ۳): کارت واحد ماین‌شده + انتقال همه ---------- */
 function wHome(){
@@ -1796,9 +1909,9 @@ function wHome(){
    <div class="v"><b class="num" id="wm-${k.id}"></b><small class="num" id="wv-${k.id}"></small></div>
    <svg class="ic s mch" aria-hidden="true"><use href="#i-chevL"/></svg></div>`).join('')}
   <button class="btn wide scta" id="wcall" data-act="w-cashall" ${anyOk?'':'disabled'}>انتقال همه‌ی ماین‌شده‌ها به کیف پول</button>
-  <p class="hint" id="wcinfo" style="margin:8px 0 0">${wCInfo()}</p>
+  <div class="chiprow" id="wcinfo" style="margin:8px 0 0"><span class="tg">حداقل ${d&&d.cashout?fc(d.cashout.min_usd):"—"}</span><span class="tg">باقی‌مانده ${d&&d.cashout?fc(d.cashout.left_usd):"—"}</span>${info("کارمزد انتقال و قوانین برداشت را پیش از انتقال بررسی کن. Stars فقط به صورت عدد صحیح منتقل می‌شود.")}</div>
  </div>
- <div class="sh"><b>دارایی‌های کیف پول</b><small>قیمت زنده</small></div>
+ <div class="sh"><b>دارایی‌های کیف پول</b><span class="tg">● قیمت زنده</span></div>
  ${d?WA.map(a=>{const p=wusd(a.id);let chg='';
   if(a.id==='TON'){const t=trend('TON');if(Math.abs(t)>=.005)chg=`<span class="pchg ${t>=0?'up':'dn'}">${icon(t>=0?'pup':'pdn','s')}${Math.abs(t).toFixed(2)}٪</span>`}
   return `<div class="as">${wic(a.id,36)}<div class="n"><b>${a.full}</b><small class="num">${fp(a.id==='USDT'?'USD':a.id,p)}</small></div><div class="v"><b class="num">${wnum(a.id,bal[a.id])} ${a.n}</b><small class="num">≈ ${fh(bal[a.id]*p)}</small></div>${chg}</div>`}).join('')
@@ -1886,7 +1999,7 @@ function sheetWallet(){
  const nm=((TU.first_name||'')+' '+(TU.last_name||'')).trim()||'بازیکن',un=TU.username?'@'+TU.username:'';
  const ti=RANKS.filter(r=>worth()>=r[0]).pop()[1],d=W.d;
  const av=TU.photo_url?`<img src="${esc(TU.photo_url)}" alt="" referrerpolicy="no-referrer">`:`<span>${esc(nm.slice(0,2).toUpperCase())}</span>`;
- let o=`<div class="pf"><div class="av" data-act="tab" data-tab="me" role="button" aria-label="پروفایل من">${av}</div><div class="pi"><b>${esc(nm)}</b><small>${un?`<span class="num">${esc(un)}</span> · `:''}ID <span class="num">${esc(UID)}</span></small>
+ let o=`<div class="pf"><div class="av" data-act="tab" data-tab="me" role="button" aria-label="پروفایل من">${av}</div><div class="pi"><b>${esc(nm)}</b><small title="${esc((un?un+' · ':'')+'ID '+UID)}">${un?`<span class="num">${esc(un)}</span> · `:''}ID <span class="num">${esc(UID)}</span></small>
   <div class="bd"><span>${icon('hub','s')} ${d&&d.rank?`<b class="num">#${d.rank}</b>`:'—'}</span><span>${ti}</span><span>${icon('miners','s')} <b class="num">${cnt()}</b> ماینر</span></div></div>${IS_ADMIN?`<button class="admgo" data-act="tab" data-tab="admin">${icon('shield','s')}مدیریت</button>`:''}</div>`;
  if(W.v==='home')return o+wHome();
  const T={dep:'واریز',wd:'برداشت',swap:'تبدیل ارز',gm:'شارژ بالانس بازی',coin:coin(W.coin).name}[W.v]||'';
@@ -2185,7 +2298,7 @@ function act(t,e){
  else if(a==='invite'){if(!REFLINK)return;const u='https://t.me/share/url?url='+encodeURIComponent(REFLINK)+'&text='+encodeURIComponent('بیا با هم تو اتاق ماینر ماین کنیم');try{tg.openTelegramLink(u)}catch(e){window.open(u,'_blank')}}
  else if(a==='copyref'){if(!REFLINK)return;try{navigator.clipboard.writeText(REFLINK).then(()=>toast('لینک کپی شد'),()=>toast(REFLINK))}catch(e){toast(REFLINK)}}
  else if(a==='boost'){boostUntil=Date.now()+30000;boostShow=0;$('#boost').classList.add('hide');hapOk();centerBurst('#ffd166');setMiko('happy',3000);toast('بوست فعال شد: ۳۰ ثانیه ماین دو برابر');renderHUD()}
- else if(a==='snd'){SND=!SND;storageSet('mr3:snd',SND?'1':'0');const sb=$('#sndBtn');sb.classList.toggle('off',!SND);sb.setAttribute('aria-pressed',SND);const u=sb.querySelector('use');if(u)u.setAttribute('href',SND?'#i-sound':'#i-mute');hap('light');if(SND)sfx('ok')}
+ else if(a==='snd'){SND=!SND;storageSet('mr3:snd',SND?'1':'0');syncSound();if(!SND&&window.speechSynthesis)try{speechSynthesis.cancel()}catch(e){};if(SND){hap('light');sfx('ok')}}
  else if(a==='top-retry'){const e2=$('#top');if(e2)e2.innerHTML='<small class="mut">در حال بارگذاری…</small>';loadTop()}
  else if(a==='ref-retry'){const e2=$('#ref');if(e2)e2.innerHTML='<small class="mut">در حال بارگذاری…</small>';loadRef()}
  else if(a==='evgo'){const ev=EVENTS.find(x=>x.id===id);if(!ev)return;ev.apply();$('#evbtn').classList.add('hide');evShow=0;hapOk();toast(ev.t+' فعال شد');say(ev.say,6000);checkChapter();renderHUD()}
@@ -2194,7 +2307,7 @@ function act(t,e){
 function afterAction(){checkChapter();renderHUD();if(sheet.tab)renderSheet();save()}
 
 document.addEventListener('pointerdown',e=>{const t=e.target.closest&&e.target.closest('[data-act="mine"]');if(t){e.preventDefault();mine(e)}});
-document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-act]');if(!t||t.dataset.act==='mine')return;act(t,e)});
+document.addEventListener('click',e=>{const ib=e.target.closest&&e.target.closest('[data-info]');if(ib){e.preventDefault();e.stopPropagation();showInfo(ib);return}const ip=$('#infoPop');if(ip&&!e.target.closest('#infoPop'))ip.classList.add('hide');const t=e.target.closest&&e.target.closest('[data-act]');if(!t||t.dataset.act==='mine')return;act(t,e)});
 
 /* ورود به Style Guide: سه‌ضربه‌ی سریع روی عدد موجودی (ابزار توسعه‌ی فاز ۱) */
 let sgN=0,sgLast=0;
@@ -2272,7 +2385,7 @@ function evTick(){
  const ev=EVENTS[Math.floor(Math.random()*EVENTS.length)];
  b.innerHTML=icon(ev.ico)+'<span>'+ev.t+'</span><small>'+ev.d+'</small>';
  b.dataset.act='evgo';b.dataset.id=ev.id;
- b.style.left=(12+Math.random()*46)+'%';b.style.top=(16+Math.random()*22)+'%';
+ b.style.left=(24+Math.random()*38)+'%';b.style.top=(25+Math.random()*18)+'%';
  b.classList.remove('hide');evShow=14;evIn=200+Math.random()*220;
  hapWarn();sfx('ping')}
 
@@ -2285,16 +2398,27 @@ function tick(){
  COINS.forEach(c=>{S.wallet[c.id]+=st.rate[c.id]*f});
  weeklyCheck();
  if(blackoutOn!==(Date.now()<blackoutUntil)){blackoutOn=Date.now()<blackoutUntil;try{$('#room').classList.toggle('blk',blackoutOn)}catch(e){}}
- mikoIdle();checkLight();evTick();if(Math.random()<.6)coinRain();
+ mikoIdle();checkLight();evTick();if(!REDUCE&&Math.random()<.10)coinRain();if(!REDUCE&&Math.random()<.025&&parts.length<30){const [x,y]=svgToScreen(3.1,2.2);parts.push({x,y,vx:(Math.random()-.5)*.2,vy:-.3,g:0,l:1,d:.018,r:5,c:coin(S.sel).col,type:S.sel==='STAR'?'star':S.sel==='TON'?'gem':'usd',rot:Math.random()*6.28,vr:.025})}
  if(boostShow>0){if(--boostShow<=0)$('#boost').classList.add('hide')}
- else if(!boosting()&&--boostIn<=0){boostIn=90+Math.random()*60;boostShow=12;const b=$('#boost');b.style.left=(8+Math.random()*58)+'%';b.style.top=(13+Math.random()*25)+'%';b.classList.remove('hide');sfx('ping')}
+ else if(!boosting()&&--boostIn<=0){boostIn=90+Math.random()*60;boostShow=12;const b=$('#boost');b.style.left=(27+Math.random()*34)+'%';b.style.top=(27+Math.random()*14)+'%';b.classList.remove('hide');sfx('ping')}
  checkChapter();renderHUD();drawChart();updateLive()}
 
+document.addEventListener('visibilitychange',syncMotion);
+try{if(window.Telegram&&Telegram.WebApp){Telegram.WebApp.onEvent('activated',()=>{document.documentElement.classList.remove('tg-inactive');syncMotion()});Telegram.WebApp.onEvent('deactivated',()=>{document.documentElement.classList.add('tg-inactive');syncMotion()})}}catch(e){}
+
+function updateDailyCountdown(){
+ const el=$('#dailyTimer');if(!el)return;
+ const now=Date.now(),next=Math.floor(now/86400000+1)*86400000,left=Math.max(0,next-now);
+ const h=Math.floor(left/3600000),m=Math.floor(left%3600000/60000),sec=Math.floor(left%60000/1000);
+ el.textContent=[h,m,sec].map(v=>String(v).padStart(2,'0')).join(':')+' UTC'
+}
+setInterval(updateDailyCountdown,1000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)updateDailyCountdown()});
 /* ---------------- Boot ---------------- */
 async function boot(){
  $('#introChibi').innerHTML=chibiSvg();$('#bp').innerHTML=chibiSvg();
  buildChips();buildRoom();renderRack();updateRoomItems();drawChart();renderHUD();renderTag();layoutVars();
- resizeFx();window.addEventListener('resize',resizeFx);requestAnimationFrame(fxLoop);
+ resizeFx();window.addEventListener('resize',resizeFx);if(!fxRaf)fxRaf=requestAnimationFrame(fxLoop);
  /* بازی را معطل timeout قیمت زنده نکن؛ قیمت در پس‌زمینه تازه می‌شود. */
  pullPrices();
  const off=await loadState();
