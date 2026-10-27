@@ -580,6 +580,73 @@ nav button.on .ic{color:var(--brand2)}
  #evbtn{width:66px;height:66px;min-width:66px}
 }
 
+
+/* ===== v3 polish: no emoji, tidy headers, chips, info badges ===== */
+.num{unicode-bidi:isolate}
+.tg .num,.chips .num,.chiprow .num,.slotpill .num,.pg{direction:ltr;unicode-bidi:isolate}
+.sh2{display:flex;align-items:center;gap:8px;margin:16px 2px 9px;min-width:0}
+.sh2:first-child{margin-top:4px}
+.sh2 .sh-title{flex:1;min-width:0;display:inline-flex;align-items:center;gap:7px}
+.sh2 .sh-title b{font-size:14px}
+.sh2 .info-badge,.tl .info-badge,.grp .info-badge{margin:0}
+.slotpill{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border-radius:99px;border:1px solid rgba(61,220,132,.32);background:rgba(61,220,132,.1);color:var(--green);font-size:12px;white-space:nowrap;flex:none}
+.slotpill .ic{width:14px;height:14px}
+.addshelf{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 11px 0 9px;border-radius:99px;border:1px solid rgba(255,194,71,.5);background:rgba(255,194,71,.1);color:#ffd166;font:700 12px/1 inherit;font-family:inherit;cursor:pointer;flex:none}
+.addshelf .ic{width:13px;height:13px}
+.addshelf:active{transform:scale(.95)}
+.tl{display:flex;align-items:center;gap:7px;min-width:0}
+.tl b{min-width:0;overflow-wrap:anywhere}
+.chips{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.tg.rw,.tg{display:inline-flex;align-items:center;gap:5px}
+.tg.rw .ic{width:13px;height:13px;color:var(--gold,#ffc247)}
+.row.wk{align-items:center}
+.row.wk.done{justify-content:flex-start}
+.row.wk .rb{display:grid;gap:7px;overflow:visible}
+.row.wk .bar{margin:0}
+.row.wk .pg{font-size:13px;color:var(--mut);white-space:nowrap}
+.chcard{align-items:flex-start}
+.chcard .cc{flex:1;min-width:0;display:grid;gap:9px}
+.chcard .bar{margin:0}
+.chcard .tl b{font-size:15px}
+.chcard .chips .rpl{margin-inline-start:auto;width:34px;height:34px;min-width:34px;padding:0;border-radius:50%;display:grid;place-items:center}
+.chcard .chips .rpl .ic{width:15px;height:15px}
+.chiprow{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 10px}
+.chiprow .tg{padding:5px 11px;gap:7px}
+.tg small{font-size:10.5px;opacity:.85}
+.tg b{font-size:11.5px;direction:ltr;unicode-bidi:isolate}
+.donegrid{display:flex;flex-wrap:wrap;gap:9px;margin:2px 0 14px}
+.donebd{position:relative;width:40px;height:40px;border-radius:13px;border:1px solid rgba(61,220,132,.34);background:rgba(61,220,132,.08);color:#8dffbc;display:grid;place-items:center;font-family:inherit;padding:0;cursor:pointer}
+.donebd b{font-size:13px}
+.donebd i{position:absolute;top:-5px;inset-inline-end:-5px;width:16px;height:16px;border-radius:50%;background:#1f9a5c;color:#fff;display:grid;place-items:center;box-shadow:0 0 0 2px #14112a}
+.donebd .ic{width:10px;height:10px}
+.shop .nm small{display:flex;align-items:center;gap:9px;margin-top:5px}
+.tier{display:inline-flex;gap:3px;align-items:center}
+.tier i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.16)}
+.tier i.on{background:#ffc247;box-shadow:0 0 6px rgba(255,194,71,.55)}
+.shop .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:11px}
+.shop .stats>.st{display:flex;align-items:center;gap:8px;min-width:0;padding:7px 9px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--line);text-align:start}
+.st>i{flex:none;width:28px;height:28px;border-radius:9px;display:grid;place-items:center}
+.st>i .ic{width:15px;height:15px}
+.st.p>i{color:#ffd166;background:rgba(255,209,102,.13)}
+.st.w>i{color:#ff8aa0;background:rgba(255,92,122,.13)}
+.st.e>i{color:#6ee7a0;background:rgba(74,222,128,.13)}
+.st.t>i{color:#7be7ff;background:rgba(123,231,255,.13)}
+.st>span{min-width:0;display:flex;flex-direction:column;gap:1px}
+.shop .stats .st b{font-size:11.5px;white-space:nowrap;overflow:visible;overflow-wrap:normal;word-break:normal;text-align:start}
+.shop .stats .st .num{direction:ltr;text-align:right}
+.shop .stats .st small{font-size:9.5px;color:var(--mut);margin:0;white-space:nowrap}
+.pf .pi>small.idl{display:flex;flex-wrap:wrap;gap:2px 10px;white-space:normal;overflow:visible;text-overflow:clip;unicode-bidi:isolate;direction:rtl;text-align:start;font-size:11px}
+.pf .pi>small.idl .num{direction:ltr;white-space:nowrap}
+.pf .bd{gap:6px;margin-top:7px}
+.pf .bd>span{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:99px;border:1px solid rgba(255,255,255,.08);font-size:11px;background:rgba(255,255,255,.06)}
+.pf .bd .ic{width:13px;height:13px}
+.pf .bd em{font-style:normal;color:var(--mut)}
+#hud .top>.box.g{flex:1 1 0}
+#hud .top>.box:not(.g){flex:1.15 1 0;min-width:0}
+#hud .top>.box b{text-overflow:clip}
+#wcall.scta{position:static;bottom:auto;margin-top:14px;padding:13px;background:linear-gradient(135deg,#ffd166,#ff4fa3)}
+#wcall.scta:disabled{background:#2b2550}
+.mcard .hint{margin:10px 0 0}
 </style>
 </head>
 <body>
@@ -637,6 +704,10 @@ nav button.on .ic{color:var(--brand2)}
  <symbol id="i-wd" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 13.8V3.6M8.2 7.4L12 3.6l3.8 3.8"/><path d="M4.6 15.8v1.8a3 3 0 003 3h8.8a3 3 0 003-3v-1.8"/></g></symbol>
  <symbol id="i-swap" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.8 3.8L3.4 7.2l3.4 3.4"/><path d="M3.4 7.2h13.8"/><path d="M17.2 13l3.4 3.4-3.4 3.4"/><path d="M20.6 16.4H6.8"/></g></symbol>
  <symbol id="i-game" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.8" y="7.6" width="18.4" height="9.6" rx="4.8"/><path d="M8 10.6v3.6M6.2 12.4h3.6"/><circle cx="15.3" cy="11.3" r=".6" fill="currentColor" stroke="none"/><circle cx="17.9" cy="13.6" r=".6" fill="currentColor" stroke="none"/></g></symbol>
+ <symbol id="i-plug" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v5M15 3v5M6.5 8h11v3a5.5 5.5 0 01-11 0z"/><path d="M12 16.5V21"/></g></symbol>
+ <symbol id="i-gauge" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.2 17a8.2 8.2 0 1115.6 0"/><path d="M12 16.2l3.6-5"/><circle cx="12" cy="16.4" r="1.1" fill="currentColor" stroke="none"/></g></symbol>
+ <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.4V12l3.2 2"/></g></symbol>
+ <symbol id="i-plus" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></g></symbol>
  <symbol id="i-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8.8" y="8.8" width="11.7" height="11.7" rx="2.6"/><path d="M5.6 15.2h-.9a2.2 2.2 0 01-2.2-2.2V4.7a2.2 2.2 0 012.2-2.2H13a2.2 2.2 0 012.2 2.2v.9"/></g></symbol>
  <symbol id="i-energy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.8" y="8.2" width="16" height="7.6" rx="2.4"/><path d="M21.2 10.8v2.4"/><path d="M11.6 9.4l-2.7 3.9h2.1l-.6 2.7 3-4.1h-2.2z" fill="currentColor" stroke-width="1"/></g></symbol>
  <symbol id="i-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5.4" y="10.4" width="13.2" height="9.8" rx="2.6"/><path d="M8.4 10.4V7.8a3.6 3.6 0 017.2 0v2.6"/><circle cx="12" cy="15.2" r="1.3" fill="currentColor" stroke="none"/></g></symbol>
@@ -1308,7 +1379,7 @@ function buildRoom(){
  o+=onB(0,`<rect x="6.42" y="4.42" width="1.3" height="1.76" rx=".05" fill="#171221" stroke="#5E4A33" stroke-width=".07"/><rect x="6.54" y="4.54" width="1.06" height="1.52" fill="#20293E"/><polygon points="${(()=>{const cx=7.07,cy=5.02,R=.2,r=.085,p=[];for(let i=0;i<10;i++){const a=Math.PI/2+i*Math.PI/5,rr=i%2?r:R;p.push((cx+Math.cos(a)*rr).toFixed(2)+','+(cy-Math.sin(a)*rr).toFixed(2))}return p.join(' ')})()}" fill="#FFC247"/><rect x="6.68" y="5.5" width=".2" height=".4" fill="#3AA8F0"/><rect x="6.95" y="5.36" width=".2" height=".54" fill="#3ED598"/><rect x="7.22" y="5.58" width=".2" height=".32" fill="#FF5C7A"/>`);
  const hex=(cx,cy,r,c)=>`<path d="M${cx+r} ${cy} L${cx+r/2} ${cy+r*.866} L${cx-r/2} ${cy+r*.866} L${cx-r} ${cy} L${cx-r/2} ${cy-r*.866} L${cx+r/2} ${cy-r*.866}Z" fill="${c}" stroke="#fff" stroke-width=".04" stroke-opacity=".7"/>`;
  o+=`<g id="it-hex" class="item gone">${glow(onB(0,hex(8.3,3.0,.28,'#ffe28a')+hex(8.3,3.49,.28,'#c4b5fd')+hex(8.72,3.25,.28,'#7be7ff')+hex(8.3,4.0,.28,'#7be7ff')+hex(8.72,3.75,.28,'#ffe28a')))}</g>`;
- o+=`<g id="it-ac" class="item gone">${box(.5,0,6.25,3.3,.75,.95,['#f5f2ff','#ddd7f7','#c6bfea'])}${onB(.75,`<rect x=".65" y="6.42" width="3" height=".12" rx=".05" fill="#b3abdc"/><rect x=".65" y="6.62" width="3" height=".06" fill="#c6bfea"/><circle cx="3.45" cy="6.93" r=".06" fill="#4ade80"/>`)}${[0,1,2,3].map(i=>onB(.75,`<line x1="${1+i*.8}" x2="${1.05+i*.8}" y1="6.1" y2="5.55" stroke="rgba(200,240,255,.7)" stroke-width=".05" stroke-linecap="round"><animate attributeName="opacity" values="0;.9;0" dur="2.2s" begin="${i*.5}s" repeatCount="indefinite"/></line>`)).join('')}</g>`;
+ o+=`<g id="it-ac" class="item gone">${box(0,.55,6.2,.8,2.85,.95,['#f5f2ff','#ddd7f7','#c6bfea'])}${onA(.8,`<rect x=".75" y="6.43" width="2.5" height=".12" rx=".05" fill="#b3abdc"/><rect x=".75" y="6.63" width="2.5" height=".06" fill="#c6bfea"/><circle cx="3.05" cy="6.95" r=".06" fill="#4ade80"/>`)}${[0,1,2,3].map(i=>onA(.8,`<line x1="${1+i*.6}" x2="${1.05+i*.6}" y1="6.1" y2="5.55" stroke="rgba(200,240,255,.7)" stroke-width=".05" stroke-linecap="round"><animate attributeName="opacity" values="0;.9;0" dur="2.2s" begin="${i*.5}s" repeatCount="indefinite"/></line>`)).join('')}</g>`;
  o+=glow(onB(0,`<g transform="translate(5.05 6.3) scale(1 -1)"><text x="0" y="0" font-size=".8" font-weight="900" textLength="3.9" lengthAdjust="spacingAndGlyphs" fill="#F5B356" class="flick">MINER ROOM</text></g><rect x="5.0" y="6.15" width="3.9" height=".04" fill="#E8913A" opacity=".8"/>`));
 
  /* ---- رک‌ها: پنل پشت، هاله‌ی گرما، قفسه‌ها، اقلام داینامیک، ستون‌ها ---- */
@@ -1455,7 +1526,13 @@ function renderHUD(){
  const nx=S.pc+1;
  $('#nb-up').classList.toggle('hide',!((nx<PC.length&&S.usd>=PCCOST[nx])||ROOM.some(r=>!S.room[r.id]&&S.usd>=r.price)));
  const en=energy();$('#enbar').style.width=(en/EMAX*100)+'%';$('#entxt').textContent=Math.floor(en);
- $('#energy').classList.toggle('empty',en<1)}
+ $('#energy').classList.toggle('empty',en<1);
+ fitHUD()}
+function fitTxt(el,min,imp){
+ if(!el)return;const key=el.textContent+'|'+el.clientWidth;if(el.dataset.fk===key)return;el.dataset.fk=key;
+ el.style.removeProperty('font-size');let fs=parseFloat(getComputedStyle(el).fontSize)||14,n=0;
+ while(el.scrollWidth>el.clientWidth+1&&fs>min&&n<16){fs-=.5;el.style.setProperty('font-size',fs+'px',imp?'important':'');n++}}
+function fitHUD(){try{fitTxt($('#inc'),8,true);fitTxt($('#bal'),11,false);COINS.forEach(c=>fitTxt($('#cw-'+c.id),8,false))}catch(e){}}
 
 function mine(e){
  const en=energy();
@@ -1621,7 +1698,7 @@ if(window.visualViewport)visualViewport.addEventListener('resize',()=>{
  $('#app').style.setProperty('--kb',Math.max(0,innerHeight-visualViewport.height-2)+'px');layoutVars()});
 const TITLES={market:'بازار زنده',miners:'فروشگاه ماینر',racks:'قفسه‌ها',up:'ارتقا و دکوراسیون',hub:'برترین‌ها',wallet:'کیف پول',admin:'پنل مدیریت',tasks:'ماموریت‌ها',slot:'ماینر روی قفسه',style:'راهنمای استایل',me:'پروفایل'};
 
-const frate=(id,n)=>id==='USD'?'$'+fmtNum(n)+'/s':fmtNum(n)+(id==='STAR'?' ★':' TON')+'/s';
+const frate=(id,n)=>id==='USD'?'$'+fmtNum(n)+'/s':fmtNum(n)+(id==='STAR'?' Stars':' TON')+'/s';
 function spark(h){
  const mn=Math.min(...h),mx=Math.max(...h),rg=(mx-mn),n=h.length-1||1;
  const pts=h.map((v,i)=>`${(i*100/n).toFixed(1)},${(rg<1e-9?15:28-(v-mn)/rg*26).toFixed(1)}`).join(' ');
@@ -1648,21 +1725,21 @@ function shopCard(m,full){
  const best=same.length?same.reduce((a,b)=>b.y>a.y?b:a):null;
  const net=Math.max(1e-9,m.y-m.pw),pb=m.price/net;
  const pbTxt=pb>=86400?(pb/86400).toFixed(1)+' روز':pb>=3600?(pb/3600).toFixed(1)+' ساعت':Math.round(pb/60)+' دقیقه';
- const cmp=best?`<span class="tier" title="${esc(best.name)}">${m.tier>=best.tier?'●':'○'} ${m.tier}/۳</span>`:`<span class="tier">${'●'.repeat(m.tier)}${'○'.repeat(3-m.tier)}</span>`;
+ const cmp=`<span class="tier" aria-label="سطح ${m.tier} از 3">${[1,2,3].map(k=>`<i class="${k<=m.tier?'on':''}"></i>`).join('')}</span>`;
  const afford=S.usd>=m.price,can=!full&&afford;
  return `<div class="shop">
   <div class="top"><div class="pv">${minerPreview(m)}</div>
-   <div class="nm"><b>${m.name}</b><small>${c.name} · ${cmp}</small></div>
+   <div class="nm"><b>${m.name}</b><small><span>${c.name}</span>${cmp}</small></div>
    <div class="buy"><button class="btn sm" data-act="buy" data-id="${m.id}" data-cost="${m.price}" ${can?'':'disabled'}>${fm(m.price)}</button><small>${full?'جای خالی نیست':afford?'آماده‌ی نصب':'کسری '+fm(m.price-S.usd)}</small></div></div>
   <div class="stats">
-   <div><small>⚡ تولید</small><b class="num">${fmtNum(m.y/c.ref)}/s</b></div>
-   <div><small>🔋 برق</small><b class="num">$${fmtNum(m.pw)}</b></div>
-   <div><small>♻ بازده</small><b class="num">×${(m.y/m.pw).toFixed(0)}</b></div>
-   <div><small>⏱ بازگشت</small><b>${pbTxt}</b></div></div>
+    <div class="st p"><i>${icon('up')}</i><span><b class="num">${fmtNum(m.y/c.ref)}/s</b><small>تولید</small></span></div>
+    <div class="st w"><i>${icon('plug')}</i><span><b class="num">$${fmtNum(m.pw)}</b><small>برق</small></span></div>
+    <div class="st e"><i>${icon('gauge')}</i><span><b class="num">×${(m.y/m.pw).toFixed(0)}</b><small>بازده</small></span></div>
+    <div class="st t"><i>${icon('clock')}</i><span><b>${pbTxt}</b><small>بازگشت سرمایه</small></span></div></div>
  </div>`}
 function sheetMiners(){
  const full=cnt()>=cap();
- let o=`<div class="sh"><span class="sh-title"><b>ماینرها</b>${info('سختی شبکه با تعداد ماینرها بیشتر می‌شود و سهم تولید هر دستگاه را کم می‌کند.')}</span><span class="tg">جایگاه ${cnt()}/${cap()}</span>${full?'<a data-act="tab" data-tab="racks">قفسه +</a>':''}</div>`;
+ let o=`<div class="sh2"><span class="sh-title"><b>ماینرها</b>${info('سختی شبکه با تعداد ماینرها بیشتر می‌شود و سهم تولید هر دستگاه را کم می‌کند.')}</span><span class="slotpill">${icon('racks','s')}<b class="num">${cnt()}/${cap()}</b></span>${full?`<button type="button" class="addshelf" data-act="tab" data-tab="racks" aria-label="قفسه جدید">${icon('plus','s')}<span>قفسه</span></button>`:''}</div>`;
  COINS.forEach(c=>{
   o+=`<div class="grp" style="--c:${c.col}">${coinIcon(c.id,24)}<b>ماینر ${c.name}</b></div>`;
   MINERS.filter(m=>m.coin===c.id).forEach(m=>{o+=shopCard(m,full)})});
@@ -1672,7 +1749,7 @@ function shelfIcon(own){
  const c=own?'#22e6ff':'#6b5fb5';
  return `<svg viewBox="0 0 56 44"><rect x="3" y="30" width="50" height="4" rx="2" fill="${c}"/>${own?`<rect x="8" y="14" width="17" height="16" rx="3" fill="#1f1b45" stroke="${c}"/><rect x="31" y="14" width="17" height="16" rx="3" fill="#1f1b45" stroke="${c}"/><circle cx="16.5" cy="22" r="4" fill="none" stroke="${c}"/><circle cx="39.5" cy="22" r="4" fill="none" stroke="${c}"/>`:`<rect x="8" y="14" width="40" height="16" rx="3" fill="none" stroke="${c}" stroke-dasharray="4 3"/><path d="M28 17v10M23 22h10" stroke="${c}" stroke-width="2" stroke-linecap="round"/>`}</svg>`}
 function sheetRacks(){
- let o=`<div class="sh"><span class="sh-title"><b>قفسه‌ها</b>${info("هر قفسه دو جایگاه دارد؛ قفسه‌ها را به ترتیب باز کن.")}</span><span class="tg num">${cnt()}/${cap()}</span></div>`;
+ let o=`<div class="sh2"><span class="sh-title"><b>قفسه‌ها</b>${info("هر قفسه دو جایگاه دارد؛ قفسه‌ها را به ترتیب باز کن.")}</span><span class="slotpill">${icon('miners','s')}<b class="num">${cnt()}/${cap()}</b></span></div>`;
  for(let k=0;k<SHELVES;k++){
   const own=k<S.shelves,nx=k===S.shelves,used=[S.slots[2*k],S.slots[2*k+1]].filter(Boolean).length;
   o+=`<div class="row ${own?'':'lockedrow'}"><div class="ico">${shelfIcon(own)}</div><div class="rb"><b>قفسه ${k+1}</b><small>${own?`فعال · ${used} از ۲ جایگاه پره`:nx?'آماده‌ی خرید':'اول قفسه‌ی قبلی رو بخر'}</small></div>${own?'<span class="tg">فعال</span>':`<button class="btn sm" data-act="buyshelf" data-k="${k}" data-cost="${SHELF_COST[k]}" ${nx&&S.usd>=SHELF_COST[k]?'':'disabled'}>${fm(SHELF_COST[k])}</button>`}</div>`}
@@ -1680,9 +1757,9 @@ function sheetRacks(){
 
 function sheetUp(){
  const n=S.pc+1;
- let o=n<PC.length?`<div class="row"><div class="ico">${icon('up','l')}</div><div class="rb"><b>کامپیوتر: سطح ${S.pc+1} از ${PC.length}</b><small>ضریب ضربه و تولید کامپیوتر: <span class="num">×${PC[S.pc]} ← ×${PC[n]}</span></small></div><button class="btn sm" data-act="pcup" data-cost="${PCCOST[n]}" ${S.usd<PCCOST[n]?'disabled':''}>${fm(PCCOST[n])}</button></div>`:`<div class="row done">${icon('check','s')} کامپیوتر در بالاترین سطحه</div>`;
+ let o=n<PC.length?`<div class="row"><div class="ico">${icon('up','l')}</div><div class="rb"><b>کامپیوتر: سطح ${S.pc+1} از ${PC.length}</b><small>ضریب ضربه و تولید <span class="num" dir="ltr">×${PC[S.pc]} → ×${PC[n]}</span></small></div><button class="btn sm" data-act="pcup" data-cost="${PCCOST[n]}" ${S.usd<PCCOST[n]?'disabled':''}>${fm(PCCOST[n])}</button></div>`:`<div class="row done">${icon('check','s')} کامپیوتر در بالاترین سطحه</div>`;
  o+=`<div class="grp"><b>اتاق و دکور</b>${info('دکورها مزیت دائمی می‌دهند و ظاهر اتاق را تغییر می‌دهند.')}</div>`;
- o+=ROOM.map(r=>{const owned=!!S.room[r.id];return `<div class="row ${owned?'done':''}"><div class="ico">${icon(r.ico,'l')}</div><div class="rb"><b>${r.name}</b><small>${owned?'نصب شده':r.price.toFixed(2)+' $'}</small></div>${owned?'<span class="tg">فعال</span>':`<button class="btn sm" data-act="room" data-id="${r.id}" data-cost="${r.price}" ${S.usd<r.price?'disabled':''}>${fm(r.price)}</button>`}</div>`}).join('');
+ o+=ROOM.map(r=>{const owned=!!S.room[r.id];return `<div class="row ${owned?'done':''}"><div class="ico">${icon(r.ico,'l')}</div><div class="rb"><div class="tl"><b>${r.name}</b>${info(r.desc)}</div></div>${owned?'<span class="tg">فعال</span>':`<button class="btn sm" data-act="room" data-id="${r.id}" data-cost="${r.price}" ${S.usd<r.price?'disabled':''}>${fm(r.price)}</button>`}</div>`}).join('');
  o+=`<div class="grp"><b>لباس میکو</b>${info('لباس‌ها فقط ظاهر میکو را تغییر می‌دهند.')}</div>`
   +OUTFITS.map(u=>{const owned=S.cos>>u.id&1,equipped=S.co===u.id;
    return `<div class="row ${owned?'':'lockedrow'}"><div class="ico mp">${chibiSvg(40,48,u)}</div><div class="rb"><b>${u.n}</b><small>${u.d}</small></div>${equipped?`<span class="tg">پوشیده</span>`:owned?`<button class="btn sm" data-act="wear" data-i="${u.id}">بپوش</button>`:`<button class="btn sm" data-act="outfit" data-i="${u.id}" data-cost="${u.price}" ${S.usd<u.price?'disabled':''}>${fm(u.price)}</button>`}</div>`}).join('');
@@ -1691,29 +1768,29 @@ function sheetUp(){
 /* ماموریت‌ها (فاز ۵): فصل داستانی + تقویم روزانه با استریک */
 function dailyCal(){
  const idx=dailyIdx(),ready=dailyReady();
- return `<div class="sh"><span class="sh-title"><b>هدیه‌ی روزانه</b>${info("هر روز یک جایزه بگیر؛ مقدار آن با استریک افزایش می‌یابد.")}</span><small>استریک <span class="num">${Math.min(S.st,7)}/۷</span> روز</small></div>
+ return `<div class="sh2"><span class="sh-title"><b>هدیه‌ی روزانه</b>${info("هر روز یک جایزه بگیر؛ مقدار آن با استریک افزایش می‌یابد. اگر یک روز را جا بیندازی، استریک از اول شروع می‌شود.")}</span><span class="slotpill">${icon('flame','s')}<b class="num">${Math.min(S.st,7)}/7</b></span></div>
  <div class="dcal">`+DAILY.map((v,i)=>{
   const claimed=ready?i<idx:i<S.st;
   const today=ready&&i===idx;
   return `<div class="${claimed?'got':''} ${today?'today':''}">
    <small>روز ${i+1}</small><b class="num">${fc(v).replace('$','$')}</b>
-   ${claimed?icon('check','s'):icon(today?'gift':'cal','s')}</div>`}).join('')+`</div>
- ${info("هر روز پیاپی که برگردی، جایزه بزرگ‌تر می‌شود؛ جا انداختن روز، استریک را از اول شروع می‌کند.")}`}
+   ${claimed?icon('check','s'):icon(today?'gift':'cal','s')}</div>`}).join('')+`</div>`}
 function weeklySec(){
- weeklyCheck();
- return `<div class="sh"><span class="sh-title"><b>ماموریت هفتگی</b>${info("ماموریت‌های هفتگی با انجام بازی تکمیل می‌شوند.")}</span><small>هفته‌ی ${S.wk}</small></div>`
-  +WEEKM.map((m,i)=>{const cur=m.cur()-(S.wp[m.k]||0),done=cur>=m.goal,cl=(S.wc>>i)&1;
-   return `<div class="row ${cl?'done':''}"><div class="ico">${icon(cl?'check':'cal')}</div><div class="rb"><b>${m.t}</b><small>${info(m.d)} · جایزه ${fc(m.rw)}</small><div class="bar"><i style="width:${Math.min(100,cur/m.goal*100)}%"></i></div></div>${cl?`<span class="tg">گرفته شد</span>`:done?`<button class="btn sm claim" data-act="wclaim" data-i="${i}">دریافت</button>`:`<b class="num mut">${m.goalTxt(Math.min(cur,m.goal))}/${m.goalTxt(m.goal)}</b>`}</div>`}).join('')}
+  weeklyCheck();
+  return `<div class="sh2"><span class="sh-title"><b>ماموریت هفتگی</b>${info("ماموریت‌های هفتگی با انجام بازی تکمیل می‌شوند و هر هفته ریست می‌شوند.")}</span><span class="slotpill"><b class="num" dir="ltr">${esc(String(S.wk))}</b></span></div>`
+   +WEEKM.map((m,i)=>{const cur=m.cur()-(S.wp[m.k]||0),done=cur>=m.goal,cl=(S.wc>>i)&1;
+    const side=cl?`<span class="tg">گرفته شد</span>`:done?`<button class="btn sm claim" data-act="wclaim" data-i="${i}">دریافت</button>`:`<b class="num pg">${m.goalTxt(Math.min(cur,m.goal))}/${m.goalTxt(m.goal)}</b>`;
+    return `<div class="row wk ${cl?'done':''}"><div class="ico">${icon(cl?'check':'cal')}</div><div class="rb"><div class="tl"><b>${m.t}</b>${info(m.d)}</div><div class="bar"><i style="width:${Math.min(100,cur/m.goal*100)}%"></i></div><div class="chips"><span class="tg rw">${icon('gift','s')}<span class="num">${fc(m.rw)}</span></span></div></div>${side}</div>`}).join('')}
 function sheetTasks(){
  const c=CH[S.ch];let o='';
  if(c){const [a,b]=c.prog();
-  o+=`<div class="chcard"><div class="pt">${chibiSvg(60,72)}</div><div style="flex:1"><b>ماموریت ${S.ch+1}: ${c.t}</b><button class="info-badge" type="button" data-info="${esc(c.say)}" aria-label="توضیح ماموریت">!</button><div class="goal">هدف: ${esc(c.goal)}</div><div class="bar"><i id="chbar" style="width:${S.rd?100:Math.min(100,a/b*100)}%"></i></div><div class="mission-meta"><span class="tg"><span class="num" id="chtxt">${cf(c,Math.min(a,b))}/${cf(c,b)}</span></span><span class="tg">🎁 <span class="num">${fc(c.reward)}</span></span></div>${c.scene?`<button class="btn ghost w2" data-act="replay" aria-label="بازپخش">${icon('sound','s')}</button>`:''}${S.rd?`<button class="btn wide claim" data-act="claimch">${icon('gift','s')}دریافت جایزه · <span class="num">${fc(c.reward)}</span></button>`:''}</div></div>`}
- else o+=`<div class="chcard"><div class="pt">${chibiSvg(60,72)}</div><div><b>پایان داستان!</b><button class="info-badge" data-info="ارزها را بفروش، دستگاه‌ها را ارتقا بده و ثروتت را بیشتر کن." aria-label="توضیح">!</button></div></div>`;
+  o+=`<div class="chcard"><div class="pt">${chibiSvg(60,72)}</div><div class="cc"><div class="tl"><b>ماموریت ${S.ch+1}: ${c.t}</b>${info(c.say+' هدف: '+c.goal)}</div><div class="bar"><i id="chbar" style="width:${S.rd?100:Math.min(100,a/b*100)}%"></i></div><div class="chips"><span class="tg"><span class="num" id="chtxt">${cf(c,Math.min(a,b))}/${cf(c,b)}</span></span><span class="tg rw">${icon('gift','s')}<span class="num">${fc(c.reward)}</span></span>${c.scene?`<button class="btn ghost w2 rpl" data-act="replay" aria-label="بازپخش">${icon('sound','s')}</button>`:''}</div>${S.rd?`<button class="btn wide claim" data-act="claimch">${icon('gift','s')}دریافت جایزه · <span class="num">${fc(c.reward)}</span></button>`:''}</div></div>`}
+ else o+=`<div class="chcard"><div class="pt">${chibiSvg(60,72)}</div><div class="cc"><div class="tl"><b>پایان داستان!</b>${info("ارزها را بفروش، دستگاه‌ها را ارتقا بده و ثروتت را بیشتر کن.")}</div></div></div>`;
  o+=weeklySec();
  o+=dailyCal();
  o+=dailyReady()?`<button class="btn wide claim" data-act="daily">${icon('gift','s')}دریافت هدیه‌ی روز ${dailyIdx()+1} · <span class="num">${fc(DAILY[dailyIdx()])}</span></button>`:`<div class="row done">${icon('check','s')} <span>پاداش امروز دریافت شد</span><span class="tg num" id="dailyTimer">--:--:--</span></div>`;
- o+=`<div class="sh"><span class="sh-title"><b>دعوت دوستان</b>${info("دوستان را با لینک اختصاصی دعوت کن تا پاداش‌ها فعال شوند.")}</span><small>جایزه‌ی دوطرفه</small></div><div id="ref"><small class="mut">در حال بارگذاری…</small></div>`;
- if(S.ch>0)o+=`<h3 class="sec">انجام‌شده</h3>`+CH.slice(0,S.ch).map((x,i)=>`<button class="ok done-chip" data-info="${esc(x.t)}"><span class="tg">${i+1}</span>${icon('check','s')}</button>`).join('');
+ o+=`<div class="sh2"><span class="sh-title"><b>دعوت دوستان</b>${info("دوستت را با لینک اختصاصی دعوت کن. وقتی به ماموریت ۳ برسد، هر دو جایزه می‌گیرید.")}</span></div><div id="ref"><small class="mut">در حال بارگذاری…</small></div>`;
+ if(S.ch>0)o+=`<div class="sh2"><span class="sh-title"><b>انجام‌شده</b></span><span class="slotpill"><b class="num">${S.ch}/${CH.length}</b></span></div><div class="donegrid">`+CH.slice(0,S.ch).map((x,i)=>`<button type="button" class="donebd" data-info="${esc(x.t)}" aria-label="${esc(x.t)}"><b class="num">${i+1}</b><i>${icon('check','s')}</i></button>`).join('')+`</div>`;
  return o}
 
 function sheetHub(){
@@ -1725,7 +1802,7 @@ async function loadRef(){
  if(!INIT){el.innerHTML='<small class="mut">دعوت دوستان فقط داخل تلگرام فعاله.</small>';return}
  try{const r=await api('/api/ref'),e2=$('#ref');if(!e2)return;REFLINK=r.link||'';
   if(!REFLINK){e2.innerHTML='<small class="mut">لینک دعوت هنوز آماده نیست.</small>';return}
-  e2.innerHTML=`<div class="chiprow"><span class="tg">تو: ${fc(r.bonus)}</span><span class="tg">دوست: ${fc(r.welcome)}</span><span class="tg">${r.next?'سطح ۲: '+fc(r.next.bonus):'دعوت سطح ۲'}</span></div>
+  e2.innerHTML=`<div class="chiprow"><span class="tg"><small>تو</small><b class="num">${fc(r.bonus)}</b></span><span class="tg"><small>دوست</small><b class="num">${fc(r.welcome)}</b></span><span class="tg"><small>سطح ۲</small>${r.next?`<b class="num">${fc(r.next.bonus)}</b>`:''}</span></div>
   <div class="row"><div class="rb"><b>زیرمجموعه‌ی فعال: <span class="num">${r.active}/${r.max}</span></b><small>دعوت‌شده: <span class="num">${r.invited}</span> · درآمد: <span class="num">${fc(r.earned)}</span></small></div></div>
   <div style="display:flex;gap:8px"><button class="btn wide" style="margin:0" data-act="invite">${icon('user','s')}دعوت دوستان</button><button class="btn ghost" data-act="copyref">${icon('copy','s')}کپی لینک</button></div>`}
  catch(e){const e2=$('#ref');if(e2)e2.innerHTML='<div class="werr">'+icon('alert')+'<b>در دسترس نیست</b><button class="btn sm" data-act="ref-retry">تلاش مجدد</button></div>'}}
@@ -1848,7 +1925,7 @@ const RANKS=[[0,'تازه‌کار'],[.5,'ماینر'],[3,'حرفه‌ای'],[15
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const wic=(a,s)=>coinIcon(a==='USDT'?'USD':a,s);
 const wnum=(a,v)=>a==='STAR'?Math.floor(v).toLocaleString('en-US'):(+v).toLocaleString('en-US',{maximumFractionDigits:a==='TON'?4:2});
-const fh=n=>'$'+(+n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:n<10?4:2});
+const fh=n=>{n=+n||0;return Math.abs(n)===0?'$0.00':(n<0?'−':'')+'$'+fmtNum(Math.abs(n))};
 const wusd=a=>W.d?W.d.usd[a]:(a==='STAR'?coin('STAR').ref:a==='USDT'?1:price('TON'));
 const WERR={balance:'موجودی کافی نیست',min:'کمتر از حداقله',address:'آدرس معتبر نیست',amount:'مقدار نامعتبره','too small':'مقدار خیلی کمه',disabled:'این بخش فعلاً غیرفعاله',invoice:'ساخت فاکتور ناموفق بود',net:'اتصال به سرور برقرار نشد',daily:'سقف انتقال روزانه پر شده',nostate:'اول چند لحظه بازی کن تا ذخیره بشه',price:'قیمت در دسترس نیست'};
 const wchips=(k,cur,list)=>`<div class="chs">${list.map(a=>`<button data-act="w-set" data-k="${k}" data-v="${a.id}" class="${cur===a.id?'on':''}" style="--c:${a.col}">${a.n}</button>`).join('')}</div>`;
@@ -1999,8 +2076,8 @@ function sheetWallet(){
  const nm=((TU.first_name||'')+' '+(TU.last_name||'')).trim()||'بازیکن',un=TU.username?'@'+TU.username:'';
  const ti=RANKS.filter(r=>worth()>=r[0]).pop()[1],d=W.d;
  const av=TU.photo_url?`<img src="${esc(TU.photo_url)}" alt="" referrerpolicy="no-referrer">`:`<span>${esc(nm.slice(0,2).toUpperCase())}</span>`;
- let o=`<div class="pf"><div class="av" data-act="tab" data-tab="me" role="button" aria-label="پروفایل من">${av}</div><div class="pi"><b>${esc(nm)}</b><small title="${esc((un?un+' · ':'')+'ID '+UID)}">${un?`<span class="num">${esc(un)}</span> · `:''}ID <span class="num">${esc(UID)}</span></small>
-  <div class="bd"><span>${icon('hub','s')} ${d&&d.rank?`<b class="num">#${d.rank}</b>`:'—'}</span><span>${ti}</span><span>${icon('miners','s')} <b class="num">${cnt()}</b> ماینر</span></div></div>${IS_ADMIN?`<button class="admgo" data-act="tab" data-tab="admin">${icon('shield','s')}مدیریت</button>`:''}</div>`;
+ let o=`<div class="pf"><div class="av" data-act="tab" data-tab="me" role="button" aria-label="پروفایل من">${av}</div><div class="pi"><b>${esc(nm)}</b><small class="idl">${un?`<span class="num">${esc(un)}</span>`:''}<span class="num">ID ${esc(UID)}</span></small>
+  <div class="bd"><span>${icon('hub','s')}${d&&d.rank?`<b class="num">#${d.rank}</b>`:'<b>—</b>'}</span><span>${ti}</span><span>${icon('miners','s')}<b class="num">${cnt()}</b><em>ماینر</em></span></div></div>${IS_ADMIN?`<button class="admgo" data-act="tab" data-tab="admin">${icon('shield','s')}مدیریت</button>`:''}</div>`;
  if(W.v==='home')return o+wHome();
  const T={dep:'واریز',wd:'برداشت',swap:'تبدیل ارز',gm:'شارژ بالانس بازی',coin:coin(W.coin).name}[W.v]||'';
  return o+`<div class="fh"><button data-act="w-back" aria-label="بازگشت">${icon('back')}</button><b>${T}</b></div>`+wSec()}
