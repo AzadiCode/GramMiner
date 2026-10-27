@@ -177,6 +177,35 @@ def display_name(u):
     return (name.strip() or u.get("username") or "ناشناس")[:24]
 
 
+def user_language(uid):
+    """Return a validated saved language; English is the universal default."""
+    try:
+        pref = db.user_prefs.find_one({"_id": int(uid)}, {"language": 1}) or {}
+        lang = pref.get("language", "en")
+        return lang if lang in ("en", "fa") else "en"
+    except Exception:
+        return "en"
+
+
+def language_was_chosen(uid):
+    try:
+        pref = db.user_prefs.find_one({"_id": int(uid)}, {"chosen": 1}) or {}
+        return bool(pref.get("chosen"))
+    except Exception:
+        return False
+
+
+def save_user_language(uid, lang, chosen=True):
+    if lang not in ("en", "fa"):
+        raise ValueError("language")
+    db.user_prefs.update_one(
+        {"_id": int(uid)},
+        {"$set": {"language": lang, "chosen": bool(chosen), "updated": now()}},
+        upsert=True,
+    )
+    return lang
+
+
 _cfg = {"t": 0.0, "v": dict(CFG_DEFAULTS)}
 
 
@@ -461,13 +490,18 @@ def activate_ref(uid):
     up = db.players.find_one({"_id": rid}, {"ref": 1})
     if up and up.get("ref"):
         db.players.update_one({"_id": up["ref"]}, {"$inc": {"bonus": REF2_BONUS, "ref_earned": REF2_BONUS}})
-        tg("sendMessage", chat_id=up["ref"],
-           text=f"زیرمجموعه‌ی زیرمجموعه‌ات فعال شد: +${REF2_BONUS:.2f} (سطح دوم دعوت)",
-           reply_markup=PLAY_KB)
-    tg("sendMessage", chat_id=rid, text=f"🎉 پاداش دعوت اضافه شد!\n{p.get('name', 'دوستت')} به ماموریت ۳ رسید.\nجایزه: ${bonus:.2f} · زیرمجموعه‌ی فعال: {active}",
-       reply_markup=PLAY_KB)
-    tg("sendMessage", chat_id=uid, text=f"🎁 هدیه‌ی خوش‌آمد اضافه شد: ${REF_WELCOME:.2f}\nدفعه‌ی بعد که بازی رو باز کنی تو موجودیت می‌بینی.",
-       reply_markup=PLAY_KB)
+        up_lang = user_language(up["ref"])
+        up_text = (f"🎉 Your second-level referral became active: +${REF2_BONUS:.2f}." if up_lang == "en"
+                   else f"زیرمجموعه‌ی زیرمجموعه‌ات فعال شد: +${REF2_BONUS:.2f} (سطح دوم دعوت)")
+        tg("sendMessage", chat_id=up["ref"], text=up_text, reply_markup=play_keyboard(up_lang))
+    rid_lang = user_language(rid)
+    uid_lang = user_language(uid)
+    rid_text = (f"🎉 Referral reward added! {p.get('name', 'A player')} reached Mission 3.\nReward: ${bonus:.2f} · Active referrals: {active}"
+                if rid_lang == "en" else f"🎉 پاداش دعوت اضافه شد!\n{p.get('name', 'دوستت')} به ماموریت ۳ رسید.\nجایزه: ${bonus:.2f} · زیرمجموعه‌ی فعال: {active}")
+    uid_text = (f"🎁 Welcome bonus added: ${REF_WELCOME:.2f}. Open the game to see your balance."
+                if uid_lang == "en" else f"🎁 هدیه‌ی خوش‌آمد اضافه شد: ${REF_WELCOME:.2f}\nدفعه‌ی بعد که بازی رو باز کنی تو موجودیت می‌بینی.")
+    tg("sendMessage", chat_id=rid, text=rid_text, reply_markup=play_keyboard(rid_lang))
+    tg("sendMessage", chat_id=uid, text=uid_text, reply_markup=play_keyboard(uid_lang))
 
 
 _BU_LOCK = threading.Lock()
@@ -510,6 +544,27 @@ def index():
 @app.get("/health")
 def health():
     return "ok"
+
+
+@app.route("/api/language", methods=["GET", "POST"])
+def api_language():
+    """Per-user language preference shared by the bot and Mini App."""
+    u = auth()
+    if not u:
+        return jsonify(error="unauthorized"), 401
+    if request.method == "GET":
+        pref = db.user_prefs.find_one({"_id": int(u["id"])}, {"language": 1, "chosen": 1}) or {}
+        language = pref.get("language", "en")
+        if language not in ("en", "fa"):
+            language = "en"
+        return jsonify(language=language, chosen=bool(pref.get("chosen")), configured=("language" in pref))
+    body = request.get_json(silent=True) or {}
+    lang = body.get("language")
+    if lang not in ("en", "fa"):
+        return jsonify(error="invalid language"), 400
+    # A Mini App change updates the shared preference but does not skip the bot's first-start language prompt.
+    save_user_language(u["id"], lang, chosen=language_was_chosen(u["id"]))
+    return jsonify(ok=True, language=lang, chosen=language_was_chosen(u["id"]), configured=True)
 
 
 @app.get("/api/prices")
@@ -1205,8 +1260,14 @@ def decide_wd(wid, approve):
         return None
     if not approve:
         credit(x["uid"], x["asset"], x["amount"])
-    tg("sendMessage", chat_id=x["uid"], text=(f"✅ برداشت {x['amount']} {x['asset']} پرداخت شد." if approve
-                                              else f"❌ برداشت رد شد و {x['amount']} {x['asset']} به کیف پولت برگشت."))
+    lang = user_language(x["uid"])
+    if lang == "en":
+        text = (f"✅ Withdrawal paid: {x['amount']} {x['asset']}." if approve
+                else f"❌ Withdrawal rejected. {x['amount']} {x['asset']} has been returned to your wallet.")
+    else:
+        text = (f"✅ برداشت {x['amount']} {x['asset']} پرداخت شد." if approve
+                else f"❌ برداشت رد شد و {x['amount']} {x['asset']} به کیف پولت برگشت.")
+    tg("sendMessage", chat_id=x["uid"], text=text, reply_markup=play_keyboard(lang))
     alog("withdraw_" + new, wid=wid, uid=x["uid"], asset=x["asset"], amount=x["amount"])
     return new
 
@@ -1267,46 +1328,127 @@ def stars_paid(msg):
         if not applied.modified_count:
             return
         if direct_game:
-            tg("sendMessage", chat_id=uid, text=f"✅ {n} ⭐ پرداخت شد و ${usd:.2f} به بالانس بازیت اضافه شد.\nبازی رو باز کن 🎮", reply_markup=PLAY_KB)
+            lang = user_language(uid)
+            text = (f"✅ {n} ⭐ paid. ${usd:.2f} was added to your game balance. Open the game 🎮" if lang == "en"
+                    else f"✅ {n} ⭐ پرداخت شد و ${usd:.2f} به بالانس بازیت اضافه شد.\nبازی رو باز کن 🎮")
+            tg("sendMessage", chat_id=uid, text=text, reply_markup=play_keyboard(lang))
         else:
-            tg("sendMessage", chat_id=uid, text=f"✅ {n} ⭐ به کیف پولت اضافه شد.", reply_markup=PLAY_KB)
+            lang = user_language(uid)
+            text = (f"✅ {n} ⭐ added to your wallet." if lang == "en" else f"✅ {n} ⭐ به کیف پولت اضافه شد.")
+            tg("sendMessage", chat_id=uid, text=text, reply_markup=play_keyboard(lang))
     except Exception:
         log.exception("stars_paid failed")
 
 
 # ───────────────────────── ربات ─────────────────────────
-PLAY_KB = {"inline_keyboard": [[{"text": "⛏️ ورود به اتاق ماینر", "web_app": {"url": BASE_URL}}]]}
+def play_keyboard(lang="en"):
+    label = "⛏️ Open Miner Room" if lang == "en" else "⛏️ ورود به اتاق ماینر"
+    return {"inline_keyboard": [[{"text": label, "web_app": {"url": BASE_URL}}]]}
 
 
-def top_text():
+PLAY_KB = play_keyboard("en")
+
+
+def top_text(lang="en"):
     rows = list(db.players.find({"state": {"$ne": None}}).sort("worth", -1).limit(10))
     if not rows:
-        return "هنوز کسی تو رده‌بندی نیست. اولین نفر باش! ⛏️"
+        return "No leaderboard entries yet. Be the first miner! ⛏️" if lang == "en" else "هنوز کسی تو رده‌بندی نیست. اولین نفر باش! ⛏️"
     medals = ["🥇", "🥈", "🥉"]
-    lines = [f"{medals[i] if i < 3 else str(i + 1) + '.'} {r.get('name', 'ناشناس')} — ${fnum(r.get('worth', 0), 6)}"
+    lines = [f"{medals[i] if i < 3 else str(i + 1) + '.'} {r.get('name', 'Miner')} — ${fnum(r.get('worth', 0), 6)}"
              for i, r in enumerate(rows)]
-    return "🏆 برترین ماینرها\n\n" + "\n".join(lines)
+    return ("🏆 Top Miners\n\n" if lang == "en" else "🏆 برترین ماینرها\n\n") + "\n".join(lines)
 
 
-def wallet_text(uid):
-    p = db.players.find_one({"_id": uid})
-    if not p or not p.get("state"):
-        return "هنوز اتاقی نساختی. اول وارد بازی شو! ⛏️"
-    s = p["state"]
-    w = s["wallet"]
-    n = sum(1 for m in s["slots"] if m)
+def wallet_text(uid, lang="en"):
+    player = db.players.find_one({"_id": uid})
+    if not player or not player.get("state"):
+        return "You haven't built a room yet. Open the game first! ⛏️" if lang == "en" else "هنوز اتاقی نساختی. اول وارد بازی شو! ⛏️"
+    st = player["state"]
+    w = st["wallet"]
+    n = sum(1 for m in st["slots"] if m)
+    if lang == "en":
+        return ("👛 Your Wallet\n\n"
+                f"⭐ Stars: {fnum(w['STAR'], 6)}\n"
+                f"💎 TON: {fnum(w['TON'], 8)}\n"
+                f"💵 USD: ${fnum(w['USD'], 8)}\n\n"
+                f"💰 Game balance: ${fnum(st['usd'], 8)}\n"
+                f"⚙️ Active miners: {n} · Shelves: {st['shelves']}")
     return ("👛 کیف پول تو\n\n"
             f"⭐ Stars: {fnum(w['STAR'], 6)}\n"
             f"💎 TON: {fnum(w['TON'], 8)}\n"
             f"💵 USD: ${fnum(w['USD'], 8)}\n\n"
-            f"💰 موجودی بازی: ${fnum(s['usd'], 8)}\n"
-            f"⚙️ ماینر فعال: {n} · قفسه: {s['shelves']}")
+            f"💰 موجودی بازی: ${fnum(st['usd'], 8)}\n"
+            f"⚙️ ماینر فعال: {n} · قفسه: {st['shelves']}")
 
 
-WELCOME = ("⛏️ به اتاق ماینر میکو خوش اومدی!\n\n"
-           "استارز، تون و دلار رو با ماینرهات استخراج کن. ارقام ریزه، شبکه سخته و صبر پاداش داره.\n"
-           "هر روز سر بزن و پاداش روزانه‌ت رو بگیر 🎁")
-HELP = ("/start — ورود به بازی\n/invite — لینک دعوت دوستان\n/wallet — موجودی کیف پول\n/top — رده‌بندی ثروت\n/help — راهنما")
+WELCOME_EN = ("⛏️ Welcome to Miko's Miner Room!\n\n"
+              "Mine Stars, TON, and USD with your rigs. Upgrade your room, complete missions, and claim daily rewards.\n"
+              "Your mining progress is saved automatically. Ready to play? 🎮")
+WELCOME_FA = ("⛏️ به اتاق ماینر میکو خوش اومدی!\n\n"
+              "استارز، تون و دلار رو با ماینرهات استخراج کن. ارقام ریزه، شبکه سخته و صبر پاداش داره.\n"
+              "هر روز سر بزن و پاداش روزانه‌ت رو بگیر 🎁")
+HELP_EN = ("/start — Open the game\n/language — Change language\n/invite — Invite friends\n"
+           "/wallet — Wallet balances\n/top — Miner leaderboard\n/help — Help")
+HELP_FA = ("/start — ورود به بازی\n/language — تغییر زبان\n/invite — لینک دعوت دوستان\n"
+           "/wallet — موجودی کیف پول\n/top — رده‌بندی ثروت\n/help — راهنما")
+
+
+def language_keyboard():
+    return {"inline_keyboard": [[
+        {"text": "🇬🇧 English", "callback_data": "lang:en"},
+        {"text": "🇮🇷 فارسی", "callback_data": "lang:fa"},
+    ]]}
+
+
+def language_prompt_text():
+    return ("🌐 Welcome! Please choose your language.\n\nزبان خود را انتخاب کنید:")
+
+
+def send_welcome(chat_id, uid, lang=None):
+    chosen_lang = lang or user_language(uid)
+    text = WELCOME_EN if chosen_lang == "en" else WELCOME_FA
+    tg("sendMessage", chat_id=chat_id, text=text, reply_markup=play_keyboard(chosen_lang))
+
+
+def notify_start_referral(uid, chat_id, lang):
+    player = db.players.find_one({"_id": int(uid)}, {"ref": 1, "name": 1}) or {}
+    ref = player.get("ref")
+    if not ref:
+        return
+    pref = db.user_prefs.find_one({"_id": int(uid)}, {"ref_start_notified": 1}) or {}
+    if pref.get("ref_start_notified"):
+        return
+    db.user_prefs.update_one({"_id": int(uid)}, {"$set": {"ref_start_notified": True}}, upsert=True)
+    if lang == "en":
+        invited_text = f"🎁 You joined through a friend's invite! Complete Mission 3 to earn ${REF_WELCOME:.2f}."
+    else:
+        invited_text = f"🎁 با دعوت دوستت اومدی! بعد از رسیدن به ماموریت ۳ بازی، ${REF_WELCOME:.2f} هدیه می‌گیری."
+    inviter_lang = user_language(ref)
+    if inviter_lang == "en":
+        inviter_text = f"👋 {player.get('name', 'A new miner')} joined through your invite! They can earn ${REF_WELCOME:.2f} after reaching Mission 3; your referral reward is ${REF_BONUS:.2f}."
+    else:
+        inviter_text = f"👋 {player.get('name', 'دوستت')} با لینک دعوت تو وارد شد!\nوقتی به ماموریت ۳ برسه، ${REF_BONUS:.2f} پاداش می‌گیری."
+    tg("sendMessage", chat_id=chat_id, text=invited_text, reply_markup=play_keyboard(lang))
+    tg("sendMessage", chat_id=ref, text=inviter_text, reply_markup=play_keyboard(inviter_lang))
+
+
+def handle_language_callback(cb):
+    data = (cb.get("data") or "").strip()
+    lang = data.split(":", 1)[1] if data.startswith("lang:") else ""
+    uid = (cb.get("from") or {}).get("id")
+    if lang not in ("en", "fa") or not isinstance(uid, int):
+        tg("answerCallbackQuery", callback_query_id=cb.get("id", ""), text="Invalid language selection")
+        return
+    save_user_language(uid, lang, chosen=True)
+    tg("answerCallbackQuery", callback_query_id=cb.get("id", ""), text="Language saved" if lang == "en" else "زبان ذخیره شد")
+    msg = cb.get("message") or {}
+    chat_id = (msg.get("chat") or {}).get("id", uid)
+    message_id = msg.get("message_id")
+    confirm = "✅ Language set to English." if lang == "en" else "✅ زبان فارسی انتخاب شد."
+    if message_id:
+        tg("editMessageText", chat_id=chat_id, message_id=message_id, text=confirm)
+    send_welcome(chat_id, uid, lang)
+    notify_start_referral(uid, chat_id, lang)
 
 
 @app.post("/bot")
@@ -1316,7 +1458,11 @@ def bot_hook():
     upd = request.get_json(silent=True) or {}
     try:
         if upd.get("callback_query"):
-            wd_decide(upd["callback_query"])
+            cb = upd["callback_query"]
+            if (cb.get("data") or "").startswith("lang:"):
+                handle_language_callback(cb)
+            else:
+                wd_decide(cb)
             return "ok"
         if upd.get("pre_checkout_query"):
             q = upd["pre_checkout_query"]
@@ -1327,7 +1473,7 @@ def bot_hook():
             ok = q.get("currency") == "XTR" and owner_ok
             answer = {"pre_checkout_query_id": q["id"], "ok": ok}
             if not ok:
-                answer["error_message"] = "این فاکتور متعلق به حساب شما نیست یا معتبر نیست."
+                answer["error_message"] = "This invoice does not belong to your account or is invalid."
             tg("answerPreCheckoutQuery", **answer)
             return "ok"
         msg = upd.get("message")
@@ -1339,36 +1485,53 @@ def bot_hook():
         chat_id = msg["chat"]["id"]
         parts = (msg.get("text") or "").strip().split()
         cmd = parts[0][1:].split("@")[0].lower() if parts and parts[0].startswith("/") else ""
+        u = msg.get("from") or {}
+        uid = int(u.get("id") or chat_id)
+        lang = user_language(uid)
+
         if cmd == "start":
-            u = msg["from"]
-            _, ref = register_ref(u["id"], display_name(u), parts[1] if len(parts) > 1 else "")
-            if ref:
-                tg("sendMessage", chat_id=chat_id,
-                   text=f"🎁 با دعوت دوستت اومدی! بعد از رسیدن به ماموریت ۳ بازی، ${REF_WELCOME:.2f} هدیه می‌گیری.")
-                tg("sendMessage", chat_id=ref,
-                   text=f"👋 {display_name(u)} با لینک دعوت تو وارد شد!\nوقتی به ماموریت ۳ برسه، ${REF_BONUS:.2f} پاداش می‌گیری.",
-                   reply_markup=PLAY_KB)
+            register_ref(uid, display_name(u), parts[1] if len(parts) > 1 else "")
+            if not language_was_chosen(uid):
+                tg("sendMessage", chat_id=chat_id, text=language_prompt_text(), reply_markup=language_keyboard())
+                return "ok"
+            send_welcome(chat_id, uid, lang)
+            notify_start_referral(uid, chat_id, lang)
+            return "ok"
+        if cmd == "language":
+            current = "English" if lang == "en" else "فارسی"
+            prompt = f"Current language: {current}. Choose a language:" if lang == "en" else f"زبان فعلی: {current}\nزبان جدید را انتخاب کن:"
+            tg("sendMessage", chat_id=chat_id, text=prompt, reply_markup=language_keyboard())
+            return "ok"
+        if not language_was_chosen(uid) and cmd not in ("addbal",):
+            tg("sendMessage", chat_id=chat_id, text=language_prompt_text(), reply_markup=language_keyboard())
+            return "ok"
+
+        lang = user_language(uid)
         if cmd == "top":
-            tg("sendMessage", chat_id=chat_id, text=top_text(), reply_markup=PLAY_KB)
+            tg("sendMessage", chat_id=chat_id, text=top_text(lang), reply_markup=play_keyboard(lang))
         elif cmd == "invite":
-            link = ref_link(msg["from"]["id"])
-            tg("sendMessage", chat_id=chat_id,
-               text=("🔗 لینک دعوت تو:\n" + link) if link else "لینک دعوت هنوز آماده نیست.")
-        elif cmd == "addbal" and ADMIN_ID and msg["from"]["id"] == ADMIN_ID:      # فقط ادمین، برای تست: /addbal TON 10
+            link = ref_link(uid)
+            if lang == "en":
+                text = ("🔗 Your invite link:\n" + link) if link else "Your invite link is not ready yet. Please try again shortly."
+            else:
+                text = ("🔗 لینک دعوت تو:\n" + link) if link else "لینک دعوت هنوز آماده نیست. کمی بعد دوباره تلاش کن."
+            tg("sendMessage", chat_id=chat_id, text=text, reply_markup=play_keyboard(lang))
+        elif cmd == "addbal" and ADMIN_ID and uid == ADMIN_ID:
             try:
                 a, v = parts[1].upper(), float(parts[2])
                 a = "STAR" if a in ("STAR", "STARS") else a
                 assert a in ASSETS and 0 < v < 1e6
                 credit(ADMIN_ID, a, floor_to(a, v))
-                tg("sendMessage", chat_id=chat_id, text=f"✅ {floor_to(a, v)} {a} به کیف پولت اضافه شد.", reply_markup=PLAY_KB)
+                text = f"✅ {floor_to(a, v)} {a} credited to your wallet." if lang == "en" else f"✅ {floor_to(a, v)} {a} به کیف پولت اضافه شد."
+                tg("sendMessage", chat_id=chat_id, text=text, reply_markup=play_keyboard(lang))
             except Exception:
-                tg("sendMessage", chat_id=chat_id, text="فرمت: /addbal TON 10  (TON | STAR | USDT)")
+                tg("sendMessage", chat_id=chat_id, text="Usage: /addbal TON 10 (TON | STAR | USDT)" if lang == "en" else "فرمت: /addbal TON 10  (TON | STAR | USDT)")
         elif cmd == "wallet":
-            tg("sendMessage", chat_id=chat_id, text=wallet_text(msg["from"]["id"]), reply_markup=PLAY_KB)
+            tg("sendMessage", chat_id=chat_id, text=wallet_text(uid, lang), reply_markup=play_keyboard(lang))
         elif cmd == "help":
-            tg("sendMessage", chat_id=chat_id, text=HELP, reply_markup=PLAY_KB)
+            tg("sendMessage", chat_id=chat_id, text=HELP_EN if lang == "en" else HELP_FA, reply_markup=play_keyboard(lang))
         else:
-            tg("sendMessage", chat_id=chat_id, text=WELCOME, reply_markup=PLAY_KB)
+            send_welcome(chat_id, uid, lang)
     except Exception:
         log.exception("bot_hook error")
     return "ok"
@@ -1379,12 +1542,20 @@ def setup_bot():
     r = tg("setWebhook", url=f"{BASE_URL}/bot", secret_token=BOT_SECRET,
            allowed_updates=["message", "callback_query", "pre_checkout_query"], drop_pending_updates=False)
     tg("setMyCommands", commands=[
+        {"command": "start", "description": "Open the game"},
+        {"command": "invite", "description": "Invite friends"},
+        {"command": "wallet", "description": "Wallet balances"},
+        {"command": "top", "description": "Miner leaderboard"},
+        {"command": "help", "description": "Help"},
+        {"command": "language", "description": "Change language"}])
+    tg("setMyCommands", language_code="fa", commands=[
         {"command": "start", "description": "ورود به بازی"},
         {"command": "invite", "description": "دعوت دوستان"},
-        {"command": "wallet", "description": "کیف پول"},
-        {"command": "top", "description": "رده‌بندی"},
-        {"command": "help", "description": "راهنما"}])
-    tg("setChatMenuButton", menu_button={"type": "web_app", "text": "بازی", "web_app": {"url": BASE_URL}})
+        {"command": "wallet", "description": "موجودی کیف پول"},
+        {"command": "top", "description": "رده‌بندی ماینرها"},
+        {"command": "help", "description": "راهنما"},
+        {"command": "language", "description": "تغییر زبان"}])
+    tg("setChatMenuButton", menu_button={"type": "web_app", "text": "Play", "web_app": {"url": BASE_URL}})
     log.info("webhook: %s", r)
 
 
