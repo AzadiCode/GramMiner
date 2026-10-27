@@ -647,6 +647,35 @@ nav button.on .ic{color:var(--brand2)}
 #wcall.scta{position:static;bottom:auto;margin-top:14px;padding:13px;background:linear-gradient(135deg,#ffd166,#ff4fa3)}
 #wcall.scta:disabled{background:#2b2550}
 .mcard .hint{margin:10px 0 0}
+
+/* ═══════ HUD v4 — یکپارچه، جمع‌وجور، حس بازی ═══════ */
+#hud{gap:6px;padding:max(8px,env(safe-area-inset-top)) 10px 8px;background:linear-gradient(180deg,rgba(11,10,20,.55),rgba(11,10,20,0))}
+#hud .hbar{display:flex;align-items:center;gap:6px;min-height:34px}
+#hud .hbtns{display:flex;align-items:center;gap:6px}
+#hud #energy{position:static;top:auto;right:auto;flex:0 1 150px;min-width:0;height:32px;padding:0 10px 0 11px;gap:7px;border-radius:12px;border:1px solid rgba(245,179,86,.3);background:linear-gradient(135deg,rgba(245,179,86,.12),rgba(19,16,34,.7));box-shadow:inset 0 1px rgba(255,255,255,.05)}
+#hud #energy i{flex:1;width:auto;min-width:40px;height:6px}
+#hud #energy .num{font-size:11.5px;font-weight:800;min-width:2.1ch;text-align:end}
+#hud #tags{margin-inline-start:auto;gap:5px}
+#hud #taskBtn,#hud #sndBtn{position:relative;top:auto;left:auto;inset-inline-start:auto;width:34px;height:34px;border-radius:12px;border:1px solid var(--line2);background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(19,16,34,.7))}
+#hud #taskBtn .ic{width:18px;height:18px}
+#hud #sndBtn .ic{width:17px;height:17px}
+#hud #taskBtn .dot{top:-3px;right:-3px}
+#hud .top.wallet{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:0;align-items:stretch;border-radius:18px;border:1px solid rgba(245,179,86,.3);background:radial-gradient(120% 140% at 100% 0%,rgba(245,179,86,.16),rgba(124,92,255,.07) 55%,rgba(19,16,34,.72));box-shadow:inset 0 1px rgba(255,255,255,.07),0 8px 22px rgba(0,0,0,.28);overflow:hidden}
+#hud .top.wallet>.box{min-width:0;min-height:54px;padding:8px 13px 7px;border:0;border-radius:0;background:none;box-shadow:none;display:flex;flex-direction:column;justify-content:center;flex:none}
+#hud .top.wallet>.box+.box{border-inline-start:1px solid rgba(244,239,230,.1);background:rgba(0,0,0,.14)}
+#hud .top.wallet small{font-size:10px;color:var(--mut);margin:0 0 1px;letter-spacing:0}
+#hud .top.wallet>.box b{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:clip;line-height:1.2}
+#hud #bal{font-size:clamp(20px,6.6vw,28px);font-weight:900;letter-spacing:-.3px;background:linear-gradient(180deg,#FFF1BF 10%,#FFC247 60%,#E8913A);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;text-shadow:none;filter:drop-shadow(0 0 12px rgba(255,194,71,.28))}
+#hud #bal.bump{-webkit-text-fill-color:#7dffb0;filter:drop-shadow(0 0 14px rgba(77,255,176,.7))}
+#hud #inc{font-size:clamp(11px,3.5vw,14px)!important;font-weight:800!important}
+#hud .chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;padding:0;flex-wrap:nowrap;border-radius:16px;border:1px solid rgba(196,181,253,.18);background:linear-gradient(145deg,rgba(255,255,255,.05),rgba(19,16,34,.65));box-shadow:inset 0 1px rgba(255,255,255,.04);overflow:hidden}
+#hud .chip{position:relative;min-height:44px;padding:5px 9px;gap:7px;border:0;border-radius:0;background:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;transition:background var(--t-fast)}
+#hud .chip+.chip{border-inline-start:1px solid rgba(244,239,230,.08)}
+#hud .chip.sel{background:linear-gradient(180deg,transparent 30%,var(--cg));box-shadow:inset 0 -2px 0 var(--c)}
+#hud .chip .ci{flex:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))}
+#hud .chip b{font-size:12px;font-weight:800;text-align:start}
+#hud .chip small{font-size:9.5px;margin-top:1px}
+@media(max-width:380px){#hud{padding-inline:8px}#hud .chip{padding:5px 6px;gap:5px}#hud #energy{flex-basis:128px}#hud .top.wallet>.box{padding:7px 10px 6px}}
 </style>
 </head>
 <body>
@@ -732,10 +761,17 @@ nav button.on .ic{color:var(--brand2)}
 </svg>
 <div id="app">
   <header id="hud">
-    <div class="top">
+    <div class="hbar">
+      <div id="energy" aria-hidden="true"><svg class="ic" aria-hidden="true"><use href="#i-energy"/></svg><i><b id="enbar"></b></i><span class="num" id="entxt">100</span></div>
+      <div id="tags"><button id="admBtn" class="admb hide" data-act="tab" data-tab="admin" aria-label="پنل مدیریت"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></button><span id="boostTag" class="tag bst hide"><svg class="ic" aria-hidden="true"><use href="#i-up"/></svg>×۲</span><span id="liveTag" class="tag"></span></div>
+      <div class="hbtns">
+        <button id="sndBtn" data-act="snd" aria-label="صدا" aria-pressed="true"><svg class="ic" aria-hidden="true"><use href="#i-sound"/></svg></button>
+        <button id="taskBtn" data-act="tab" data-tab="tasks" aria-label="ماموریت‌ها"><svg class="ic" aria-hidden="true"><use href="#i-tasks"/></svg><i class="dot hide" id="taskDot"></i></button>
+      </div>
+    </div>
+    <div class="top wallet">
       <div class="box g"><small>موجودی بازی</small><b id="bal" class="num">$0</b></div>
       <div class="box"><small>سود خالص</small><b id="inc" class="num">0</b></div>
-      <div id="tags"><button id="admBtn" class="admb hide" data-act="tab" data-tab="admin" aria-label="پنل مدیریت"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></button><span id="boostTag" class="tag bst hide"><svg class="ic" aria-hidden="true"><use href="#i-up"/></svg>×۲</span><span id="liveTag" class="tag"></span></div>
     </div>
     <div class="chips" id="chips"></div>
   </header>
@@ -744,9 +780,6 @@ nav button.on .ic{color:var(--brand2)}
     <svg id="room" viewBox="35 6 380 390" preserveAspectRatio="xMidYMid meet" aria-label="اتاق ماینر"></svg>
     <canvas id="fx"></canvas>
     <div id="fl"></div>
-    <button id="taskBtn" data-act="tab" data-tab="tasks" aria-label="ماموریت‌ها"><svg class="ic" aria-hidden="true"><use href="#i-tasks"/></svg><i class="dot hide" id="taskDot"></i></button>
-    <button id="sndBtn" data-act="snd" aria-label="صدا" aria-pressed="true"><svg class="ic" aria-hidden="true"><use href="#i-sound"/></svg></button>
-    <div id="energy" aria-hidden="true"><svg class="ic" aria-hidden="true"><use href="#i-energy"/></svg><i><b id="enbar"></b></i><span class="num" id="entxt">100</span></div>
     <div id="toast" role="status"></div>
     <button id="boost" class="hide" data-act="boost"><svg class="ic" aria-hidden="true"><use href="#i-up"/></svg>بوست ×۲</button>
     <div id="bubble" class="hide"><div class="bp" id="bp"></div><div class="bt" id="bt"></div></div>
@@ -865,7 +898,11 @@ const cnt=()=>S.slots.filter(Boolean).length;
 const hasT3=()=>S.slots.some(id=>id&&mById(id)&&mById(id).tier===3);
 
 /* ---------------- Prices ---------------- */
-const PR={};COINS.forEach(c=>PR[c.id]={usd:c.ref,hist:Array(40).fill(c.ref)});
+/* base = قیمت واقعی/مرجع · w = نوسان کوچک نمایشی (Stars و TON) · USD همیشه ثابت */
+const WOB={STAR:{amp:.012,k:.10,vol:.0042},TON:{amp:.016,k:.09,vol:.0052}},HMAX=80;
+const PR={};COINS.forEach(c=>{const m=WOB[c.id];let w=0;const h=[];
+ for(let i=0;i<50;i++){if(m){w+=-m.k*w+(Math.random()-.5)*2*m.vol;w=Math.max(-m.amp,Math.min(m.amp,w))}h.push(c.ref*(1+w))}
+ PR[c.id]={base:c.ref,w:w,usd:h[h.length-1],hist:h}});
 let LIVE=false,SERVER=false;
 const price=id=>PR[id].usd;
 function trend(id){const h=PR[id].hist;return h.length>1?(h[h.length-1]/h[0]-1)*100:0}
@@ -877,7 +914,8 @@ async function api(path,opt){
 
 async function pullPrices(){
  try{const r=await api('/api/prices');
-  COINS.forEach(c=>{const d=r.coins&&r.coins[c.id];if(d&&Number.isFinite(+d.usd)&&+d.usd>0){PR[c.id].usd=+d.usd;if(Array.isArray(d.hist)&&d.hist.length>1)PR[c.id].hist=d.hist.map(Number).filter(v=>Number.isFinite(v)&&v>0).slice(-60)}});
+  /* قیمت سرور فقط «پایه» رو عوض می‌کنه؛ نوسان ریز نمایشی روش سوار می‌شه تا نمودارها زنده بمونن */
+  COINS.forEach(c=>{const d=r.coins&&r.coins[c.id];if(d&&Number.isFinite(+d.usd)&&+d.usd>0){const p=PR[c.id];p.base=+d.usd;p.usd=p.base*(1+p.w)}});
   /* قیمت Stars و USD ثابت‌اند؛ نشان «زنده» فقط وقتی TON واقعاً از سرور آمده روشن باشد. */
   LIVE=!!(r.coins&&r.coins.TON&&Number.isFinite(+r.coins.TON.usd)&&+r.coins.TON.usd>0)
  }catch(e){LIVE=false}
@@ -886,8 +924,11 @@ async function pullPrices(){
  if(tt<-2.5&&Date.now()-lastScare>3e5){lastScare=Date.now();setMiko('scared',3200);say('وای، تون ریخت! بفروشیم یا صبر کنیم؟!',5200)}
  renderTag()}
 
-function simulate(){ /* فقط وقتی قیمت TON از سرور در دسترس نیست */
- COINS.forEach(c=>{let p=PR[c.id].usd;if(c.id==='TON')p=Math.max(.0001,p*(1+(Math.random()-.5)*.012+(c.ref-p)/c.ref*.01));PR[c.id].usd=p;const h=PR[c.id].hist;h.push(p);if(h.length>60)h.shift()})}
+function simulate(){ /* هر ثانیه: نوسان کوچک و برگشت‌پذیر برای Stars و TON، چه آنلاین چه آفلاین */
+ COINS.forEach(c=>{const p=PR[c.id],m=WOB[c.id];
+  if(c.id==='TON'&&!LIVE)p.base=Math.max(.0001,p.base*(1+(Math.random()-.5)*.004+(c.ref-p.base)/c.ref*.004));
+  if(m){p.w+=-m.k*p.w+(Math.random()-.5)*2*m.vol;p.w=Math.max(-m.amp,Math.min(m.amp,p.w))}
+  p.usd=p.base*(1+p.w);p.hist.push(p.usd);if(p.hist.length>HMAX)p.hist.shift()})}
 
 /* ---------------- Story (فاز ۶): دنیای میکو — همه‌ی متن‌ها اینجا، قابل ویرایش ---------------- */
 /* پرتره‌های نیم‌تنه شخصیت‌ها (SVG دستی، ۶۰×۷۲) */
@@ -992,7 +1033,7 @@ const nf=(n,b)=>{const a=Math.abs(n),d=a>=1000?2:a>=100?4:a>=1?Math.max(b-2,4):b
 const f$=n=>(n<0?'-':'')+'$'+nf(n,8);
 const fc=n=>'$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});   /* قیمت‌ها و هزینه‌ها */
 const fm=fc;
-const fp=(id,p)=>'$'+(id==='STAR'?p.toFixed(4):id==='USD'?p.toFixed(2):p.toFixed(3));
+const fp=(id,p)=>'$'+(id==='STAR'?p.toFixed(5):id==='USD'?p.toFixed(2):p.toFixed(3));
 const fa=(id,n)=>id==='USD'?f$(n):id==='STAR'?nf(n,6):nf(n,8);
 const fs=(id,n)=>id==='USD'?'+$'+n.toFixed(8):id==='STAR'?'+'+n.toFixed(6)+'★':'+'+n.toFixed(8)+' TON';
 const fpw=n=>'$'+fmtNum(n);
@@ -1327,6 +1368,7 @@ function buildRoom(){
  <radialGradient id="gHeat"><stop offset="0" stop-color="#FF7A3D" stop-opacity=".55"/><stop offset="1" stop-color="#FF7A3D" stop-opacity="0"/></radialGradient>
  <radialGradient id="gLamp"><stop offset="0" stop-color="#FFC46B" stop-opacity=".55"/><stop offset="1" stop-color="#FFC46B" stop-opacity="0"/></radialGradient>
  <radialGradient id="gShadow"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+ <linearGradient id="gDoor" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3A2F4C"/><stop offset=".55" stop-color="#2A2138"/><stop offset="1" stop-color="#1B1527"/></linearGradient>
  <clipPath id="winClip"><rect x=".5" y="2.2" width="2.7" height="3.7"/></clipPath>
  <clipPath id="cGem"><polygon points=".5,1.02 1,1.02 .75,.42"/></clipPath>
  <clipPath id="cBay0"><rect x=".3" y="0" width="3.5" height="5.8"/></clipPath>
@@ -1370,7 +1412,7 @@ function buildRoom(){
  wi+=`<polygon points=".5,2.2 1.4,2.2 .5,4" fill="#fff" opacity=".06"/></g><rect x=".5" y="2.2" width="2.7" height="3.7" fill="none" stroke="#e5deff" stroke-width=".1"/><line x1="1.85" x2="1.85" y1="2.2" y2="5.9" stroke="#e5deff" stroke-width=".07"/><line x1=".5" x2="3.2" y1="4.05" y2="4.05" stroke="#e5deff" stroke-width=".07"/>`;
  o+=onA(0,wi);
  /* چارت دیواری (قیمت زنده) */
- o+=glow(onA(0,`<rect x="4.4" y="4.8" width="3.8" height="1.8" rx=".1" fill="#070520" stroke="#22e6ff" stroke-width=".05"/><g stroke="rgba(167,139,250,.2)" stroke-width=".02"><line x1="4.6" x2="8" y1="5.4" y2="5.4"/><line x1="4.6" x2="8" y1="5.85" y2="5.85"/><line x1="4.6" x2="8" y1="6.3" y2="6.3"/></g><polygon id="chartArea" points="" fill="#ffc247" opacity=".2"/><polyline id="chartLine" points="" fill="none" stroke="#ffc247" stroke-width=".07" stroke-linejoin="round"/>`));
+ o+=glow(onA(0,`<rect x="4.4" y="4.8" width="3.8" height="1.8" rx=".1" fill="#070520" stroke="#22e6ff" stroke-width=".05"/><g stroke="rgba(167,139,250,.2)" stroke-width=".02"><line x1="4.6" x2="8" y1="5.4" y2="5.4"/><line x1="4.6" x2="8" y1="5.85" y2="5.85"/><line x1="4.6" x2="8" y1="6.3" y2="6.3"/></g><polygon id="chartArea" points="" fill="#ffc247" opacity=".2"/><polyline id="chartLine" points="" fill="none" stroke="#ffc247" stroke-width=".07" stroke-linejoin="round"/><rect x="4.4" y="4.8" width=".5" height="1.8" fill="url(#gSweep)" opacity=".9"><animate attributeName="x" values="4.4;7.7;4.4" dur="7s" repeatCount="indefinite"/></rect><circle id="chartDot" cx="8" cy="5.5" r=".085" fill="#ffc247"><animate attributeName="r" values=".07;.13;.07" dur="1.4s" repeatCount="indefinite"/></circle>`));
  /* نئون‌های خریدنی */
  o+=`<g id="it-strip" class="item gone">${onTop(0.02,'<ellipse cx="2" cy="6" rx="2" ry="4" fill="url(#gGreen)"/>')}${glow(onA(0,'<rect x=".4" y="6.9" width="8.3" height=".13" rx=".06" fill="#4dffb0"/>'))}</g>`;
  o+=`<g id="it-tube" class="item gone">${onTop(0.02,'<ellipse cx="2.4" cy="3.5" rx="1.5" ry="2.2" fill="url(#gPink)"/>')}${glow(onA(0,'<rect x="3.42" y="1.4" width=".13" height="3.8" rx=".06" fill="#ff4fa3"/><rect x="3.42" y="5.2" width=".13" height=".6" rx=".06" fill="#22e6ff"/><rect x="3.1" y="2.0" width=".13" height="2.6" rx=".06" fill="#8b5cf6"/>'))}</g>`;
@@ -1378,9 +1420,28 @@ function buildRoom(){
  /* ---- دیوار راست: پوستر + هگز + کولر + تابلو (فاز ۴: پوستر جدید) ---- */
  o+=onB(0,`<rect x="6.42" y="4.42" width="1.3" height="1.76" rx=".05" fill="#171221" stroke="#5E4A33" stroke-width=".07"/><rect x="6.54" y="4.54" width="1.06" height="1.52" fill="#20293E"/><polygon points="${(()=>{const cx=7.07,cy=5.02,R=.2,r=.085,p=[];for(let i=0;i<10;i++){const a=Math.PI/2+i*Math.PI/5,rr=i%2?r:R;p.push((cx+Math.cos(a)*rr).toFixed(2)+','+(cy-Math.sin(a)*rr).toFixed(2))}return p.join(' ')})()}" fill="#FFC247"/><rect x="6.68" y="5.5" width=".2" height=".4" fill="#3AA8F0"/><rect x="6.95" y="5.36" width=".2" height=".54" fill="#3ED598"/><rect x="7.22" y="5.58" width=".2" height=".32" fill="#FF5C7A"/>`);
  const hex=(cx,cy,r,c)=>`<path d="M${cx+r} ${cy} L${cx+r/2} ${cy+r*.866} L${cx-r/2} ${cy+r*.866} L${cx-r} ${cy} L${cx-r/2} ${cy-r*.866} L${cx+r/2} ${cy-r*.866}Z" fill="${c}" stroke="#fff" stroke-width=".04" stroke-opacity=".7"/>`;
- o+=`<g id="it-hex" class="item gone">${glow(onB(0,hex(8.3,3.0,.28,'#ffe28a')+hex(8.3,3.49,.28,'#c4b5fd')+hex(8.72,3.25,.28,'#7be7ff')+hex(8.3,4.0,.28,'#7be7ff')+hex(8.72,3.75,.28,'#ffe28a')))}</g>`;
+ o+=`<g id="it-hex" class="item gone">${glow(onB(0,hex(8.3,4.0,.28,'#ffe28a')+hex(8.3,4.49,.28,'#c4b5fd')+hex(8.72,4.25,.28,'#7be7ff')+hex(8.3,5.0,.28,'#7be7ff')+hex(8.72,4.75,.28,'#ffe28a')))}</g>`;
  o+=`<g id="it-ac" class="item gone">${box(0,.55,6.2,.8,2.85,.95,['#f5f2ff','#ddd7f7','#c6bfea'])}${onA(.8,`<rect x=".75" y="6.43" width="2.5" height=".12" rx=".05" fill="#b3abdc"/><rect x=".75" y="6.63" width="2.5" height=".06" fill="#c6bfea"/><circle cx="3.05" cy="6.95" r=".06" fill="#4ade80"/>`)}${[0,1,2,3].map(i=>onA(.8,`<line x1="${1+i*.6}" x2="${1.05+i*.6}" y1="6.1" y2="5.55" stroke="rgba(200,240,255,.7)" stroke-width=".05" stroke-linecap="round"><animate attributeName="opacity" values="0;.9;0" dur="2.2s" begin="${i*.5}s" repeatCount="indefinite"/></line>`)).join('')}</g>`;
  o+=glow(onB(0,`<g transform="translate(5.05 6.3) scale(1 -1)"><text x="0" y="0" font-size=".8" font-weight="900" textLength="3.9" lengthAdjust="spacingAndGlyphs" fill="#F5B356" class="flick">MINER ROOM</text></g><rect x="5.0" y="6.15" width="3.9" height=".04" fill="#E8913A" opacity=".8"/>`));
+
+
+ /* ---- در اتاق دوم: هم‌سبک اتاق (فریم برنزی + لته‌ی فلزی + نشان نئونی) ---- */
+ {const D0=8.14,DW=.78,DH=2.85,cx=D0+DW/2;
+ o+=`<g id="door2" class="tap" data-act="door2">`
+  +onTop(.012,`<rect x="${D0-.12}" y=".02" width="${DW+.24}" height=".5" rx=".08" fill="rgba(255,170,80,.14)"/>`)
+  +onB(0,`<rect x="${D0-.07}" y="0" width="${DW+.14}" height="${DH+.07}" rx=".05" fill="#120D1C" stroke="#B98A4A" stroke-width=".05"/>
+   <rect x="${D0}" y="0" width="${DW}" height="${DH}" rx=".03" fill="url(#gDoor)"/>
+   <rect x="${D0+.1}" y=".16" width="${DW-.2}" height="1.0" rx=".03" fill="rgba(0,0,0,.26)" stroke="rgba(255,255,255,.08)" stroke-width=".018"/>
+   <rect x="${D0+.1}" y="1.3" width="${DW-.2}" height="1.2" rx=".03" fill="#0B1A2E" stroke="#8FB6D9" stroke-width=".03"/>
+   <line x1="${D0+.16}" x2="${D0+DW-.16}" y1="1.55" y2="1.55" stroke="rgba(143,182,217,.35)" stroke-width=".02"/>
+   <line x1="${D0+.16}" x2="${D0+DW-.16}" y1="1.85" y2="1.85" stroke="rgba(143,182,217,.25)" stroke-width=".02"/>
+   <rect x="${D0+.14}" y="2.05" width=".22" height=".34" fill="#fff" opacity=".07" transform="skewX(-12)"/>
+   <rect x="${D0+DW-.2}" y="1.0" width=".08" height=".3" rx=".04" fill="#F5B356"/>
+   <rect x="${D0+DW-.24}" y=".6" width=".16" height=".26" rx=".03" fill="#0E0A18" stroke="#B98A4A" stroke-width=".02"/>
+   <circle cx="${D0+DW-.16}" cy=".73" r=".03" fill="#FF5C7A"><animate attributeName="opacity" values="1;.2;1" dur="1.6s" repeatCount="indefinite"/></circle>`)
+  +glow(onB(0,`<rect x="${D0-.04}" y="${DH+.12}" width="${DW+.08}" height=".34" rx=".05" fill="#191430" stroke="#8FB6D9" stroke-width=".025"/>
+   <g transform="translate(${cx.toFixed(2)} ${(DH+.2).toFixed(2)}) scale(1 -1)"><text text-anchor="middle" font-size=".19" font-weight="800" fill="#8FB6D9" direction="ltr">ROOM 2</text></g>`))
+  +`</g>`;}
 
  /* ---- رک‌ها: پنل پشت، هاله‌ی گرما، قفسه‌ها، اقلام داینامیک، ستون‌ها ---- */
  [0,1].forEach(bay=>{const a0=BAY_A[bay];
@@ -1403,6 +1464,7 @@ function buildRoom(){
   <polygon id="dmArea" points="" fill="#FFC247" opacity=".22"/>
   <polyline id="dmLine" points="" fill="none" stroke="#FFC247" stroke-width=".06" stroke-linejoin="round"/>
   <rect x="4.55" y="4.14" width=".95" height=".06" rx=".03" fill="#4CD97B"><animate attributeName="width" values=".1;.95;.1" dur="4s" repeatCount="indefinite"/></rect>
+  <circle id="dmDot" cx="6.9" cy="3.5" r=".055" fill="#FFC247"><animate attributeName="opacity" values="1;.25;1" dur="1.2s" repeatCount="indefinite"/></circle>
   <circle cx="6.78" cy="4.17" r=".05" fill="#4CD97B"><animate attributeName="opacity" values="1;.2;1" dur="1s" repeatCount="indefinite"/></circle>`))+`</g>`;
  /* کیبورد RGB */
  o+=box(1.0,5.2,2.58,.55,1.9,.07,['#2A2438','#1C1728','#151122'])+onTop(2.65,'<rect x="1.03" y="5.25" width=".5" height="1.8" fill="url(#gRgb)" opacity=".9"/>','class="rgb"');
@@ -1422,7 +1484,7 @@ function buildRoom(){
  o+=box(1.1,7.12,2.58,.22,.2,.08,['#2A2438','#1C1728','#151122']);
  o+=`<g class="tap" data-act="mine">`+box(.35,7.35,2.58,1.3,1.1,2.3,['#241E36','#181328','#120E20'])
   +onTop(4.88,'<rect x=".4" y="7.4" width="1.2" height=".08" fill="url(#gRgb)"/>','class="rgb"')
-  +onA(1.65,`<rect x="7.43" y="2.66" width="1.0" height="2.14" rx=".06" fill="#07051a" stroke="#7c5cff" stroke-width=".03"/>`+[3.15,3.8,4.45].map((cy,i)=>`<g class="rgb" style="animation-delay:${i*-.8}s">${fan(7.93,cy,.26,'#ff4fa3',(.5+i*.1)+'s')}</g>`).join(''))+`</g>`;
+  +onA(1.65,`<rect x="7.43" y="2.66" width="1.0" height="2.14" rx=".06" fill="#07051a" stroke="#7c5cff" stroke-width=".03"/>`+[3.15,3.8,4.45].map((cy,i)=>`<g class="rgb" style="animation-delay:${i*-.8}s">${fan(7.93,cy,.26,'#ff4fa3',(.5+i*.1)+'s')}</g>`).join('')+[0,1,2,3,4,5,6].map(i=>`<rect x="${(7.52+i*.12).toFixed(2)}" y="2.72" width=".07" height=".06" rx=".02" fill="${['#FFC247','#3AA8F0','#3ED598'][i%3]}"><animate attributeName="height" values=".05;${(.1+((i*37)%5)*.03).toFixed(2)};.05" dur="${(.7+(i%4)*.23).toFixed(2)}s" repeatCount="indefinite"/></rect>`).join(''))+`</g>`;
  /* چراغ ایستادی گرم کنار میز (فاز ۴) */
  o+=box(8.15,1.6,0,.12,.12,2.6,MET)+box(8.0,1.45,2.6,.42,.42,.3,['#E8913A','#B06A24','#8A521B'])
   +onTop(2.92,`<ellipse cx="8.2" cy="1.66" rx="1.7" ry="1.05" fill="url(#gLamp)" opacity="${PL.lampOp}"/>`);
@@ -1450,8 +1512,6 @@ function buildRoom(){
   <rect x="-34" y="-9.5" width="68" height="1" fill="#22e6ff" opacity=".55"/><rect x="-34" y="36.5" width="68" height="1" fill="#22e6ff" opacity=".25"/>`
   +COINS.map((c,i)=>`<g transform="translate(0 ${6+i*14})"><circle cx="-29" cy="0" r="3" fill="${c.col}" filter="url(#gl2)"/><text direction="ltr" x="-22" y="3.1" font-size="8.5" font-weight="700" fill="#e9fbff" id="bbp-${c.id}"></text><text direction="ltr" x="32" y="3.1" font-size="8" text-anchor="end" font-weight="800" id="bbt-${c.id}"></text></g>`).join('')+`</g>`;
 
- /* در اتاق دوم (زیرساخت فاز بعد) */
- o+=`<g id="door2" class="tap" data-act="door2">${onB(0,`<rect x="8.1" y="0" width="1.05" height="3.2" rx=".04" fill="#241C33" stroke="#5E4A33" stroke-width=".07"/><line x1="8.62" x2="8.62" y1="0" y2="3.2" stroke="#5E4A33" stroke-width=".05"/><circle cx="8.52" cy="1.7" r=".055" fill="#FFC247"/><rect x="8.16" y="2.3" width=".92" height=".5" rx=".05" fill="#191430" stroke="#8FB6D9" stroke-width=".022"/><text x="8.62" y="2.55" text-anchor="middle" font-size=".15" font-weight="700" fill="#8FB6D9" direction="ltr">ROOM 2</text>`)}${onTop(.02,`<ellipse cx="8.62" cy="1.5" rx="1.05" ry=".55" fill="rgba(0,0,0,.35)"/>`)}</g>`;
  /* جایزه‌های بصری دائمی فصل‌ها (فاز ۶) — با اتمام هر فصل یکی باز می‌شه */
  const [fx1,fy1]=P(2.72,7.72,2.9);
  o+=`<g id="it-ch1" class="item gone">${box(2.55,7.62,2.58,.36,.07,.3,['#B98A4A','#8A5A28','#6E441C'])}${onB(7.69,`<rect x="2.6" y="2.64" width=".26" height=".2" fill="#FFE9C9"/><circle cx="2.67" cy="2.72" r=".022" fill="#241304"/><circle cx="2.72" cy="2.72" r=".022" fill="#241304"/><path d="M2.66 2.78 q.05.04.1 0" stroke="#241304" stroke-width=".008" fill="none"/>`)}</g>`;
@@ -1475,7 +1535,9 @@ function drawChart(){
  /* فاز ۴: مانیتور روی میز همون چارت زنده‌ی ارز انتخابی رو نشون می‌ده */
  const dm=$('#dmLine'),da=$('#dmArea');
  if(dm){const q=h.map((v,i)=>`${(4.55+i*(2.35/n)).toFixed(2)},${(3.1+(1-(v-mn)/rg)*1.0).toFixed(2)}`).join(' ');
-  dm.setAttribute('points',q);da.setAttribute('points',`4.55,4.18 ${q} 6.9,4.18`);dm.setAttribute('stroke',c.col);da.setAttribute('fill',c.col)}
+  dm.setAttribute('points',q);da.setAttribute('points',`4.55,4.18 ${q} 6.9,4.18`);dm.setAttribute('stroke',c.col);da.setAttribute('fill',c.col);
+  const dd=$('#dmDot');if(dd){dd.setAttribute('cx','6.9');dd.setAttribute('cy',(3.1+(1-(h[n]-mn)/rg)*1.0).toFixed(2));dd.setAttribute('fill',c.col)}}
+ const cd=$('#chartDot');if(cd){cd.setAttribute('cx','8.0');cd.setAttribute('cy',(5.2+(h[n]-mn)/rg*1.1).toFixed(2));cd.setAttribute('fill',c.col)}
  /* فاز ۴: نوارهای تولید واقعی هر ارز روی مانیتور کناری */
  const st=stats(),mxc=Math.max(1e-9,...COINS.map(cc=>st.rate[cc.id]));
  COINS.forEach(cc=>{const e=document.getElementById('mBar-'+cc.id);if(e){const v=Math.max(.06,st.rate[cc.id]/mxc);
@@ -1483,7 +1545,7 @@ function drawChart(){
 
 /* ---------------- HUD ---------------- */
 function buildChips(){
- $('#chips').innerHTML=COINS.map(c=>`<div class="chip" id="chip-${c.id}" style="--c:${c.col};--cg:${c.col}59" data-act="sel" data-id="${c.id}">${coinIcon(c.id,26)}<div><b class="num" id="cw-${c.id}">0</b><small>${c.short}</small></div></div>`).join('')}
+ $('#chips').innerHTML=COINS.map(c=>`<div class="chip" id="chip-${c.id}" style="--c:${c.col};--cg:${c.col}59" data-act="sel" data-id="${c.id}">${coinIcon(c.id,24)}<div><b class="num" id="cw-${c.id}">0</b><small>${c.short}</small></div></div>`).join('')}
 function renderTag(){
  const e=$('#liveTag');if(!e)return;
  e.textContent=LIVE?'زنده':'آفلاین';e.className='tag '+(LIVE?'on':'off')}
@@ -1494,7 +1556,7 @@ function fmtNum(n){if(!Number.isFinite(+n))return '0';const a=Math.abs(+n);const
 function fmtUsd(n){const s=n<0?'−':'',a=Math.abs(n),k=kfmt(a);
  if(k&&a>=1000)return s+'$'+k;if(a===0)return '$0.00';
  return s+'$'+fmtNum(a)}
-const fmtChip=(id,n)=>{const a=Math.abs(+n||0);return a>=1000?(kfmt(n)||fmtNum(n)):fmtNum(n)};
+const fmtChip=(id,n)=>fmtNum(n);   /* عدد کامل؛ فقط اگه جا کم بود فونت کوچیک می‌شه (fitHUD) */
 /* شمارنده‌ی انیمیشنی بالانس (فقط روی تغییر گسسته، نه تیک ثانیه‌ای) */
 let lastBal=null,balTgt=null,balTW=0;
 function setBal(v){
@@ -1790,21 +1852,25 @@ function sheetTasks(){
  o+=dailyCal();
  o+=dailyReady()?`<button class="btn wide claim" data-act="daily">${icon('gift','s')}دریافت هدیه‌ی روز ${dailyIdx()+1} · <span class="num">${fc(DAILY[dailyIdx()])}</span></button>`:`<div class="row done">${icon('check','s')} <span>پاداش امروز دریافت شد</span><span class="tg num" id="dailyTimer">--:--:--</span></div>`;
  o+=`<div class="sh2"><span class="sh-title"><b>دعوت دوستان</b>${info("دوستت را با لینک اختصاصی دعوت کن. وقتی به ماموریت ۳ برسد، هر دو جایزه می‌گیرید.")}</span></div><div id="ref"><small class="mut">در حال بارگذاری…</small></div>`;
- if(S.ch>0)o+=`<div class="sh2"><span class="sh-title"><b>انجام‌شده</b></span><span class="slotpill"><b class="num">${S.ch}/${CH.length}</b></span></div><div class="donegrid">`+CH.slice(0,S.ch).map((x,i)=>`<button type="button" class="donebd" data-info="${esc(x.t)}" aria-label="${esc(x.t)}"><b class="num">${i+1}</b><i>${icon('check','s')}</i></button>`).join('')+`</div>`;
  return o}
 
 function sheetHub(){
  return `<div id="top"><small class="mut">در حال بارگذاری…</small></div>`}
 
-let REFLINK='';
+let REFLINK='',refTries=0;
 async function loadRef(){
  const el=$('#ref');if(!el)return;
  if(!INIT){el.innerHTML='<small class="mut">دعوت دوستان فقط داخل تلگرام فعاله.</small>';return}
  try{const r=await api('/api/ref'),e2=$('#ref');if(!e2)return;REFLINK=r.link||'';
-  if(!REFLINK){e2.innerHTML='<small class="mut">لینک دعوت هنوز آماده نیست.</small>';return}
-  e2.innerHTML=`<div class="chiprow"><span class="tg"><small>تو</small><b class="num">${fc(r.bonus)}</b></span><span class="tg"><small>دوست</small><b class="num">${fc(r.welcome)}</b></span><span class="tg"><small>سطح ۲</small>${r.next?`<b class="num">${fc(r.next.bonus)}</b>`:''}</span></div>
-  <div class="row"><div class="rb"><b>زیرمجموعه‌ی فعال: <span class="num">${r.active}/${r.max}</span></b><small>دعوت‌شده: <span class="num">${r.invited}</span> · درآمد: <span class="num">${fc(r.earned)}</span></small></div></div>
-  <div style="display:flex;gap:8px"><button class="btn wide" style="margin:0" data-act="invite">${icon('user','s')}دعوت دوستان</button><button class="btn ghost" data-act="copyref">${icon('copy','s')}کپی لینک</button></div>`}
+  const rw=(lbl,v)=>`<span class="tg"><small>${lbl}</small><b class="num">${fc(v)}</b></span>`;
+  const nx=r.next?`<small class="mut" style="display:block;margin:2px 2px 10px">با <span class="num">${r.next.at}</span> زیرمجموعه‌ی فعال، جایزه‌ی ویژه‌ی <span class="num">${fc(r.next.bonus)}</span> می‌گیری.</small>`:'';
+  const act=REFLINK
+   ?`<div style="display:flex;gap:8px"><button class="btn wide" style="margin:0" data-act="invite">${icon('user','s')}دعوت دوستان</button><button class="btn ghost" data-act="copyref">${icon('copy','s')}کپی لینک</button></div>`
+   :`<div class="werr">${icon('alert')}<b>لینک دعوت در حال آماده‌سازی است</b><button class="btn sm" data-act="ref-retry">تلاش مجدد</button></div>`;
+  e2.innerHTML=`<div class="chiprow">${rw('جایزه‌ی تو برای هر دوست فعال',r.bonus)}${rw('هدیه‌ی دوستت',r.welcome)}${rw('سطح دوم',r.bonus2!=null?r.bonus2:0)}</div>
+  <div class="row"><div class="rb"><b>زیرمجموعه‌ی فعال: <span class="num">${r.active}/${r.max}</span></b><small>دعوت‌شده: <span class="num">${r.invited}</span> · درآمد: <span class="num">${fc(r.earned)}</span></small></div></div>${nx}${act}`;
+  /* اگه سرور هنوز یوزرنیم ربات رو نداشت، چند بار خودکار دوباره تلاش می‌کنیم */
+  if(!REFLINK&&refTries<3&&sheet.tab==='tasks'){refTries++;setTimeout(loadRef,3500)}else if(REFLINK)refTries=0}
  catch(e){const e2=$('#ref');if(e2)e2.innerHTML='<div class="werr">'+icon('alert')+'<b>در دسترس نیست</b><button class="btn sm" data-act="ref-retry">تلاش مجدد</button></div>'}}
 /* برترین‌ها (فاز ۵): سکوی ۳ نفر + لیگ + دکمه‌ی پروفایل */
 async function loadTop(){
@@ -2377,7 +2443,7 @@ function act(t,e){
  else if(a==='boost'){boostUntil=Date.now()+30000;boostShow=0;$('#boost').classList.add('hide');hapOk();centerBurst('#ffd166');setMiko('happy',3000);toast('بوست فعال شد: ۳۰ ثانیه ماین دو برابر');renderHUD()}
  else if(a==='snd'){SND=!SND;storageSet('mr3:snd',SND?'1':'0');syncSound();if(!SND&&window.speechSynthesis)try{speechSynthesis.cancel()}catch(e){};if(SND){hap('light');sfx('ok')}}
  else if(a==='top-retry'){const e2=$('#top');if(e2)e2.innerHTML='<small class="mut">در حال بارگذاری…</small>';loadTop()}
- else if(a==='ref-retry'){const e2=$('#ref');if(e2)e2.innerHTML='<small class="mut">در حال بارگذاری…</small>';loadRef()}
+ else if(a==='ref-retry'){refTries=0;const e2=$('#ref');if(e2)e2.innerHTML='<small class="mut">در حال بارگذاری…</small>';loadRef()}
  else if(a==='evgo'){const ev=EVENTS.find(x=>x.id===id);if(!ev)return;ev.apply();$('#evbtn').classList.add('hide');evShow=0;hapOk();toast(ev.t+' فعال شد');say(ev.say,6000);checkChapter();renderHUD()}
  else if(a==='replay'){closeSheet();setTimeout(()=>playScene(S.ch),260)}
  else if(a==='sg-m'){hap('light');try{t.animate([{transform:'scale(1)'},{transform:'scale(1.22)'},{transform:'scale(1)'}],{duration:420,easing:'cubic-bezier(.34,1.45,.4,1)'})}catch(e){}}}
@@ -2470,7 +2536,7 @@ function evTick(){
 /* ---------------- Tick ---------------- */
 let boostIn=70+Math.random()*40,boostShow=0,blackoutOn=false;
 function tick(){
- if(!LIVE)simulate();
+ simulate();
  const st=stats(),f=st.gross>0?Math.max(0,st.net)/st.gross:0;
  COINS.forEach(c=>{S.wallet[c.id]+=st.rate[c.id]*f});
  weeklyCheck();

@@ -470,8 +470,33 @@ def activate_ref(uid):
        reply_markup=PLAY_KB)
 
 
+_BU_LOCK = threading.Lock()
+_BU_TRY = 0.0
+
+
+def bot_username(force=False):
+    """یوزرنیم ربات؛ اگه هنوز نداریم همین‌جا از getMe می‌گیریم (حداکثر هر ۵ ثانیه یک تلاش).
+    قبلاً فقط توی thread استارت‌آپ گرفته می‌شد و اگه اون لحظه شبکه‌ی تلگرام قطع بود، تا ری‌استارت بعدی لینک دعوت خالی می‌موند."""
+    global BOT_USERNAME, _BU_TRY
+    if BOT_USERNAME:
+        return BOT_USERNAME
+    with _BU_LOCK:
+        if BOT_USERNAME:
+            return BOT_USERNAME
+        if not force and time.time() - _BU_TRY < 5:
+            return ""
+        _BU_TRY = time.time()
+        name = ((tg("getMe") or {}).get("result") or {}).get("username", "") or ""
+        if name:
+            BOT_USERNAME = name
+        else:
+            log.warning("getMe نتونست یوزرنیم ربات رو بگیره؛ BOT_TOKEN یا شبکه رو چک کن (یا BOT_USERNAME رو دستی بذار)")
+        return BOT_USERNAME
+
+
 def ref_link(uid):
-    return f"https://t.me/{BOT_USERNAME}?start=ref_{uid}" if BOT_USERNAME else ""
+    name = bot_username()
+    return f"https://t.me/{name}?start=ref_{uid}" if name else ""
 
 
 # ───────────────────────── API مینی‌اپ ─────────────────────────
@@ -602,7 +627,8 @@ def api_ref():
     invited = db.players.count_documents({"ref": u["id"]})
     active = db.players.count_documents({"ref": u["id"], "ref_done": True})
     nxt = next(((k, v) for k, v in sorted(REF_MILESTONES.items()) if active < k), None)
-    return jsonify(link=ref_link(u["id"]), invited=invited, active=active,
+    link = ref_link(u["id"])
+    return jsonify(link=link, ready=bool(link), bonus2=REF2_BONUS, invited=invited, active=active,
                    earned=float(me.get("ref_earned", 0) or 0), bonus=REF_BONUS, welcome=REF_WELCOME,
                    next={"at": nxt[0], "bonus": nxt[1]} if nxt else None, max=REF_MAX)
 
@@ -1349,9 +1375,7 @@ def bot_hook():
 
 
 def setup_bot():
-    global BOT_USERNAME
-    if not BOT_USERNAME:
-        BOT_USERNAME = (tg("getMe").get("result") or {}).get("username", "")
+    bot_username(force=True)
     r = tg("setWebhook", url=f"{BASE_URL}/bot", secret_token=BOT_SECRET,
            allowed_updates=["message", "callback_query", "pre_checkout_query"], drop_pending_updates=False)
     tg("setMyCommands", commands=[
