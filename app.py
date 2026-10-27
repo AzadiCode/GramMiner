@@ -27,6 +27,7 @@ Environment:
   نمای کلی · برداشت‌ها (تأیید/رد) · کاربران (جستجو، تنظیم موجودی، مسدود) · تنظیمات (کارمزد و حداقل‌ها) · پیام همگانی
 """
 import os, re, json, time, math, hmac, hashlib, secrets, threading, logging
+from concurrent.futures import ThreadPoolExecutor
 from collections import deque
 from urllib.parse import parse_qsl
 from datetime import datetime, timezone, timedelta
@@ -77,6 +78,7 @@ SAVE_MIN_GAP = 2.0      # حداقل فاصله‌ی دو ذخیره (ثانیه
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("miko")
+BOT_UPDATE_POOL = ThreadPoolExecutor(max_workers=4, thread_name_prefix="telegram-update")
 
 app = Flask(__name__)
 if MONGO_URI:
@@ -120,9 +122,26 @@ def aware(d):
     return d.replace(tzinfo=timezone.utc) if d is not None and d.tzinfo is None else d
 
 
+# Telegram HTTP uses a thread-local Session with environment/netrc discovery disabled.
+# This avoids rare Python/netrc import-lock stalls seen in sync Gunicorn workers.
+_TG_LOCAL = threading.local()
+
+def _tg_session():
+    session = getattr(_TG_LOCAL, "session", None)
+    if session is None:
+        session = requests.Session()
+        session.trust_env = False
+        _TG_LOCAL.session = session
+    return session
+
 def tg(method, **data):
+    """Call Telegram with bounded connect/read timeouts; never block a webhook indefinitely."""
     try:
-        r = requests.post(f"https://api.telegram.org/bot{BOT_TOKEN}/{method}", json=data, timeout=15)
+        r = _tg_session().post(
+            f"https://api.telegram.org/bot{BOT_TOKEN}/{method}",
+            json=data,
+            timeout=(2.5, 5.0),
+        )
         return r.json()
     except Exception as e:
         log.warning("tg %s failed: %s", method, e)
@@ -1451,11 +1470,8 @@ def handle_language_callback(cb):
     notify_start_referral(uid, chat_id, lang)
 
 
-@app.post("/bot")
-def bot_hook():
-    if request.headers.get("X-Telegram-Bot-Api-Secret-Token") != BOT_SECRET:
-        return "forbidden", 403
-    upd = request.get_json(silent=True) or {}
+def process_bot_update(upd):
+    """Process a Telegram update away from the Gunicorn request thread."""
     try:
         if upd.get("callback_query"):
             cb = upd["callback_query"]
@@ -1533,8 +1549,28 @@ def bot_hook():
         else:
             send_welcome(chat_id, uid, lang)
     except Exception:
-        log.exception("bot_hook error")
+        log.exception("bot update processing failed")
     return "ok"
+
+
+@app.post("/bot")
+def bot_hook():
+    """Acknowledge Telegram immediately; do outbound Telegram calls in a bounded pool."""
+    if request.headers.get("X-Telegram-Bot-Api-Secret-Token") != BOT_SECRET:
+        return "forbidden", 403
+    upd = request.get_json(silent=True) or {}
+    # Telegram requires pre-checkout answers within 10 seconds. Process those inline;
+    # tg() has a bounded connect/read timeout. All other updates are acknowledged first
+    # and processed in the background so a slow sendMessage cannot time out Gunicorn.
+    if upd.get("pre_checkout_query"):
+        process_bot_update(upd)
+        return "ok", 200
+    try:
+        BOT_UPDATE_POOL.submit(process_bot_update, upd)
+    except Exception:
+        # Do not make Telegram retry indefinitely if the pool is shutting down.
+        log.exception("could not queue Telegram update")
+    return "ok", 200
 
 
 def setup_bot():
